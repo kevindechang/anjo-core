@@ -1,0 +1,2728 @@
+{
+  "_meta": {
+    "purpose": "Cross-runtime deterministic companion-kernel contract",
+    "source": "Production-derived synthetic vectors; product prose removed",
+    "cases": 225,
+    "float_round": 9,
+    "affect_dynamics": true,
+    "affect_habituation": false,
+    "excludes": [
+      "turn-shape prose",
+      "prompt text",
+      "gate",
+      "generation",
+      "policy",
+      "persistence",
+      "reflection"
+    ]
+  },
+  "affect_control": {
+    "mood_octant": [
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0
+        },
+        "out": "neutral"
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": "exuberant"
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": "dependent"
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": "relaxed"
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": "docile"
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": "hostile"
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": "anxious"
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": "disdainful"
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": "bored"
+      },
+      {
+        "in": {
+          "valence": -0.4,
+          "arousal": -0.35,
+          "dominance": 0.0
+        },
+        "out": "disdainful"
+      },
+      {
+        "in": {
+          "valence": -0.5,
+          "arousal": -0.1,
+          "dominance": 0.0
+        },
+        "out": "disdainful"
+      },
+      {
+        "in": {
+          "valence": 0.2,
+          "arousal": 0.2,
+          "dominance": 0.2
+        },
+        "out": "exuberant"
+      },
+      {
+        "in": {
+          "valence": 0.1,
+          "arousal": -0.1,
+          "dominance": 0.05
+        },
+        "out": "neutral"
+      },
+      {
+        "in": {
+          "valence": -1.0,
+          "arousal": 1.0,
+          "dominance": 1.0
+        },
+        "out": "hostile"
+      },
+      {
+        "in": {
+          "valence": 1.0,
+          "arousal": -1.0,
+          "dominance": -1.0
+        },
+        "out": "docile"
+      }
+    ],
+    "decoding_params": [
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0
+        },
+        "out": {
+          "temperature": 1.0,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": {
+          "temperature": 1.12,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": {
+          "temperature": 1.12,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": {
+          "temperature": 0.88,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": {
+          "temperature": 0.88,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": {
+          "temperature": 1.12,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": {
+          "temperature": 1.12,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": {
+          "temperature": 0.88,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": {
+          "temperature": 0.88,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": -0.4,
+          "arousal": -0.35,
+          "dominance": 0.0
+        },
+        "out": {
+          "temperature": 0.93,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": -0.5,
+          "arousal": -0.1,
+          "dominance": 0.0
+        },
+        "out": {
+          "temperature": 0.98,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": 0.2,
+          "arousal": 0.2,
+          "dominance": 0.2
+        },
+        "out": {
+          "temperature": 1.04,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": 0.1,
+          "arousal": -0.1,
+          "dominance": 0.05
+        },
+        "out": {
+          "temperature": 0.98,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": -1.0,
+          "arousal": 1.0,
+          "dominance": 1.0
+        },
+        "out": {
+          "temperature": 1.18,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": {
+          "valence": 1.0,
+          "arousal": -1.0,
+          "dominance": -1.0
+        },
+        "out": {
+          "temperature": 0.8,
+          "top_p": 0.97
+        }
+      },
+      {
+        "in": null,
+        "out": {
+          "temperature": 1.0,
+          "top_p": null
+        }
+      }
+    ],
+    "length_factor": [
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0
+        },
+        "out": 1.0
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": 1.0
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": 1.0
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": 0.6
+      },
+      {
+        "in": {
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": 0.6
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": 0.72
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": 0.72
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": 0.6
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": 0.6
+      },
+      {
+        "in": {
+          "valence": -0.4,
+          "arousal": -0.35,
+          "dominance": 0.0
+        },
+        "out": 0.6
+      },
+      {
+        "in": {
+          "valence": -0.5,
+          "arousal": -0.1,
+          "dominance": 0.0
+        },
+        "out": 0.72
+      },
+      {
+        "in": {
+          "valence": 0.2,
+          "arousal": 0.2,
+          "dominance": 0.2
+        },
+        "out": 1.0
+      },
+      {
+        "in": {
+          "valence": 0.1,
+          "arousal": -0.1,
+          "dominance": 0.05
+        },
+        "out": 1.0
+      },
+      {
+        "in": {
+          "valence": -1.0,
+          "arousal": 1.0,
+          "dominance": 1.0
+        },
+        "out": 0.72
+      },
+      {
+        "in": {
+          "valence": 1.0,
+          "arousal": -1.0,
+          "dominance": -1.0
+        },
+        "out": 0.6
+      },
+      {
+        "in": null,
+        "out": 1.0
+      }
+    ],
+    "apply_length_factor": [
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0
+        },
+        "out": 240
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0
+        },
+        "out": 800
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0
+        },
+        "out": 200
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": 240
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": 800
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": 200
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": 240
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": 800
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": 0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": 200
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": 480
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": 480
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": 0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": 576
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": 0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": 576
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": -0.6,
+          "arousal": 0.6,
+          "dominance": -0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": 480
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": 0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": 480
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": -0.6,
+          "arousal": -0.6,
+          "dominance": -0.6
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": -0.4,
+          "arousal": -0.35,
+          "dominance": 0.0
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": -0.4,
+          "arousal": -0.35,
+          "dominance": 0.0
+        },
+        "out": 480
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": -0.4,
+          "arousal": -0.35,
+          "dominance": 0.0
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": -0.5,
+          "arousal": -0.1,
+          "dominance": 0.0
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": -0.5,
+          "arousal": -0.1,
+          "dominance": 0.0
+        },
+        "out": 576
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": -0.5,
+          "arousal": -0.1,
+          "dominance": 0.0
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": 0.2,
+          "arousal": 0.2,
+          "dominance": 0.2
+        },
+        "out": 240
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": 0.2,
+          "arousal": 0.2,
+          "dominance": 0.2
+        },
+        "out": 800
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": 0.2,
+          "arousal": 0.2,
+          "dominance": 0.2
+        },
+        "out": 200
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": 0.1,
+          "arousal": -0.1,
+          "dominance": 0.05
+        },
+        "out": 240
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": 0.1,
+          "arousal": -0.1,
+          "dominance": 0.05
+        },
+        "out": 800
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": 0.1,
+          "arousal": -0.1,
+          "dominance": 0.05
+        },
+        "out": 200
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": -1.0,
+          "arousal": 1.0,
+          "dominance": 1.0
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": -1.0,
+          "arousal": 1.0,
+          "dominance": 1.0
+        },
+        "out": 576
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": -1.0,
+          "arousal": 1.0,
+          "dominance": 1.0
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 240,
+          "valence": 1.0,
+          "arousal": -1.0,
+          "dominance": -1.0
+        },
+        "out": 180
+      },
+      {
+        "in": {
+          "base_tokens": 800,
+          "valence": 1.0,
+          "arousal": -1.0,
+          "dominance": -1.0
+        },
+        "out": 480
+      },
+      {
+        "in": {
+          "base_tokens": 200,
+          "valence": 1.0,
+          "arousal": -1.0,
+          "dominance": -1.0
+        },
+        "out": 180
+      }
+    ],
+    "is_ambivalent": [
+      {
+        "in": {},
+        "out": false
+      },
+      {
+        "in": {
+          "joy": 0.8
+        },
+        "out": false
+      },
+      {
+        "in": {
+          "distress": 0.7
+        },
+        "out": false
+      },
+      {
+        "in": {
+          "admiration": 0.5,
+          "distress": 0.25
+        },
+        "out": true
+      },
+      {
+        "in": {
+          "joy": 0.8,
+          "distress": 0.1
+        },
+        "out": false
+      },
+      {
+        "in": {
+          "joy": 0.8,
+          "distress": 0.2
+        },
+        "out": false
+      },
+      {
+        "in": {
+          "gratitude": 0.4,
+          "reproach": 0.4
+        },
+        "out": true
+      },
+      {
+        "in": {
+          "hope": 0.16,
+          "fear": 0.16
+        },
+        "out": true
+      },
+      {
+        "in": {
+          "longing": 0.9,
+          "satisfaction": 0.1
+        },
+        "out": false
+      }
+    ]
+  },
+  "retrieval": {
+    "recency_weight": [
+      {
+        "in": {
+          "days_ago": 0
+        },
+        "out": 1.0
+      },
+      {
+        "in": {
+          "days_ago": 7
+        },
+        "out": 0.883333333
+      },
+      {
+        "in": {
+          "days_ago": 30
+        },
+        "out": 0.5
+      },
+      {
+        "in": {
+          "days_ago": 60
+        },
+        "out": 0.4
+      },
+      {
+        "in": {
+          "days_ago": 120
+        },
+        "out": 0.4
+      },
+      {
+        "in": {
+          "timestamp": "not-a-date"
+        },
+        "out": 0.7
+      }
+    ],
+    "mood_congruence_factor": [
+      {
+        "in": {
+          "mem_valence": 0.5,
+          "mood_valence": 0.5,
+          "congruence_on": true
+        },
+        "out": 1.03
+      },
+      {
+        "in": {
+          "mem_valence": -0.5,
+          "mood_valence": -0.5,
+          "congruence_on": true
+        },
+        "out": 1.06
+      },
+      {
+        "in": {
+          "mem_valence": 0.5,
+          "mood_valence": -0.5,
+          "congruence_on": true
+        },
+        "out": 1.0
+      },
+      {
+        "in": {
+          "mem_valence": 0.0,
+          "mood_valence": -0.5,
+          "congruence_on": true
+        },
+        "out": 1.0
+      },
+      {
+        "in": {
+          "mem_valence": -0.5,
+          "mood_valence": -0.5,
+          "congruence_on": false
+        },
+        "out": 1.0
+      }
+    ],
+    "candidate_score": [
+      {
+        "in": {
+          "distance": 0.4,
+          "days_ago": 0,
+          "episode": true,
+          "significance": 0.8,
+          "recall_count": 3
+        },
+        "out": 0.875854213
+      },
+      {
+        "in": {
+          "distance": 0.4,
+          "days_ago": 0,
+          "episode": false,
+          "significance": 0.8,
+          "recall_count": 3
+        },
+        "out": 0.825854213
+      },
+      {
+        "in": {
+          "distance": 1.0,
+          "days_ago": 30,
+          "episode": false,
+          "significance": 0.5,
+          "recall_count": 0
+        },
+        "out": 0.25375
+      },
+      {
+        "in": {
+          "distance": 0.0,
+          "days_ago": 0,
+          "episode": true,
+          "significance": 1.0,
+          "recall_count": 50
+        },
+        "out": 1.103590954
+      },
+      {
+        "in": {
+          "distance": 2.0,
+          "days_ago": 120,
+          "episode": false,
+          "significance": 0.0,
+          "recall_count": 0
+        },
+        "out": 0.0
+      }
+    ]
+  },
+  "appraisal": {
+    "mood_inertia": [
+      {
+        "in": {
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.15
+        },
+        "out": 0.735
+      },
+      {
+        "in": {
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.5,
+          "A": 0.72,
+          "N": 0.5
+        },
+        "out": 0.8
+      },
+      {
+        "in": {
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.0,
+          "A": 0.72,
+          "N": 1.0
+        },
+        "out": 0.92
+      },
+      {
+        "in": {
+          "O": 0.8,
+          "C": 0.72,
+          "E": 1.0,
+          "A": 0.72,
+          "N": 0.0
+        },
+        "out": 0.65
+      },
+      {
+        "in": {
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.0,
+          "A": 0.72,
+          "N": 0.0
+        },
+        "out": 0.75
+      },
+      {
+        "in": {
+          "O": 0.8,
+          "C": 0.72,
+          "E": 1.0,
+          "A": 0.72,
+          "N": 1.0
+        },
+        "out": 0.85
+      },
+      {
+        "in": {
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.1,
+          "A": 0.72,
+          "N": 0.9
+        },
+        "out": 0.92
+      },
+      {
+        "in": {
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.9,
+          "A": 0.72,
+          "N": 0.1
+        },
+        "out": 0.68
+      }
+    ],
+    "stage_int": [
+      {
+        "in": {
+          "stage": "stranger"
+        },
+        "out": 1
+      },
+      {
+        "in": {
+          "stage": "acquaintance"
+        },
+        "out": 2
+      },
+      {
+        "in": {
+          "stage": "friend"
+        },
+        "out": 3
+      },
+      {
+        "in": {
+          "stage": "close"
+        },
+        "out": 4
+      },
+      {
+        "in": {
+          "stage": "intimate"
+        },
+        "out": 5
+      },
+      {
+        "in": {
+          "stage": "unknown"
+        },
+        "out": 1
+      }
+    ],
+    "baseline_weight": [
+      {
+        "in": {
+          "stage_int": 1
+        },
+        "out": 0.0
+      },
+      {
+        "in": {
+          "stage_int": 2
+        },
+        "out": 0.2
+      },
+      {
+        "in": {
+          "stage_int": 3
+        },
+        "out": 0.4
+      },
+      {
+        "in": {
+          "stage_int": 4
+        },
+        "out": 0.6
+      },
+      {
+        "in": {
+          "stage_int": 5
+        },
+        "out": 0.7
+      },
+      {
+        "in": {
+          "stage_int": 0
+        },
+        "out": 0.0
+      },
+      {
+        "in": {
+          "stage_int": 99
+        },
+        "out": 0.0
+      }
+    ],
+    "decay_mood": [
+      {
+        "in": {
+          "valence": 0.5,
+          "arousal": 0.4,
+          "dominance": 0.2,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.15,
+          "stage_int": 1,
+          "baseline_valence": 0.0
+        },
+        "out": {
+          "valence": 0.3675,
+          "arousal": 0.294,
+          "dominance": 0.147
+        }
+      },
+      {
+        "in": {
+          "valence": 0.5,
+          "arousal": 0.4,
+          "dominance": 0.2,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.15,
+          "stage_int": 3,
+          "baseline_valence": 0.1
+        },
+        "out": {
+          "valence": 0.3781,
+          "arousal": 0.294,
+          "dominance": 0.1576
+        }
+      },
+      {
+        "in": {
+          "valence": -0.6,
+          "arousal": 0.5,
+          "dominance": -0.3,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.15,
+          "stage_int": 5,
+          "baseline_valence": -0.2
+        },
+        "out": {
+          "valence": -0.4781,
+          "arousal": 0.3675,
+          "dominance": -0.202
+        }
+      },
+      {
+        "in": {
+          "valence": 0.9,
+          "arousal": -0.7,
+          "dominance": 0.8,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.1,
+          "A": 0.72,
+          "N": 0.9,
+          "stage_int": 4,
+          "baseline_valence": 0.3
+        },
+        "out": {
+          "valence": 0.8424,
+          "arousal": -0.644,
+          "dominance": 0.7408
+        }
+      },
+      {
+        "in": {
+          "valence": -1.0,
+          "arousal": 1.0,
+          "dominance": -1.0,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 1.0,
+          "A": 0.72,
+          "N": 0.0,
+          "stage_int": 2,
+          "baseline_valence": 0.0
+        },
+        "out": {
+          "valence": -0.65,
+          "arousal": 0.65,
+          "dominance": -0.643
+        }
+      },
+      {
+        "in": {
+          "valence": 1.0,
+          "arousal": 1.0,
+          "dominance": 1.0,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.15,
+          "stage_int": 5,
+          "baseline_valence": 0.5
+        },
+        "out": {
+          "valence": 0.8277,
+          "arousal": 0.735,
+          "dominance": 0.7536
+        }
+      },
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.15,
+          "stage_int": 1,
+          "baseline_valence": 0.4
+        },
+        "out": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0
+        }
+      },
+      {
+        "in": {
+          "valence": 0.2,
+          "arousal": -0.2,
+          "dominance": 0.0,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.15,
+          "stage_int": 3,
+          "baseline_valence": -0.5
+        },
+        "out": {
+          "valence": 0.094,
+          "arousal": -0.147,
+          "dominance": 0.0106
+        }
+      },
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": -0.23,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.0,
+          "stage_int": 2,
+          "baseline_valence": 0.0
+        },
+        "out": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": -0.1562
+        }
+      }
+    ],
+    "appraise_input": [
+      {
+        "in": {
+          "valence": 0.3,
+          "arousal": 0.2,
+          "dominance": 0.1,
+          "intent": "ABUSE",
+          "baseline_valence": 0.1,
+          "rapport": 0.8,
+          "intellectual": 0.8,
+          "autonomy": 0.7,
+          "respect": 0.85,
+          "honesty": 0.9
+        },
+        "out": {
+          "emotions": {
+            "joy": 0.0,
+            "distress": 0.52,
+            "admiration": 0.0,
+            "reproach": 0.8075,
+            "gratitude": 0.0
+          },
+          "mood": {
+            "valence": -0.05,
+            "arousal": 0.1,
+            "dominance": 0.35
+          },
+          "baseline_valence": 0.097
+        }
+      },
+      {
+        "in": {
+          "valence": 0.2,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "intent": "APOLOGY",
+          "baseline_valence": 0.0,
+          "rapport": 0.8,
+          "intellectual": 0.8,
+          "autonomy": 0.7,
+          "respect": 0.85,
+          "honesty": 0.9
+        },
+        "out": {
+          "emotions": {
+            "joy": 0.16,
+            "distress": 0.0,
+            "admiration": 0.0,
+            "reproach": 0.0,
+            "gratitude": 0.315
+          },
+          "mood": {
+            "valence": 0.26,
+            "arousal": 0.0,
+            "dominance": 0.0
+          },
+          "baseline_valence": 0.0052
+        }
+      },
+      {
+        "in": {
+          "valence": 0.1,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "intent": "VULNERABILITY",
+          "baseline_valence": 0.0,
+          "rapport": 0.8,
+          "intellectual": 0.8,
+          "autonomy": 0.7,
+          "respect": 0.85,
+          "honesty": 0.9
+        },
+        "out": {
+          "emotions": {
+            "joy": 0.6,
+            "distress": 0.0,
+            "admiration": 0.0,
+            "reproach": 0.0,
+            "gratitude": 0.63
+          },
+          "mood": {
+            "valence": 0.25,
+            "arousal": 0.1,
+            "dominance": 0.0
+          },
+          "baseline_valence": 0.005
+        }
+      },
+      {
+        "in": {
+          "valence": 0.3781,
+          "arousal": 0.294,
+          "dominance": 0.1576,
+          "intent": "CURIOSITY",
+          "baseline_valence": 0.1,
+          "rapport": 0.8,
+          "intellectual": 0.8,
+          "autonomy": 0.7,
+          "respect": 0.85,
+          "honesty": 0.9
+        },
+        "out": {
+          "emotions": {
+            "joy": 0.4,
+            "distress": 0.0,
+            "admiration": 0.6,
+            "reproach": 0.0,
+            "gratitude": 0.0
+          },
+          "mood": {
+            "valence": 0.6012,
+            "arousal": 0.444,
+            "dominance": 0.2076
+          },
+          "baseline_valence": 0.11
+        }
+      },
+      {
+        "in": {
+          "valence": 0.1,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "intent": "CHALLENGE",
+          "baseline_valence": 0.0,
+          "rapport": 0.8,
+          "intellectual": 0.8,
+          "autonomy": 0.7,
+          "respect": 0.85,
+          "honesty": 0.9
+        },
+        "out": {
+          "emotions": {
+            "joy": 0.0,
+            "distress": 0.2,
+            "admiration": 0.36,
+            "reproach": 0.0,
+            "gratitude": 0.0
+          },
+          "mood": {
+            "valence": 0.05,
+            "arousal": 0.0,
+            "dominance": 0.1
+          },
+          "baseline_valence": 0.001
+        }
+      },
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "intent": "NEGLECT",
+          "baseline_valence": 0.0,
+          "rapport": 0.8,
+          "intellectual": 0.8,
+          "autonomy": 0.7,
+          "respect": 0.85,
+          "honesty": 0.9
+        },
+        "out": {
+          "emotions": {
+            "joy": 0.0,
+            "distress": 0.32,
+            "admiration": 0.0,
+            "reproach": 0.0,
+            "gratitude": 0.0
+          },
+          "mood": {
+            "valence": -0.1,
+            "arousal": -0.05,
+            "dominance": 0.0
+          },
+          "baseline_valence": -0.002
+        }
+      },
+      {
+        "in": {
+          "valence": -0.5,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "intent": "CASUAL",
+          "baseline_valence": -0.2,
+          "rapport": 0.8,
+          "intellectual": 0.8,
+          "autonomy": 0.7,
+          "respect": 0.85,
+          "honesty": 0.9
+        },
+        "out": {
+          "emotions": {
+            "joy": 0.05,
+            "distress": 0.0,
+            "admiration": 0.0,
+            "reproach": 0.0,
+            "gratitude": 0.0
+          },
+          "mood": {
+            "valence": -0.528,
+            "arousal": 0.0,
+            "dominance": 0.0
+          },
+          "baseline_valence": -0.2066
+        }
+      },
+      {
+        "in": {
+          "valence": 0.1,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "intent": "CASUAL",
+          "baseline_valence": 0.0,
+          "rapport": 0.8,
+          "intellectual": 0.8,
+          "autonomy": 0.7,
+          "respect": 0.85,
+          "honesty": 0.9
+        },
+        "out": {
+          "emotions": {
+            "joy": 0.05,
+            "distress": 0.0,
+            "admiration": 0.0,
+            "reproach": 0.0,
+            "gratitude": 0.0
+          },
+          "mood": {
+            "valence": 0.12,
+            "arousal": 0.0,
+            "dominance": 0.0
+          },
+          "baseline_valence": 0.0024
+        }
+      },
+      {
+        "in": {
+          "valence": 0.4,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "intent": "GREETING",
+          "baseline_valence": 0.0,
+          "rapport": 0.8,
+          "intellectual": 0.8,
+          "autonomy": 0.7,
+          "respect": 0.85,
+          "honesty": 0.9
+        },
+        "out": {
+          "emotions": {
+            "joy": 0.0,
+            "distress": 0.0,
+            "admiration": 0.0,
+            "reproach": 0.0,
+            "gratitude": 0.0
+          },
+          "mood": {
+            "valence": 0.4,
+            "arousal": 0.0,
+            "dominance": 0.0
+          },
+          "baseline_valence": 0.008
+        }
+      },
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "intent": "ABUSE",
+          "baseline_valence": 0.0,
+          "rapport": 0.5,
+          "intellectual": 0.8,
+          "autonomy": 0.7,
+          "respect": 0.7,
+          "honesty": 0.9
+        },
+        "out": {
+          "emotions": {
+            "joy": 0.0,
+            "distress": 0.325,
+            "admiration": 0.0,
+            "reproach": 0.665,
+            "gratitude": 0.0
+          },
+          "mood": {
+            "valence": -0.35,
+            "arousal": -0.1,
+            "dominance": 0.25
+          },
+          "baseline_valence": -0.007
+        }
+      },
+      {
+        "in": {
+          "valence": -0.1,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "intent": "CURIOSITY",
+          "baseline_valence": 0.0,
+          "rapport": 0.8,
+          "intellectual": 0.8,
+          "autonomy": 0.7,
+          "respect": 0.85,
+          "honesty": 0.9
+        },
+        "out": {
+          "emotions": {
+            "joy": 0.4,
+            "distress": 0.0,
+            "admiration": 0.6,
+            "reproach": 0.0,
+            "gratitude": 0.0
+          },
+          "mood": {
+            "valence": 0.1,
+            "arousal": 0.15,
+            "dominance": 0.05
+          },
+          "baseline_valence": 0.002
+        }
+      }
+    ],
+    "expectation_emotions": [
+      {
+        "in": {
+          "expectation": "",
+          "message": "anything"
+        },
+        "out": {}
+      },
+      {
+        "in": {
+          "expectation": "she was angry with me",
+          "message": "i feel better now"
+        },
+        "out": {
+          "relief": 0.45,
+          "surprise": 0.35
+        }
+      },
+      {
+        "in": {
+          "expectation": "upset about the argument",
+          "message": "totally fine"
+        },
+        "out": {
+          "relief": 0.45,
+          "surprise": 0.35
+        }
+      },
+      {
+        "in": {
+          "expectation": "please answer me",
+          "message": "it got worse"
+        },
+        "out": {
+          "disappointment": 0.4
+        }
+      },
+      {
+        "in": {
+          "expectation": "come back and tell me",
+          "message": "it's resolved"
+        },
+        "out": {
+          "satisfaction": 0.4
+        }
+      },
+      {
+        "in": {
+          "expectation": "will you apolog",
+          "message": "you hurt me"
+        },
+        "out": {
+          "disappointment": 0.4
+        }
+      },
+      {
+        "in": {
+          "expectation": "define the boundary",
+          "message": "the cup is broken"
+        },
+        "out": {}
+      },
+      {
+        "in": {
+          "expectation": "nothing in particular",
+          "message": "ok"
+        },
+        "out": {}
+      },
+      {
+        "in": {
+          "expectation": "she was caféangry with me",
+          "message": "i feel better now"
+        },
+        "out": {}
+      },
+      {
+        "in": {
+          "expectation": "please answer me",
+          "message": "٤ok"
+        },
+        "out": {}
+      },
+      {
+        "in": {
+          "expectation": "apologé later",
+          "message": "things got worse"
+        },
+        "out": {
+          "disappointment": 0.4
+        }
+      }
+    ],
+    "occ_carry_decay": [
+      {
+        "in": {},
+        "out": {}
+      },
+      {
+        "in": {
+          "reproach": 0.5
+        },
+        "out": {
+          "reproach": 0.35
+        }
+      },
+      {
+        "in": {
+          "joy": 0.06
+        },
+        "out": {
+          "joy": 0.054
+        }
+      },
+      {
+        "in": {
+          "joy": 0.05
+        },
+        "out": {}
+      },
+      {
+        "in": {
+          "distress": 0.4,
+          "admiration": 0.3,
+          "unease": 0.5
+        },
+        "out": {
+          "distress": 0.32,
+          "admiration": 0.255,
+          "unease": 0.4
+        }
+      },
+      {
+        "in": {
+          "gratitude": 0.1
+        },
+        "out": {
+          "gratitude": 0.088
+        }
+      }
+    ],
+    "state_emotions": [
+      {
+        "in": {
+          "valence": 0.5,
+          "arousal": 0.3,
+          "longing": 0.1
+        },
+        "out": {}
+      },
+      {
+        "in": {
+          "valence": 0.1,
+          "arousal": -0.4,
+          "longing": 0.5
+        },
+        "out": {
+          "fatigue": 0.4,
+          "longing": 0.5
+        }
+      },
+      {
+        "in": {
+          "valence": -0.15,
+          "arousal": -0.2,
+          "longing": 0.0
+        },
+        "out": {
+          "fatigue": 0.2,
+          "unease": 0.15
+        }
+      },
+      {
+        "in": {
+          "valence": -0.5,
+          "arousal": -0.1,
+          "longing": 0.35
+        },
+        "out": {
+          "fatigue": 0.1,
+          "longing": 0.35
+        }
+      },
+      {
+        "in": {
+          "valence": -0.1576,
+          "arousal": -0.294,
+          "longing": 0.4
+        },
+        "out": {
+          "fatigue": 0.294,
+          "longing": 0.4,
+          "unease": 0.158
+        }
+      },
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": -0.5625,
+          "longing": 0.0
+        },
+        "out": {
+          "fatigue": 0.562
+        }
+      },
+      {
+        "in": {
+          "valence": -0.0625,
+          "arousal": 0.2,
+          "longing": 0.0
+        },
+        "out": {
+          "unease": 0.062
+        }
+      }
+    ],
+    "appraise_turn": [
+      {
+        "in": {
+          "valence": 0.5,
+          "arousal": 0.4,
+          "dominance": 0.2,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.15,
+          "stage_int": 3,
+          "baseline_valence": 0.1,
+          "longing": 0.4,
+          "intent": "CURIOSITY",
+          "occ_carry": {
+            "reproach": 0.3
+          },
+          "expectation": "",
+          "message": "tell me about the stars"
+        },
+        "out": {
+          "mood": {
+            "valence": 0.6012,
+            "arousal": 0.444,
+            "dominance": 0.2076
+          },
+          "active_emotions": {
+            "admiration": 0.6,
+            "distress": 0.0,
+            "gratitude": 0.0,
+            "joy": 0.4,
+            "reproach": 0.21,
+            "longing": 0.4
+          },
+          "occ_carry": {
+            "admiration": 0.6,
+            "joy": 0.4,
+            "reproach": 0.21,
+            "longing": 0.4
+          },
+          "baseline_valence": 0.11
+        }
+      },
+      {
+        "in": {
+          "valence": -0.2,
+          "arousal": -0.4,
+          "dominance": -0.1,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.15,
+          "stage_int": 4,
+          "baseline_valence": -0.1,
+          "longing": 0.0,
+          "intent": "ABUSE",
+          "occ_carry": {},
+          "expectation": "",
+          "message": "you're useless"
+        },
+        "out": {
+          "mood": {
+            "valence": -0.5129,
+            "arousal": -0.394,
+            "dominance": 0.1924
+          },
+          "active_emotions": {
+            "admiration": 0.0,
+            "distress": 0.52,
+            "gratitude": 0.0,
+            "joy": 0.0,
+            "reproach": 0.8075,
+            "fatigue": 0.394
+          },
+          "occ_carry": {
+            "distress": 0.52,
+            "reproach": 0.8075,
+            "fatigue": 0.394
+          },
+          "baseline_valence": -0.1083
+        }
+      },
+      {
+        "in": {
+          "valence": 0.3,
+          "arousal": 0.1,
+          "dominance": 0.0,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.15,
+          "stage_int": 5,
+          "baseline_valence": 0.2,
+          "longing": 0.6,
+          "intent": "VULNERABILITY",
+          "occ_carry": {
+            "distress": 0.4
+          },
+          "expectation": "she was upset",
+          "message": "actually things are better now"
+        },
+        "out": {
+          "mood": {
+            "valence": 0.4076,
+            "arousal": 0.1735,
+            "dominance": 0.0185
+          },
+          "active_emotions": {
+            "admiration": 0.0,
+            "distress": 0.32,
+            "gratitude": 0.63,
+            "joy": 0.6,
+            "reproach": 0.0,
+            "longing": 0.6,
+            "relief": 0.45,
+            "surprise": 0.35
+          },
+          "occ_carry": {
+            "distress": 0.32,
+            "gratitude": 0.63,
+            "joy": 0.6,
+            "longing": 0.6,
+            "relief": 0.45,
+            "surprise": 0.35
+          },
+          "baseline_valence": 0.2042
+        }
+      },
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "O": 0.8,
+          "C": 0.72,
+          "E": 0.45,
+          "A": 0.72,
+          "N": 0.15,
+          "stage_int": 1,
+          "baseline_valence": 0.0,
+          "longing": 0.0,
+          "intent": "CASUAL",
+          "occ_carry": {},
+          "expectation": "",
+          "message": "hey"
+        },
+        "out": {
+          "mood": {
+            "valence": 0.02,
+            "arousal": 0.0,
+            "dominance": 0.0
+          },
+          "active_emotions": {
+            "admiration": 0.0,
+            "distress": 0.0,
+            "gratitude": 0.0,
+            "joy": 0.05,
+            "reproach": 0.0
+          },
+          "occ_carry": {},
+          "baseline_valence": 0.0004
+        }
+      }
+    ]
+  },
+  "surfacing": {
+    "clean_text": [
+      {
+        "in": {
+          "value": null,
+          "max_len": 300
+        },
+        "out": null
+      },
+      {
+        "in": {
+          "value": 123,
+          "max_len": 300
+        },
+        "out": null
+      },
+      {
+        "in": {
+          "value": "plain",
+          "max_len": 300
+        },
+        "out": "plain"
+      },
+      {
+        "in": {
+          "value": "  hello   world  ",
+          "max_len": 300
+        },
+        "out": "hello world"
+      },
+      {
+        "in": {
+          "value": "\"quoted\"",
+          "max_len": 300
+        },
+        "out": "quoted"
+      },
+      {
+        "in": {
+          "value": "\"\"double\"\"",
+          "max_len": 300
+        },
+        "out": "double"
+      },
+      {
+        "in": {
+          "value": "  \"  spaced quotes  \"  ",
+          "max_len": 300
+        },
+        "out": "spaced quotes"
+      },
+      {
+        "in": {
+          "value": "   ",
+          "max_len": 300
+        },
+        "out": null
+      },
+      {
+        "in": {
+          "value": "\"\"",
+          "max_len": 300
+        },
+        "out": null
+      },
+      {
+        "in": {
+          "value": "tab\tand\nnewline",
+          "max_len": 300
+        },
+        "out": "tab and newline"
+      },
+      {
+        "in": {
+          "value": "truncate me please",
+          "max_len": 5
+        },
+        "out": "trunc"
+      },
+      {
+        "in": {
+          "value": "nelsep",
+          "max_len": 300
+        },
+        "out": "nel sep"
+      },
+      {
+        "in": {
+          "value": "fs\u001cgs\u001d",
+          "max_len": 300
+        },
+        "out": "fs gs"
+      },
+      {
+        "in": {
+          "value": "bom﻿mark",
+          "max_len": 300
+        },
+        "out": "bom﻿mark"
+      },
+      {
+        "in": {
+          "value": "　　",
+          "max_len": 300
+        },
+        "out": null
+      }
+    ],
+    "presence_line": [
+      {
+        "in": {
+          "reflection_pending": false,
+          "due_intention": false,
+          "carried_thought": false,
+          "open_thread": false
+        },
+        "out": "here with you"
+      },
+      {
+        "in": {
+          "reflection_pending": false,
+          "due_intention": false,
+          "carried_thought": false,
+          "open_thread": true
+        },
+        "out": "holding a pattern"
+      },
+      {
+        "in": {
+          "reflection_pending": false,
+          "due_intention": false,
+          "carried_thought": true,
+          "open_thread": false
+        },
+        "out": "carrying a thread"
+      },
+      {
+        "in": {
+          "reflection_pending": false,
+          "due_intention": false,
+          "carried_thought": true,
+          "open_thread": true
+        },
+        "out": "carrying a thread"
+      },
+      {
+        "in": {
+          "reflection_pending": false,
+          "due_intention": true,
+          "carried_thought": false,
+          "open_thread": false
+        },
+        "out": "holding a follow-up"
+      },
+      {
+        "in": {
+          "reflection_pending": false,
+          "due_intention": true,
+          "carried_thought": false,
+          "open_thread": true
+        },
+        "out": "holding a follow-up"
+      },
+      {
+        "in": {
+          "reflection_pending": false,
+          "due_intention": true,
+          "carried_thought": true,
+          "open_thread": false
+        },
+        "out": "holding a follow-up"
+      },
+      {
+        "in": {
+          "reflection_pending": false,
+          "due_intention": true,
+          "carried_thought": true,
+          "open_thread": true
+        },
+        "out": "holding a follow-up"
+      },
+      {
+        "in": {
+          "reflection_pending": true,
+          "due_intention": false,
+          "carried_thought": false,
+          "open_thread": false
+        },
+        "out": "still reflecting"
+      },
+      {
+        "in": {
+          "reflection_pending": true,
+          "due_intention": false,
+          "carried_thought": false,
+          "open_thread": true
+        },
+        "out": "still reflecting"
+      },
+      {
+        "in": {
+          "reflection_pending": true,
+          "due_intention": false,
+          "carried_thought": true,
+          "open_thread": false
+        },
+        "out": "still reflecting"
+      },
+      {
+        "in": {
+          "reflection_pending": true,
+          "due_intention": false,
+          "carried_thought": true,
+          "open_thread": true
+        },
+        "out": "still reflecting"
+      },
+      {
+        "in": {
+          "reflection_pending": true,
+          "due_intention": true,
+          "carried_thought": false,
+          "open_thread": false
+        },
+        "out": "still reflecting"
+      },
+      {
+        "in": {
+          "reflection_pending": true,
+          "due_intention": true,
+          "carried_thought": false,
+          "open_thread": true
+        },
+        "out": "still reflecting"
+      },
+      {
+        "in": {
+          "reflection_pending": true,
+          "due_intention": true,
+          "carried_thought": true,
+          "open_thread": false
+        },
+        "out": "still reflecting"
+      },
+      {
+        "in": {
+          "reflection_pending": true,
+          "due_intention": true,
+          "carried_thought": true,
+          "open_thread": true
+        },
+        "out": "still reflecting"
+      }
+    ],
+    "presence_vector": [
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "longing": 0.0,
+          "comfort": 0.0,
+          "trust_score": 0.0,
+          "stage": "stranger",
+          "carried_thought": null,
+          "cognition": {
+            "reflection_pending": false,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          }
+        },
+        "out": {
+          "trust": 0.0,
+          "valence": 0.0,
+          "arousal": 0.0,
+          "longing": 0.0,
+          "awaiting": false,
+          "mode": "quiet",
+          "line": "here with you",
+          "affect": {
+            "valence": 0.0,
+            "arousal": 0.0,
+            "dominance": 0.0
+          },
+          "relationship": {
+            "stage": "stranger",
+            "trust": 0.0,
+            "longing": 0.0,
+            "comfort": 0.0
+          },
+          "cognition": {
+            "reflection_pending": false,
+            "carried_thought": false,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          },
+          "source": "companion_state"
+        }
+      },
+      {
+        "in": {
+          "valence": 0.4,
+          "arousal": -0.2,
+          "dominance": 0.1,
+          "longing": 0.6,
+          "comfort": 0.5,
+          "trust_score": 0.7,
+          "stage": "friend",
+          "carried_thought": "i keep thinking about it",
+          "cognition": {
+            "reflection_pending": false,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          }
+        },
+        "out": {
+          "trust": 0.7,
+          "valence": 0.4,
+          "arousal": -0.2,
+          "longing": 0.6,
+          "awaiting": false,
+          "mode": "quiet",
+          "line": "carrying a thread",
+          "affect": {
+            "valence": 0.4,
+            "arousal": -0.2,
+            "dominance": 0.1
+          },
+          "relationship": {
+            "stage": "friend",
+            "trust": 0.7,
+            "longing": 0.6,
+            "comfort": 0.5
+          },
+          "cognition": {
+            "reflection_pending": false,
+            "carried_thought": true,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          },
+          "source": "companion_state"
+        }
+      },
+      {
+        "in": {
+          "valence": -0.3,
+          "arousal": 0.2,
+          "dominance": 0.0,
+          "longing": 0.0,
+          "comfort": 0.0,
+          "trust_score": 0.0,
+          "stage": "close",
+          "carried_thought": "something",
+          "cognition": {
+            "reflection_pending": true,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          }
+        },
+        "out": {
+          "trust": 0.0,
+          "valence": -0.3,
+          "arousal": 0.2,
+          "longing": 0.0,
+          "awaiting": true,
+          "mode": "reflecting",
+          "line": "still reflecting",
+          "affect": {
+            "valence": -0.3,
+            "arousal": 0.2,
+            "dominance": 0.0
+          },
+          "relationship": {
+            "stage": "close",
+            "trust": 0.0,
+            "longing": 0.0,
+            "comfort": 0.0
+          },
+          "cognition": {
+            "reflection_pending": true,
+            "carried_thought": true,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          },
+          "source": "companion_state"
+        }
+      },
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "longing": 0.0,
+          "comfort": 0.0,
+          "trust_score": 0.5,
+          "stage": "acquaintance",
+          "carried_thought": "a thread",
+          "cognition": {
+            "reflection_pending": false,
+            "due_intention": true,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          }
+        },
+        "out": {
+          "trust": 0.5,
+          "valence": 0.0,
+          "arousal": 0.0,
+          "longing": 0.0,
+          "awaiting": false,
+          "mode": "quiet",
+          "line": "holding a follow-up",
+          "affect": {
+            "valence": 0.0,
+            "arousal": 0.0,
+            "dominance": 0.0
+          },
+          "relationship": {
+            "stage": "acquaintance",
+            "trust": 0.5,
+            "longing": 0.0,
+            "comfort": 0.0
+          },
+          "cognition": {
+            "reflection_pending": false,
+            "carried_thought": true,
+            "due_intention": true,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          },
+          "source": "companion_state"
+        }
+      },
+      {
+        "in": {
+          "valence": 0.1,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "longing": 0.0,
+          "comfort": 0.0,
+          "trust_score": 0.0,
+          "stage": "friend",
+          "carried_thought": null,
+          "cognition": {
+            "reflection_pending": false,
+            "due_intention": false,
+            "open_thread": true,
+            "intentionality": false,
+            "curiosity": false
+          }
+        },
+        "out": {
+          "trust": 0.0,
+          "valence": 0.1,
+          "arousal": 0.0,
+          "longing": 0.0,
+          "awaiting": false,
+          "mode": "quiet",
+          "line": "holding a pattern",
+          "affect": {
+            "valence": 0.1,
+            "arousal": 0.0,
+            "dominance": 0.0
+          },
+          "relationship": {
+            "stage": "friend",
+            "trust": 0.0,
+            "longing": 0.0,
+            "comfort": 0.0
+          },
+          "cognition": {
+            "reflection_pending": false,
+            "carried_thought": false,
+            "due_intention": false,
+            "open_thread": true,
+            "intentionality": false,
+            "curiosity": false
+          },
+          "source": "companion_state"
+        }
+      },
+      {
+        "in": {
+          "valence": 0.2,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "longing": 0.4,
+          "comfort": 0.3,
+          "trust_score": 0.8,
+          "stage": "intimate",
+          "carried_thought": null,
+          "cognition": {
+            "reflection_pending": false,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": true,
+            "curiosity": true
+          }
+        },
+        "out": {
+          "trust": 0.8,
+          "valence": 0.2,
+          "arousal": 0.0,
+          "longing": 0.4,
+          "awaiting": false,
+          "mode": "quiet",
+          "line": "here with you",
+          "affect": {
+            "valence": 0.2,
+            "arousal": 0.0,
+            "dominance": 0.0
+          },
+          "relationship": {
+            "stage": "intimate",
+            "trust": 0.8,
+            "longing": 0.4,
+            "comfort": 0.3
+          },
+          "cognition": {
+            "reflection_pending": false,
+            "carried_thought": false,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": true,
+            "curiosity": true
+          },
+          "source": "companion_state"
+        }
+      },
+      {
+        "in": {
+          "valence": 0.0,
+          "arousal": 0.0,
+          "dominance": 0.0,
+          "longing": 0.0,
+          "comfort": 0.0,
+          "trust_score": 0.0,
+          "stage": "friend",
+          "carried_thought": "  \"  \"  ",
+          "cognition": {
+            "reflection_pending": false,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          }
+        },
+        "out": {
+          "trust": 0.0,
+          "valence": 0.0,
+          "arousal": 0.0,
+          "longing": 0.0,
+          "awaiting": false,
+          "mode": "quiet",
+          "line": "here with you",
+          "affect": {
+            "valence": 0.0,
+            "arousal": 0.0,
+            "dominance": 0.0
+          },
+          "relationship": {
+            "stage": "friend",
+            "trust": 0.0,
+            "longing": 0.0,
+            "comfort": 0.0
+          },
+          "cognition": {
+            "reflection_pending": false,
+            "carried_thought": false,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          },
+          "source": "companion_state"
+        }
+      },
+      {
+        "in": {
+          "valence": 0.15625,
+          "arousal": -0.15625,
+          "dominance": 0.0,
+          "longing": 0.15625,
+          "comfort": 0.15625,
+          "trust_score": 0.15625,
+          "stage": "close",
+          "carried_thought": null,
+          "cognition": {
+            "reflection_pending": false,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          }
+        },
+        "out": {
+          "trust": 0.1562,
+          "valence": 0.1562,
+          "arousal": -0.1562,
+          "longing": 0.1562,
+          "awaiting": false,
+          "mode": "quiet",
+          "line": "here with you",
+          "affect": {
+            "valence": 0.1562,
+            "arousal": -0.1562,
+            "dominance": 0.0
+          },
+          "relationship": {
+            "stage": "close",
+            "trust": 0.1562,
+            "longing": 0.1562,
+            "comfort": 0.1562
+          },
+          "cognition": {
+            "reflection_pending": false,
+            "carried_thought": false,
+            "due_intention": false,
+            "open_thread": false,
+            "intentionality": false,
+            "curiosity": false
+          },
+          "source": "companion_state"
+        }
+      }
+    ]
+  }
+}

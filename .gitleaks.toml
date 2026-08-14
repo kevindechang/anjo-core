@@ -1,0 +1,11 @@
+title = "Anjo Core secret-scanning policy"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "assigned-sensitive-value"
+description = "Detect assigned keys, secrets, tokens, passwords, and credentials"
+regex = '''(?i)\b(api[_-]?key|secret|(?:access|auth|bearer|refresh)[_-]?token|password|credential)\b\s*[:=]\s*["']?([a-z0-9_./+=-]{12,})'''
+secretGroup = 2
+entropy = 3.0

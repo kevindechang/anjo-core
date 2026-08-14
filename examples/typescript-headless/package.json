@@ -1,0 +1,6 @@
+{
+  "name": "anjo-core-typescript-headless-example",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0"
+}

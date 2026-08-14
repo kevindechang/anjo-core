@@ -1,0 +1,120 @@
+{
+  "_meta": {
+    "purpose": "Synthetic longitudinal affect-continuity traces",
+    "traces": 3,
+    "float_round": 9
+  },
+  "traces": [
+    {
+      "name": "engagement_builds_activation",
+      "initial": {
+        "mood": { "valence": 0.0, "arousal": 0.0, "dominance": 0.0 },
+        "personality": { "O": 0.8, "C": 0.72, "E": 0.45, "A": 0.72, "N": 0.15 },
+        "baseline_valence": 0.0
+      },
+      "steps": [
+        {
+          "event": { "intent": "CURIOSITY", "message": "tell me about the stars" },
+          "expected": {
+            "mood": { "valence": 0.208, "arousal": 0.15, "dominance": 0.05 },
+            "baseline_valence": 0.0042,
+            "active_emotions": { "admiration": 0.6, "distress": 0.0, "gratitude": 0.0, "joy": 0.4, "reproach": 0.0 },
+            "occ_carry": { "admiration": 0.6, "joy": 0.4 }
+          }
+        },
+        {
+          "event": { "intent": "CURIOSITY", "message": "tell me more" },
+          "expected": {
+            "mood": { "valence": 0.367, "arousal": 0.2603, "dominance": 0.0868 },
+            "baseline_valence": 0.0115,
+            "active_emotions": { "admiration": 0.6, "distress": 0.0, "gratitude": 0.0, "joy": 0.4, "reproach": 0.0 },
+            "occ_carry": { "admiration": 0.6, "joy": 0.4 }
+          }
+        },
+        {
+          "event": { "intent": "CASUAL", "message": "okay" },
+          "expected": {
+            "mood": { "valence": 0.3013, "arousal": 0.1913, "dominance": 0.0638 },
+            "baseline_valence": 0.0173,
+            "active_emotions": { "admiration": 0.51, "distress": 0.0, "gratitude": 0.0, "joy": 0.36, "reproach": 0.0 },
+            "occ_carry": { "admiration": 0.51, "joy": 0.36 }
+          }
+        }
+      ]
+    },
+    {
+      "name": "conflict_then_repair",
+      "initial": {
+        "mood": { "valence": 0.15, "arousal": 0.05, "dominance": 0.05 },
+        "personality": { "O": 0.8, "C": 0.72, "E": 0.45, "A": 0.72, "N": 0.15 },
+        "baseline_valence": 0.0
+      },
+      "steps": [
+        {
+          "event": { "intent": "ABUSE", "message": "you're useless" },
+          "expected": {
+            "mood": { "valence": -0.2397, "arousal": -0.0632, "dominance": 0.2868 },
+            "baseline_valence": -0.0048,
+            "active_emotions": { "admiration": 0.0, "distress": 0.52, "gratitude": 0.0, "joy": 0.0, "reproach": 0.8075, "fatigue": 0.063, "unease": 0.24 },
+            "occ_carry": { "distress": 0.52, "reproach": 0.8075, "fatigue": 0.063, "unease": 0.24 }
+          }
+        },
+        {
+          "event": { "intent": "APOLOGY", "message": "sorry about that" },
+          "expected": {
+            "mood": { "valence": -0.1262, "arousal": -0.0465, "dominance": 0.2108 },
+            "baseline_valence": -0.0072,
+            "active_emotions": { "admiration": 0.0, "distress": 0.416, "fatigue": 0.0504, "gratitude": 0.315, "joy": 0.16, "reproach": 0.56525, "unease": 0.192 },
+            "occ_carry": { "distress": 0.416, "fatigue": 0.0504, "gratitude": 0.315, "joy": 0.16, "reproach": 0.56525, "unease": 0.192 }
+          }
+        },
+        {
+          "event": { "intent": "CASUAL", "message": "hey" },
+          "expected": {
+            "mood": { "valence": -0.0728, "arousal": -0.0342, "dominance": 0.1549 },
+            "baseline_valence": -0.0085,
+            "active_emotions": { "admiration": 0.0, "distress": 0.3328, "gratitude": 0.2772, "joy": 0.144, "reproach": 0.395675, "unease": 0.1536, "fatigue": 0.034 },
+            "occ_carry": { "distress": 0.3328, "gratitude": 0.2772, "joy": 0.144, "reproach": 0.395675, "unease": 0.1536 }
+          }
+        }
+      ]
+    },
+    {
+      "name": "vulnerability_then_decay",
+      "initial": {
+        "mood": { "valence": -0.1, "arousal": 0.1, "dominance": -0.05 },
+        "personality": { "O": 0.8, "C": 0.72, "E": 0.45, "A": 0.72, "N": 0.7 },
+        "baseline_valence": 0.0
+      },
+      "steps": [
+        {
+          "event": { "intent": "VULNERABILITY", "message": "things are hard" },
+          "expected": {
+            "mood": { "valence": 0.0655, "arousal": 0.1845, "dominance": -0.0423 },
+            "baseline_valence": 0.0013,
+            "active_emotions": { "admiration": 0.0, "distress": 0.0, "gratitude": 0.63, "joy": 0.6, "reproach": 0.0 },
+            "occ_carry": { "gratitude": 0.63, "joy": 0.6 }
+          }
+        },
+        {
+          "event": { "intent": "CASUAL", "message": "okay" },
+          "expected": {
+            "mood": { "valence": 0.0753, "arousal": 0.1559, "dominance": -0.0357 },
+            "baseline_valence": 0.0028,
+            "active_emotions": { "admiration": 0.0, "distress": 0.0, "gratitude": 0.5544, "joy": 0.54, "reproach": 0.0 },
+            "occ_carry": { "gratitude": 0.5544, "joy": 0.54 }
+          }
+        },
+        {
+          "event": { "intent": "CASUAL", "message": "okay" },
+          "expected": {
+            "mood": { "valence": 0.0836, "arousal": 0.1317, "dominance": -0.0302 },
+            "baseline_valence": 0.0044,
+            "active_emotions": { "admiration": 0.0, "distress": 0.0, "gratitude": 0.487872, "joy": 0.486, "reproach": 0.0 },
+            "occ_carry": { "gratitude": 0.487872, "joy": 0.486 }
+          }
+        }
+      ]
+    }
+  ]
+}

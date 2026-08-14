@@ -1,0 +1,26 @@
+name: Feature request
+description: Propose a broadly reusable kernel capability
+title: "proposal: "
+labels: [proposal]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What integrator problem cannot be solved cleanly with the current contracts?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed capability
+      description: Explain the smallest general interface or behavior that would solve it.
+    validations:
+      required: true
+  - type: textarea
+    id: parity
+    attributes:
+      label: Cross-runtime impact
+      description: Which behavior, state shape, fixtures, or adapters would change?
+    validations:
+      required: true

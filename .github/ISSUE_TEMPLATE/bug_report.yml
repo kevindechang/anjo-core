@@ -1,0 +1,32 @@
+name: Bug report
+description: Report incorrect or inconsistent kernel behavior
+title: "bug: "
+labels: [bug]
+body:
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Runtime
+      options: [Python, TypeScript, Both, Documentation or tooling]
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Observed behavior
+      description: Include the smallest reproducible input and output.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Environment and context
+      description: Include package version, runtime version, and relevant adapter details. Never include credentials or real conversation data.
+    validations:
+      required: true
