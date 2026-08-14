@@ -3,20 +3,104 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass, field, replace
 from math import isfinite
 
 from .models import AppraisalGoals, CompanionState, PADMood, Personality, freeze_mapping
 
-_BASELINE_WEIGHTS: dict[int, float] = {1: 0.0, 2: 0.20, 3: 0.40, 4: 0.60, 5: 0.70}
-_STAGE_INTS: dict[str, int] = {
-    "stranger": 1,
-    "acquaintance": 2,
-    "friend": 3,
-    "close": 4,
-    "intimate": 5,
-}
+DEFAULT_STAGES: tuple[str, ...] = (
+    "stranger",
+    "acquaintance",
+    "friend",
+    "close",
+    "intimate",
+)
+DEFAULT_STAGE_WEIGHTS: tuple[float, ...] = (0.0, 0.20, 0.40, 0.60, 0.70)
+
+
+class UnknownStageError(KeyError):
+    """Raised when a strict :class:`StageLadder` receives a stage it does not define."""
+
+
+@dataclass(frozen=True, slots=True)
+class StageLadder:
+    """An ordered relationship ladder and the resting-point weight of each rung.
+
+    The default rungs are the reference conversational ladder. Domains with a
+    different progression -- a game faction track, a tutoring competence ladder,
+    a support-case lifecycle -- should supply their own ``stages`` and
+    ``weights`` rather than reusing these labels.
+
+    ``strict`` controls what happens when a stage is not on the ladder. The
+    default (``False``) floors the stage to the first rung, which matches the
+    pinned cross-runtime contract. Set ``strict=True`` to raise
+    :class:`UnknownStageError` instead; a typo'd or unmapped stage otherwise
+    resolves to weight ``0.0`` and silently removes the resting set point.
+    """
+
+    stages: tuple[str, ...] = DEFAULT_STAGES
+    weights: tuple[float, ...] = DEFAULT_STAGE_WEIGHTS
+    strict: bool = False
+    _ordinals: Mapping[str, int] = field(
+        init=False, repr=False, compare=False, default_factory=dict
+    )
+
+    def __post_init__(self) -> None:
+        stages = tuple(self.stages)
+        weights = tuple(float(weight) for weight in self.weights)
+        if not stages:
+            raise ValueError("stages must not be empty")
+        if len(stages) != len(weights):
+            raise ValueError("stages and weights must have equal length")
+        if len(set(stages)) != len(stages):
+            raise ValueError("stages must be unique")
+        for stage in stages:
+            if not isinstance(stage, str) or not stage:
+                raise ValueError("stage names must be non-empty strings")
+        for weight in weights:
+            if not isfinite(weight) or not 0.0 <= weight <= 1.0:
+                raise ValueError("stage weights must be finite and within [0, 1]")
+        if not isinstance(self.strict, bool):
+            raise TypeError("strict must be a boolean")
+        object.__setattr__(self, "stages", stages)
+        object.__setattr__(self, "weights", weights)
+        object.__setattr__(
+            self,
+            "_ordinals",
+            freeze_mapping({stage: index + 1 for index, stage in enumerate(stages)}),
+        )
+
+    def knows(self, stage: str) -> bool:
+        """Whether ``stage`` is a defined rung, for validation at an app boundary."""
+        return stage in self._ordinals
+
+    def ordinal(self, stage: str) -> int:
+        """Return the 1-based rung for ``stage``; see ``strict`` for unknown stages."""
+        try:
+            return self._ordinals[stage]
+        except KeyError:
+            if self.strict:
+                raise UnknownStageError(
+                    f"stage {stage!r} is not on the ladder {self.stages!r}"
+                ) from None
+            return 1
+
+    def weight_for_ordinal(self, ordinal: int) -> float:
+        """Return the resting-point weight of a 1-based rung; out of range means 0.0."""
+        if isinstance(ordinal, bool) or not isinstance(ordinal, int):
+            raise TypeError("ordinal must be an integer")
+        if 1 <= ordinal <= len(self.weights):
+            return self.weights[ordinal - 1]
+        return 0.0
+
+    def weight(self, stage: str) -> float:
+        """Return the resting-point weight for a stage label."""
+        return self.weight_for_ordinal(self.ordinal(stage))
+
+
+DEFAULT_STAGE_LADDER = StageLadder()
+
 _OCC_CARRY_DECAY: dict[str, float] = {
     "reproach": 0.70,
     "distress": 0.80,
@@ -31,14 +115,18 @@ def _clamp(value: float, low: float, high: float) -> float:
     return max(low, min(high, value))
 
 
-def stage_int(stage: str) -> int:
-    """Map a relationship stage label to its stable ordinal; unknown means stranger."""
-    return _STAGE_INTS.get(stage, 1)
+def stage_int(stage: str, ladder: StageLadder | None = None) -> int:
+    """Map a stage label to its stable ordinal on ``ladder`` (default: conversational).
+
+    With the default non-strict ladder an unknown stage floors to the first rung.
+    Pass ``StageLadder(strict=True)`` to surface unmapped stages instead.
+    """
+    return (ladder or DEFAULT_STAGE_LADDER).ordinal(stage)
 
 
-def baseline_weight(stage: int) -> float:
+def baseline_weight(stage: int, ladder: StageLadder | None = None) -> float:
     """Return how strongly the resting set point is expressed at a stage ordinal."""
-    return _BASELINE_WEIGHTS.get(stage, 0.0)
+    return (ladder or DEFAULT_STAGE_LADDER).weight_for_ordinal(stage)
 
 
 def mood_inertia(personality: Personality) -> float:
@@ -52,12 +140,17 @@ def decay_mood(
     personality: Personality,
     relationship_stage: int | str,
     baseline_valence: float,
+    *,
+    ladder: StageLadder | None = None,
 ) -> PADMood:
     """Relax PAD toward the stage-weighted resting point using AR(1) dynamics."""
+    chosen = ladder or DEFAULT_STAGE_LADDER
     stage = (
-        stage_int(relationship_stage) if isinstance(relationship_stage, str) else relationship_stage
+        chosen.ordinal(relationship_stage)
+        if isinstance(relationship_stage, str)
+        else relationship_stage
     )
-    weight = baseline_weight(stage)
+    weight = chosen.weight_for_ordinal(stage)
     inertia = mood_inertia(personality)
     resting_valence = weight * baseline_valence
     resting_arousal = 0.0
@@ -165,29 +258,82 @@ def _word_match(text: str, tokens: tuple[str, ...]) -> bool:
     return False
 
 
-def expectation_emotions(expectation: str, message: str) -> dict[str, float]:
+@dataclass(frozen=True, slots=True)
+class ExpectationCues:
+    """The lexical cues used to detect a violated expectation.
+
+    These defaults are an **English conversational preset**, not domain-neutral
+    behavior. Supply your own tuples to localize the kernel or to express
+    expectation violation in a non-conversational vocabulary. A trailing ``-``
+    marks a stem match (``"apolog-"`` matches ``apologize`` and ``apology``).
+    """
+
+    negative_expected: tuple[str, ...] = (
+        "angry",
+        "upset",
+        "bad",
+        "worse",
+        "argument",
+        "hurt",
+        "afraid",
+        "scared",
+    )
+    positive_current: tuple[str, ...] = (
+        "better",
+        "okay",
+        "ok",
+        "good",
+        "fine",
+        "resolved",
+        "worked out",
+    )
+    negative_current: tuple[str, ...] = (
+        "worse",
+        "bad",
+        "angry",
+        "upset",
+        "failed",
+        "awful",
+        "hurt",
+    )
+    expected_resolution: tuple[str, ...] = ("come back", "tell", "answer", "resolve", "apolog-")
+
+    def __post_init__(self) -> None:
+        for name in (
+            "negative_expected",
+            "positive_current",
+            "negative_current",
+            "expected_resolution",
+        ):
+            tokens = tuple(getattr(self, name))
+            for token in tokens:
+                if not isinstance(token, str):
+                    raise TypeError(f"{name} tokens must be strings")
+                if not token.strip():
+                    raise ValueError(f"{name} tokens must not be empty")
+            object.__setattr__(self, name, tokens)
+
+
+DEFAULT_EXPECTATION_CUES = ExpectationCues()
+
+
+def expectation_emotions(
+    expectation: str,
+    message: str,
+    *,
+    cues: ExpectationCues | None = None,
+) -> dict[str, float]:
     """Return a small deterministic delta when the current turn violates an expectation."""
+    chosen = cues or DEFAULT_EXPECTATION_CUES
     expected = (expectation or "").lower()
     current = (message or "").lower()
     if not expected or not current:
         return {}
 
-    negative_expected = _word_match(
-        expected,
-        ("angry", "upset", "bad", "worse", "argument", "hurt", "afraid", "scared"),
-    )
-    positive_current = _word_match(
-        current,
-        ("better", "okay", "ok", "good", "fine", "resolved", "worked out"),
-    )
-    negative_current = _word_match(
-        current,
-        ("worse", "bad", "angry", "upset", "failed", "awful", "hurt"),
-    )
-    expected_resolution = _word_match(
-        expected,
-        ("come back", "tell", "answer", "resolve", "apolog-"),
-    )
+    negative_expected = _word_match(expected, chosen.negative_expected)
+    positive_current = _word_match(current, chosen.positive_current)
+    negative_current = _word_match(current, chosen.negative_current)
+    expected_resolution = _word_match(expected, chosen.expected_resolution)
 
     if negative_expected and positive_current:
         return {"relief": 0.45, "surprise": 0.35}
@@ -284,6 +430,8 @@ def appraise_turn(
     occ_carry: Mapping[str, float] | None = None,
     expectation: str | None = None,
     message: str = "",
+    ladder: StageLadder | None = None,
+    cues: ExpectationCues | None = None,
 ) -> AppraisalResult:
     """Compose decay, appraisal, emotion carry, and state-emotion derivation."""
     decayed_mood = decay_mood(
@@ -291,6 +439,7 @@ def appraise_turn(
         state.personality,
         state.relationship.stage,
         state.baseline_valence,
+        ladder=ladder,
     )
     fresh = appraise_input(decayed_mood, state.goals, intent, state.baseline_valence)
     prior = state.occ_carry if occ_carry is None else occ_carry
@@ -304,7 +453,7 @@ def appraise_turn(
         if value > merged.get(name, 0.0):
             merged[name] = value
     current_expectation = state.expectation if expectation is None else expectation
-    for name, value in expectation_emotions(current_expectation, message).items():
+    for name, value in expectation_emotions(current_expectation, message, cues=cues).items():
         if value > merged.get(name, 0.0):
             merged[name] = value
 
@@ -322,6 +471,31 @@ def appraise_turn(
     )
 
 
+def conversational_appraisal_policy(
+    *,
+    ladder: StageLadder | None = None,
+    cues: ExpectationCues | None = None,
+) -> Callable[[AppraisalPolicyInput], AppraisalResult]:
+    """Build a reference-shaped policy bound to a custom ladder and cue set.
+
+    Use this when the reference intent vocabulary fits but the progression or
+    the language does not. Domains whose events are not conversational should
+    write a policy directly against :class:`AppraisalPolicyInput` instead.
+    """
+
+    def policy(request: AppraisalPolicyInput) -> AppraisalResult:
+        return appraise_turn(
+            request.state,
+            request.intent,
+            message=request.message,
+            expectation=request.expectation,
+            ladder=ladder,
+            cues=cues,
+        )
+
+    return policy
+
+
 def default_appraisal_policy(request: AppraisalPolicyInput) -> AppraisalResult:
     """Reference conversational appraisal for the kernel's built-in intents."""
     return appraise_turn(
@@ -333,12 +507,20 @@ def default_appraisal_policy(request: AppraisalPolicyInput) -> AppraisalResult:
 
 
 __all__ = [
+    "DEFAULT_EXPECTATION_CUES",
+    "DEFAULT_STAGES",
+    "DEFAULT_STAGE_LADDER",
+    "DEFAULT_STAGE_WEIGHTS",
     "AppraisalPolicyInput",
     "AppraisalResult",
+    "ExpectationCues",
     "InputAppraisal",
+    "StageLadder",
+    "UnknownStageError",
     "appraise_input",
     "appraise_turn",
     "baseline_weight",
+    "conversational_appraisal_policy",
     "decay_mood",
     "decay_occ_carry",
     "default_appraisal_policy",

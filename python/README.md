@@ -1,7 +1,7 @@
-# anjo-companion-core for Python
+# anjo-core for Python
 
 This directory contains the zero-runtime-dependency Python implementation of the
-deterministic companion kernel. Install it from this directory with
+deterministic affect-state kernel for long-lived AI characters. Install it with
 `python -m pip install -e .`; run its tests with `python -m pytest`.
 
 The package deliberately leaves model inference, persistence, and retrieval I/O

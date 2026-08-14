@@ -83,6 +83,12 @@ export interface TurnShapePolicy {
   defaultCloseRule: string;
   ambivalenceRule: string;
   moodCues: Readonly<Partial<Record<string, string>>>;
+  /**
+   * Intent (upper-case) to the mood cues it suppresses. A policy that omits
+   * this suppresses nothing; the reference rule lives in
+   * {@link NEUTRAL_TURN_SHAPE_POLICY}, not in the kernel.
+   */
+  suppressedMoodCues?: Readonly<Partial<Record<string, readonly string[]>>>;
 }
 
 /** Neutral synthetic wording; applications should supply domain-specific policy. */
@@ -105,6 +111,9 @@ export const NEUTRAL_TURN_SHAPE_POLICY: Readonly<TurnShapePolicy> = Object.freez
     disdainful: 'Use a cool, economical register.',
     bored: 'Keep the response minimal and unforced.',
   }),
+  // Reference conversational rule expressed as data: do not add upbeat momentum
+  // right after a user has been vulnerable. Override or drop it freely.
+  suppressedMoodCues: Object.freeze({ VULNERABILITY: Object.freeze(['exuberant']) }),
 });
 
 export interface TurnShapeContext {
@@ -141,8 +150,8 @@ export function buildTurnShapeDirective(
       context.mood.arousal,
       context.mood.dominance,
     );
-    const suppressUpbeat = context.intent?.toUpperCase() === 'VULNERABILITY' && octant === 'exuberant';
-    const cue = suppressUpbeat ? undefined : policy.moodCues[octant];
+    const suppressed = policy.suppressedMoodCues?.[context.intent?.toUpperCase() ?? ''] ?? [];
+    const cue = suppressed.includes(octant) ? undefined : policy.moodCues[octant];
     if (cue) rules.push(cue);
   }
   if (isAmbivalent(context.emotions) && policy.ambivalenceRule) {

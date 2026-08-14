@@ -1,0 +1,49 @@
+# Changelog
+
+All notable changes to this project are documented here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
+adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+Until `1.0.0`, orchestration APIs may change in a minor release. The
+parity-tested deterministic surfaces listed in the
+[parity contract](docs/parity-contract.md) will not change silently: any change
+to a pinned vector is called out here.
+
+## [Unreleased]
+
+## [0.1.0]
+
+First public release: the deterministic kernel extracted from
+[Anjo](https://anjo.love) and generalized beyond conversation.
+
+### Added
+
+- Behaviorally aligned Python (`anjo-core`) and TypeScript (`@anjo-ai/core`)
+  kernels with no runtime dependencies.
+- OCC-inspired appraisal, PAD mood dynamics, and Big Five N/E-conditioned affect
+  inertia.
+- Bounded memory relevance, recency, salience, and mood-congruence scoring.
+- Presence surfacing, configurable prompt composition, and injected
+  `ModelAdapter` / `AppraisalPolicy` / `StateStore` / `MemoryRetriever` contracts.
+- `StageLadder`: a configurable progression with its own rungs and resting
+  weights. `strict=True` raises `UnknownStageError` instead of silently flooring
+  an unmapped stage to the bottom rung.
+- `ExpectationCues`: the English expectation-violation vocabulary is now data a
+  caller can replace, not behavior compiled into the kernel.
+- `PresenceLabels`: the presence surface wording is caller-owned; the
+  conversational phrasing is a default, not a fixture of the library.
+- `TurnShapePolicy.suppressed_octant_cues` / `suppressedMoodCues`: the reference
+  "no upbeat cue right after vulnerability" rule is expressed as policy data.
+  The kernel no longer special-cases any intent label.
+- `conversational_appraisal_policy(...)`: build a reference-shaped policy bound
+  to a custom ladder and cue set.
+- A game-NPC example (`examples/game-npc/`) that drives the same kernel from
+  world events with its own ladder, vocabulary, and presence wording. It asserts
+  its own invariants and runs in CI.
+- 225 synthetic cross-runtime vectors and 3 synthetic longitudinal traces shared
+  by both runtimes.
+- Public-boundary verification, pinned Gitleaks history scan, and reproducible
+  packaging checks.
+
+[Unreleased]: https://github.com/kevindechang/anjo-core/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/kevindechang/anjo-core/releases/tag/v0.1.0

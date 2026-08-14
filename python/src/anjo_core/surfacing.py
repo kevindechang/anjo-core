@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import dataclass, replace
 
 from .models import (
     CognitionState,
@@ -38,30 +38,72 @@ def clean_text(value: object, max_len: int) -> str | None:
     return _smart_trim(cleaned, max_len)
 
 
+@dataclass(frozen=True, slots=True)
+class PresenceLabels:
+    """The rendered wording of the presence surface.
+
+    The defaults are the reference conversational phrasing. They are English and
+    companion-shaped on purpose; a game, tutoring, or support domain should pass
+    its own labels rather than surfacing "here with you" to its users.
+    """
+
+    reflecting: str = "still reflecting"
+    due_intention: str = "holding a follow-up"
+    carried_thought: str = "carrying a thread"
+    open_thread: str = "holding a pattern"
+    idle: str = "here with you"
+    reflecting_mode: str = "reflecting"
+    idle_mode: str = "quiet"
+
+    def __post_init__(self) -> None:
+        for name in (
+            "reflecting",
+            "due_intention",
+            "carried_thought",
+            "open_thread",
+            "idle",
+            "reflecting_mode",
+            "idle_mode",
+        ):
+            value = getattr(self, name)
+            if not isinstance(value, str):
+                raise TypeError(f"{name} must be a string")
+            if not value.strip():
+                raise ValueError(f"{name} must not be empty")
+
+
+DEFAULT_PRESENCE_LABELS = PresenceLabels()
+
+
 def presence_line(
     *,
     reflection_pending: bool,
     due_intention: bool,
     carried_thought: bool,
     open_thread: bool,
+    labels: PresenceLabels | None = None,
 ) -> str:
     """Select one compact presence label using a fixed priority cascade."""
+    chosen = labels or DEFAULT_PRESENCE_LABELS
     if reflection_pending:
-        return "still reflecting"
+        return chosen.reflecting
     if due_intention:
-        return "holding a follow-up"
+        return chosen.due_intention
     if carried_thought:
-        return "carrying a thread"
+        return chosen.carried_thought
     if open_thread:
-        return "holding a pattern"
-    return "here with you"
+        return chosen.open_thread
+    return chosen.idle
 
 
 def build_presence_vector(
     state: CompanionState,
     cognition: CognitionState | None = None,
+    *,
+    labels: PresenceLabels | None = None,
 ) -> PresenceVector:
     """Build a UI-ready presence snapshot without reading persistence or services."""
+    chosen = labels or DEFAULT_PRESENCE_LABELS
     supplied = cognition or CognitionState()
     carried = bool(clean_text(state.carried_thought, 300))
     resolved_cognition = replace(supplied, carried_thought=carried)
@@ -70,6 +112,7 @@ def build_presence_vector(
         due_intention=resolved_cognition.due_intention,
         carried_thought=resolved_cognition.carried_thought,
         open_thread=resolved_cognition.open_thread,
+        labels=chosen,
     )
     trust = round(state.relationship.trust, 4)
     valence = round(state.mood.valence, 4)
@@ -81,7 +124,7 @@ def build_presence_vector(
         arousal=arousal,
         longing=longing,
         awaiting=resolved_cognition.reflection_pending,
-        mode="reflecting" if resolved_cognition.reflection_pending else "quiet",
+        mode=chosen.reflecting_mode if resolved_cognition.reflection_pending else chosen.idle_mode,
         line=line,
         affect=PresenceAffect(
             valence=valence,
@@ -98,4 +141,10 @@ def build_presence_vector(
     )
 
 
-__all__ = ["build_presence_vector", "clean_text", "presence_line"]
+__all__ = [
+    "DEFAULT_PRESENCE_LABELS",
+    "PresenceLabels",
+    "build_presence_vector",
+    "clean_text",
+    "presence_line",
+]

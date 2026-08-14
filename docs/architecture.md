@@ -50,6 +50,28 @@ claim that those labels are domain-neutral. Both engines accept an injected,
 synchronous appraisal policy so an application can translate game, tutoring,
 coaching, or other events into its own deterministic transition.
 
+## Replaceable vocabulary
+
+No transform branches on a label that only one product uses. Every piece of
+domain vocabulary is a value the caller supplies, with the conversational preset
+as its default:
+
+| Value object | Governs | Default |
+|---|---|---|
+| `StageLadder` | progression rungs and resting weights | stranger → intimate |
+| `ExpectationCues` | expectation-violation tokens | English sentiment words |
+| `TurnShapePolicy` | response-shape wording and cue suppression | companion cadence |
+| `PresenceLabels` | presence surface wording | "here with you" |
+| `PromptPolicy` | prompt section wording | neutral headings |
+
+`StageLadder(strict=True)` raises `UnknownStageError` rather than flooring an
+unmapped stage to the bottom rung, so a typo cannot quietly delete the resting
+set point. The non-strict default preserves the pinned cross-runtime contract.
+
+`examples/game-npc/` drives the kernel from world events using a different rung
+set, a different event vocabulary, and different presence wording. It runs in CI,
+so the replaceability claim is executed rather than asserted.
+
 ## Adapters
 
 The engine depends on protocols rather than provider SDKs:

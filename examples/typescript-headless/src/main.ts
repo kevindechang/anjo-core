@@ -3,7 +3,7 @@ import {
   InMemoryRetriever,
   InMemoryStore,
   ScriptedModelAdapter,
-} from '@anjo-ai/companion-core';
+} from '@anjo-ai/core';
 
 const store = new InMemoryStore({
   state: { mood: { valence: 0.1, arousal: 0.05, dominance: 0 } },

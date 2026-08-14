@@ -1,7 +1,19 @@
 {
-  "name": "@anjo-ai/companion-core",
+  "name": "@anjo-ai/core",
   "version": "0.1.0",
-  "description": "A model-agnostic deterministic companion kernel for TypeScript",
+  "description": "Deterministic affect-state kernel for long-lived AI characters, model-agnostic",
+  "keywords": [
+    "affect",
+    "appraisal",
+    "emotion",
+    "pad",
+    "occ",
+    "memory",
+    "agent",
+    "companion",
+    "npc",
+    "character"
+  ],
   "license": "Apache-2.0",
   "homepage": "https://github.com/kevindechang/anjo-core#readme",
   "repository": {

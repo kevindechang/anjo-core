@@ -35,6 +35,10 @@ The examples must remain credential-free and deterministic.
   dependencies.
 - Keep domain event interpretation in an injected appraisal policy. The default
   English conversational policy is a preset, not the universal event model.
+- Do not branch on a label only one product uses. Relationship rungs, intent
+  names, cue words, and surface wording belong in a caller-supplied value object
+  with the preset as its default. See
+  [design principles](docs/design-principles.md#domain-vocabulary-is-data-not-behavior).
 - Update public documentation when a claim or limitation changes.
 
 ## Cross-runtime changes

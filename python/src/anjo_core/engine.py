@@ -25,7 +25,7 @@ from .models import (
 from .prompt import PromptInputs, PromptPolicy, build_system_prompt, build_untrusted_context
 from .protocols import AppraisalPolicy, MemoryRetriever, ModelAdapter, StateStore
 from .retrieval import rank_candidates
-from .surfacing import build_presence_vector
+from .surfacing import PresenceLabels, build_presence_vector
 
 DEFAULT_GATE_RESULT = GateResult(intent="CASUAL", should_respond=True, should_retrieve=False)
 SILENT_GATE_RESULT = GateResult(intent="CASUAL", should_respond=False, should_retrieve=False)
@@ -106,6 +106,7 @@ class CompanionEngine:
         base_prompt: str = "",
         prompt_policy: PromptPolicy | None = None,
         turn_shape_policy: TurnShapePolicy | None = None,
+        presence_labels: PresenceLabels | None = None,
         appraisal_policy: AppraisalPolicy = default_appraisal_policy,
         state_factory: Callable[[], CompanionState] = CompanionState,
         retrieval_limit: int = 6,
@@ -139,6 +140,7 @@ class CompanionEngine:
         self.base_prompt = base_prompt
         self.prompt_policy = prompt_policy or PromptPolicy()
         self.turn_shape_policy = turn_shape_policy or TurnShapePolicy()
+        self.presence_labels = presence_labels or PresenceLabels()
         self.appraisal_policy = appraisal_policy
         self.state_factory = state_factory
         self.retrieval_limit = retrieval_limit
@@ -317,7 +319,7 @@ class CompanionEngine:
         """Load current state and return its deterministic presence vector."""
         async with self.store.transaction(self.conversation_id) as transaction:
             state = await transaction.load_state() or self.state_factory()
-            return build_presence_vector(state, cognition)
+            return build_presence_vector(state, cognition, labels=self.presence_labels)
 
 
 __all__ = [

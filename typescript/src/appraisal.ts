@@ -2,20 +2,76 @@ import type { AppraisalGoals, PadMood, Personality } from './contracts.js';
 import { DEFAULT_APPRAISAL_GOALS, DEFAULT_PERSONALITY } from './contracts.js';
 import { pyRound } from './internal/round.js';
 
-const BASELINE_WEIGHTS: Readonly<Record<number, number>> = Object.freeze({
-  1: 0,
-  2: 0.2,
-  3: 0.4,
-  4: 0.6,
-  5: 0.7,
+export const DEFAULT_STAGES: readonly string[] = Object.freeze([
+  'stranger',
+  'acquaintance',
+  'friend',
+  'close',
+  'intimate',
+]);
+export const DEFAULT_STAGE_WEIGHTS: readonly number[] = Object.freeze([0, 0.2, 0.4, 0.6, 0.7]);
+
+/** Raised when a strict {@link StageLadder} receives a stage it does not define. */
+export class UnknownStageError extends Error {
+  constructor(stage: string, stages: readonly string[]) {
+    super(`stage ${JSON.stringify(stage)} is not on the ladder [${stages.join(', ')}]`);
+    this.name = 'UnknownStageError';
+  }
+}
+
+/**
+ * An ordered relationship ladder and the resting-point weight of each rung.
+ *
+ * The default rungs are the reference conversational ladder. Domains with a
+ * different progression -- a game faction track, a tutoring competence ladder,
+ * a support-case lifecycle -- should supply their own stages and weights
+ * rather than reusing these labels.
+ *
+ * `strict` controls unknown stages. The default (`false`) floors to the first
+ * rung, matching the pinned cross-runtime contract; `true` throws
+ * {@link UnknownStageError} instead, so a typo cannot silently resolve to
+ * weight `0` and remove the resting set point.
+ */
+export interface StageLadder {
+  readonly stages: readonly string[];
+  readonly weights: readonly number[];
+  readonly strict: boolean;
+}
+
+export const DEFAULT_STAGE_LADDER: StageLadder = Object.freeze({
+  stages: DEFAULT_STAGES,
+  weights: DEFAULT_STAGE_WEIGHTS,
+  strict: false,
 });
-const STAGES: Readonly<Record<string, number>> = Object.freeze({
-  stranger: 1,
-  acquaintance: 2,
-  friend: 3,
-  close: 4,
-  intimate: 5,
-});
+
+/** Validate and freeze a ladder; mirrors the Python `StageLadder` constructor. */
+export function createStageLadder(input: Partial<StageLadder> = {}): StageLadder {
+  const stages = Object.freeze([...(input.stages ?? DEFAULT_STAGES)]);
+  const weights = Object.freeze([...(input.weights ?? DEFAULT_STAGE_WEIGHTS)]);
+  const strict = input.strict ?? false;
+  if (stages.length === 0) throw new RangeError('stages must not be empty');
+  if (stages.length !== weights.length) {
+    throw new RangeError('stages and weights must have equal length');
+  }
+  if (new Set(stages).size !== stages.length) throw new RangeError('stages must be unique');
+  for (const stage of stages) {
+    if (typeof stage !== 'string' || stage.length === 0) {
+      throw new TypeError('stage names must be non-empty strings');
+    }
+  }
+  for (const weight of weights) {
+    if (!Number.isFinite(weight) || weight < 0 || weight > 1) {
+      throw new RangeError('stage weights must be finite and within [0, 1]');
+    }
+  }
+  return Object.freeze({ stages, weights, strict });
+}
+
+/** Whether `stage` is a defined rung, for validation at an application boundary. */
+export function ladderKnows(ladder: StageLadder, stage: string): boolean {
+  return ladder.stages.indexOf(stage) !== -1;
+}
+
 const AMBIGUOUS_INTENTS = new Set(['CASUAL', 'CURIOSITY', 'CHALLENGE', 'APOLOGY']);
 const OCC_DECAY: Readonly<Record<string, number>> = Object.freeze({
   reproach: 0.7,
@@ -31,8 +87,14 @@ function clamp(value: number, low: number, high: number): number {
 
 export { DEFAULT_APPRAISAL_GOALS, DEFAULT_PERSONALITY };
 
-export function stageInt(stage: string | null | undefined): number {
-  return (stage && STAGES[stage]) || 1;
+export function stageInt(
+  stage: string | null | undefined,
+  ladder: StageLadder = DEFAULT_STAGE_LADDER,
+): number {
+  const index = stage === null || stage === undefined ? -1 : ladder.stages.indexOf(stage);
+  if (index !== -1) return index + 1;
+  if (ladder.strict) throw new UnknownStageError(String(stage), ladder.stages);
+  return 1;
 }
 
 export function moodInertia(personality: Personality): number {
@@ -40,8 +102,13 @@ export function moodInertia(personality: Personality): number {
   return clamp(inertia, 0.62, 0.92);
 }
 
-export function baselineWeight(stage: number): number {
-  return BASELINE_WEIGHTS[stage] ?? 0;
+export function baselineWeight(
+  stage: number,
+  ladder: StageLadder = DEFAULT_STAGE_LADDER,
+): number {
+  if (!Number.isInteger(stage)) throw new TypeError('stage ordinal must be an integer');
+  if (stage >= 1 && stage <= ladder.weights.length) return ladder.weights[stage - 1] as number;
+  return 0;
 }
 
 export function decayMood(
@@ -49,9 +116,10 @@ export function decayMood(
   personality: Personality,
   stage: number,
   baselineValence: number,
+  ladder: StageLadder = DEFAULT_STAGE_LADDER,
 ): PadMood {
   const inertia = moodInertia(personality);
-  const weight = baselineWeight(stage);
+  const weight = baselineWeight(stage, ladder);
   const setValence = weight * baselineValence;
   const setDominance = weight * 0.1;
   return {
@@ -162,23 +230,47 @@ function wordMatch(text: string, tokens: readonly string[]): boolean {
   return false;
 }
 
-const NEGATIVE_EXPECTED = ['angry', 'upset', 'bad', 'worse', 'argument', 'hurt', 'afraid', 'scared'];
-const POSITIVE_CURRENT = ['better', 'okay', 'ok', 'good', 'fine', 'resolved', 'worked out'];
-const NEGATIVE_CURRENT = ['worse', 'bad', 'angry', 'upset', 'failed', 'awful', 'hurt'];
-const EXPECTED_RESOLUTION = ['come back', 'tell', 'answer', 'resolve', 'apolog-'];
+/**
+ * The lexical cues used to detect a violated expectation.
+ *
+ * These defaults are an **English conversational preset**, not domain-neutral
+ * behavior. Supply your own tokens to localize the kernel or to express
+ * expectation violation in a non-conversational vocabulary. A trailing `-`
+ * marks a stem match (`'apolog-'` matches `apologize` and `apology`).
+ */
+export interface ExpectationCues {
+  readonly negativeExpected: readonly string[];
+  readonly positiveCurrent: readonly string[];
+  readonly negativeCurrent: readonly string[];
+  readonly expectedResolution: readonly string[];
+}
+
+export const DEFAULT_EXPECTATION_CUES: ExpectationCues = Object.freeze({
+  negativeExpected: Object.freeze([
+    'angry', 'upset', 'bad', 'worse', 'argument', 'hurt', 'afraid', 'scared',
+  ]),
+  positiveCurrent: Object.freeze([
+    'better', 'okay', 'ok', 'good', 'fine', 'resolved', 'worked out',
+  ]),
+  negativeCurrent: Object.freeze([
+    'worse', 'bad', 'angry', 'upset', 'failed', 'awful', 'hurt',
+  ]),
+  expectedResolution: Object.freeze(['come back', 'tell', 'answer', 'resolve', 'apolog-']),
+});
 
 export function expectationEmotions(
   expectation: string | null | undefined,
   message: string | null | undefined,
+  cues: ExpectationCues = DEFAULT_EXPECTATION_CUES,
 ): Record<string, number> {
   const expected = (expectation ?? '').toLowerCase();
   const current = (message ?? '').toLowerCase();
   if (!expected || !current) return {};
 
-  const negativeExpected = wordMatch(expected, NEGATIVE_EXPECTED);
-  const positiveCurrent = wordMatch(current, POSITIVE_CURRENT);
-  const negativeCurrent = wordMatch(current, NEGATIVE_CURRENT);
-  const expectedResolution = wordMatch(expected, EXPECTED_RESOLUTION);
+  const negativeExpected = wordMatch(expected, cues.negativeExpected);
+  const positiveCurrent = wordMatch(current, cues.positiveCurrent);
+  const negativeCurrent = wordMatch(current, cues.negativeCurrent);
+  const expectedResolution = wordMatch(expected, cues.expectedResolution);
 
   if (negativeExpected && positiveCurrent) return { relief: 0.45, surprise: 0.35 };
   if (expectedResolution && negativeCurrent) return { disappointment: 0.4 };
@@ -230,6 +322,10 @@ export interface AppraiseTurnInput {
   occCarry?: Readonly<Record<string, number>>;
   expectation?: string | null;
   message?: string | null;
+  /** Ladder used for the resting-point weight; defaults to the conversational rungs. */
+  ladder?: StageLadder;
+  /** Expectation-violation vocabulary; defaults to the English conversational preset. */
+  cues?: ExpectationCues;
 }
 
 export interface AppraiseTurnResult {
@@ -249,6 +345,7 @@ export function appraiseTurn(input: AppraiseTurnInput): AppraiseTurnResult {
     input.personality,
     input.stageInt,
     input.baselineValence,
+    input.ladder ?? DEFAULT_STAGE_LADDER,
   );
   const appraisal = appraiseInput(
     decayedMood,
@@ -266,7 +363,10 @@ export function appraiseTurn(input: AppraiseTurnInput): AppraiseTurnResult {
     active[key] = Math.max(appraisal.emotions[key] ?? 0, decayedCarry[key] ?? 0);
   }
   active = mergeMax(active, stateEmotions(appraisal.mood, input.attachmentLonging));
-  active = mergeMax(active, expectationEmotions(input.expectation, input.message));
+  active = mergeMax(
+    active,
+    expectationEmotions(input.expectation, input.message, input.cues ?? DEFAULT_EXPECTATION_CUES),
+  );
 
   const carry: Record<string, number> = {};
   for (const [emotion, intensity] of Object.entries(active)) {

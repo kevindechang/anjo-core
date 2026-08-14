@@ -20,6 +20,7 @@ trap cleanup EXIT
 "$ANJO_INSTALL_DIR/venv/bin/python" -c \
   'import anjo_core; assert anjo_core.__version__ == "0.1.0"'
 "$ANJO_INSTALL_DIR/venv/bin/python" "$REPO_DIR/examples/python-headless/main.py"
+"$ANJO_INSTALL_DIR/venv/bin/python" "$REPO_DIR/examples/game-npc/main.py"
 
 tar -xzf "$ANJO_PACKAGE_DIR"/*.tar.gz -C "$ANJO_SDIST_DIR"
 ANJO_SDIST_ROOT="$(find "$ANJO_SDIST_DIR" -mindepth 1 -maxdepth 1 -type d -print -quit)"

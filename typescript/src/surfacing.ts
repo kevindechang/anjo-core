@@ -29,12 +29,42 @@ export interface PresenceLineInput {
   openThread: boolean;
 }
 
-export function presenceLine(input: PresenceLineInput): string {
-  if (input.reflectionPending) return 'still reflecting';
-  if (input.dueIntention) return 'holding a follow-up';
-  if (input.carriedThought) return 'carrying a thread';
-  if (input.openThread) return 'holding a pattern';
-  return 'here with you';
+/**
+ * The rendered wording of the presence surface.
+ *
+ * The defaults are the reference conversational phrasing. They are English and
+ * companion-shaped on purpose; a game, tutoring, or support domain should pass
+ * its own labels rather than surfacing "here with you" to its users.
+ */
+export interface PresenceLabels {
+  readonly reflecting: string;
+  readonly dueIntention: string;
+  readonly carriedThought: string;
+  readonly openThread: string;
+  readonly idle: string;
+  readonly reflectingMode: string;
+  readonly idleMode: string;
+}
+
+export const DEFAULT_PRESENCE_LABELS: PresenceLabels = Object.freeze({
+  reflecting: 'still reflecting',
+  dueIntention: 'holding a follow-up',
+  carriedThought: 'carrying a thread',
+  openThread: 'holding a pattern',
+  idle: 'here with you',
+  reflectingMode: 'reflecting',
+  idleMode: 'quiet',
+});
+
+export function presenceLine(
+  input: PresenceLineInput,
+  labels: PresenceLabels = DEFAULT_PRESENCE_LABELS,
+): string {
+  if (input.reflectionPending) return labels.reflecting;
+  if (input.dueIntention) return labels.dueIntention;
+  if (input.carriedThought) return labels.carriedThought;
+  if (input.openThread) return labels.openThread;
+  return labels.idle;
 }
 
 export interface CognitionState {
@@ -70,6 +100,7 @@ export interface PresenceVector {
 export function buildPresenceVector(
   stateInput: CompanionState,
   cognitionInput: CognitionState = {},
+  labels: PresenceLabels = DEFAULT_PRESENCE_LABELS,
 ): PresenceVector {
   const state = createCompanionState(stateInput);
   const cognition: Required<CognitionState> = {
@@ -90,8 +121,8 @@ export function buildPresenceVector(
     arousal,
     longing,
     awaiting: cognition.reflectionPending,
-    mode: cognition.reflectionPending ? 'reflecting' : 'quiet',
-    line: presenceLine(cognition),
+    mode: cognition.reflectionPending ? labels.reflectingMode : labels.idleMode,
+    line: presenceLine(cognition, labels),
     affect: { valence, arousal, dominance: pyRound(state.mood.dominance, 4) },
     relationship: {
       stage: state.relationship.stage,

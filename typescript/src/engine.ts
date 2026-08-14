@@ -25,7 +25,7 @@ import { stripPyWhitespace } from './internal/whitespace.js';
 import { buildUntrustedContext, composePrompt } from './prompt.js';
 import type { PromptPolicy } from './prompt.js';
 import { rankCandidates } from './retrieval.js';
-import { buildPresenceVector } from './surfacing.js';
+import { DEFAULT_PRESENCE_LABELS, buildPresenceVector, type PresenceLabels } from './surfacing.js';
 import type { CognitionState, PresenceVector } from './surfacing.js';
 
 const INTENT_SET: ReadonlySet<string> = new Set(INTENTS);
@@ -70,6 +70,8 @@ export interface CompanionEngineOptions {
   readonly instruction?: string;
   readonly promptPolicy?: PromptPolicy;
   readonly turnShapePolicy?: TurnShapePolicy;
+  /** Wording of the presence surface; defaults to the conversational phrasing. */
+  readonly presenceLabels?: PresenceLabels;
   readonly stateFactory?: () => CompanionState;
   readonly retrievalLimit?: number;
   /** Opt-in fallback; omitted means gate errors and malformed output propagate. */
@@ -389,6 +391,7 @@ export class CompanionEngine {
   private readonly instruction: string;
   private readonly promptPolicy: PromptPolicy | undefined;
   private readonly turnShapePolicy: TurnShapePolicy | undefined;
+  private readonly presenceLabels: PresenceLabels;
   private readonly stateFactory: (() => CompanionState) | undefined;
   private readonly retrievalLimit: number;
   private readonly now: (() => Date) | undefined;
@@ -410,6 +413,7 @@ export class CompanionEngine {
       instruction = '',
       promptPolicy,
       turnShapePolicy,
+      presenceLabels,
       stateFactory,
       retrievalLimit: limit = 6,
       gateFallback,
@@ -448,6 +452,9 @@ export class CompanionEngine {
     this.turnShapePolicy = turnShapePolicy === undefined
       ? undefined
       : readonlySnapshot(turnShapePolicy) as TurnShapePolicy;
+    this.presenceLabels = presenceLabels === undefined
+      ? DEFAULT_PRESENCE_LABELS
+      : readonlySnapshot(presenceLabels) as PresenceLabels;
     this.stateFactory = stateFactory;
     this.retrievalLimit = limit;
     this.now = now;
@@ -487,7 +494,9 @@ export class CompanionEngine {
   async presence(cognition: CognitionState = {}): Promise<PresenceVector> {
     const stored = await this.store.loadState();
     const state = createCompanionState(stored ?? this.stateFactory?.() ?? {});
-    return readonlySnapshot(buildPresenceVector(state, cognition)) as PresenceVector;
+    return readonlySnapshot(
+      buildPresenceVector(state, cognition, this.presenceLabels),
+    ) as PresenceVector;
   }
 
   private currentTime(): Date {

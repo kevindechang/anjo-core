@@ -35,7 +35,7 @@ fi
   cd "$EXAMPLE_DIR"
   node --input-type=module -e '
     try {
-      await import("@anjo-ai/companion-core/internal/round");
+      await import("@anjo-ai/core/internal/round");
       process.exitCode = 1;
     } catch (error) {
       if (error?.code !== "ERR_PACKAGE_PATH_NOT_EXPORTED") throw error;

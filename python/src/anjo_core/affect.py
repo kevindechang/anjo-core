@@ -89,6 +89,15 @@ def is_ambivalent(emotions: Mapping[str, float] | None) -> bool:
     return min(positive, negative) / max(positive, negative) >= 0.40
 
 
+def _default_suppressed_octant_cues() -> dict[str, tuple[str, ...]]:
+    """Reference rule: do not add upbeat momentum when a user has just been vulnerable.
+
+    This is a conversational preset expressed as data, not kernel behavior.
+    Pass ``suppressed_octant_cues={}`` to disable it, or map your own intents.
+    """
+    return {"VULNERABILITY": ("exuberant",)}
+
+
 def _default_octant_cues() -> dict[str, str]:
     return {
         "exuberant": "Allow a little more momentum.",
@@ -113,6 +122,9 @@ class TurnShapePolicy:
     mirror_length: str = "Keep the response proportionate to the user's message."
     ambivalence: str = "Preserve meaningful opposing signals instead of forcing a verdict."
     octant_cues: Mapping[str, str] = field(default_factory=_default_octant_cues)
+    suppressed_octant_cues: Mapping[str, tuple[str, ...]] = field(
+        default_factory=_default_suppressed_octant_cues
+    )
 
     def __post_init__(self) -> None:
         normalized: dict[str, str] = {}
@@ -125,6 +137,19 @@ class TurnShapePolicy:
                 raise ValueError("octant cue values must not be empty")
             normalized[octant] = cue
         object.__setattr__(self, "octant_cues", freeze_mapping(normalized))
+
+        suppressed: dict[str, tuple[str, ...]] = {}
+        for intent, octants in self.suppressed_octant_cues.items():
+            if not isinstance(intent, str) or not intent:
+                raise ValueError("suppressed cue intents must be non-empty strings")
+            if isinstance(octants, str):
+                raise TypeError("suppressed cue values must be a sequence of octant names")
+            names = tuple(octants)
+            for octant in names:
+                if not isinstance(octant, str) or not octant:
+                    raise ValueError("suppressed octant names must be non-empty strings")
+            suppressed[intent.upper()] = names
+        object.__setattr__(self, "suppressed_octant_cues", freeze_mapping(suppressed))
 
 
 def _last_assistant_text(history: Sequence[Message | Mapping[str, object]] | None) -> str:
@@ -158,8 +183,8 @@ def turn_shape_directive(
     ]
     if mood is not None:
         octant = mood_octant(mood.valence, mood.arousal, mood.dominance)
-        suppress_upbeat = intent.upper() == "VULNERABILITY" and octant == "exuberant"
-        cue = "" if suppress_upbeat else chosen.octant_cues.get(octant, "")
+        suppressed = chosen.suppressed_octant_cues.get(intent.upper(), ())
+        cue = "" if octant in suppressed else chosen.octant_cues.get(octant, "")
         if cue:
             rules.append(cue)
     if is_ambivalent(emotions) and chosen.ambivalence:

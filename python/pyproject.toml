@@ -3,15 +3,26 @@ requires = ["hatchling==1.32.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "anjo-companion-core"
+name = "anjo-core"
 version = "0.1.0"
-description = "A dependency-free deterministic companion-state kernel with injected adapters"
+description = "Deterministic affect-state kernel for long-lived AI characters, with injected adapters"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 authors = [{ name = "Anjo" }]
-keywords = ["companion", "affect", "appraisal", "memory", "agent"]
+keywords = [
+  "affect",
+  "appraisal",
+  "emotion",
+  "pad",
+  "occ",
+  "memory",
+  "agent",
+  "companion",
+  "npc",
+  "character",
+]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "License :: OSI Approved :: Apache Software License",

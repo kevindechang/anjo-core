@@ -1,8 +1,9 @@
 # Cross-runtime parity contract
 
-The shared fixture in `shared/golden/kernel_golden.json` is generated from
-production-derived deterministic behavior, then sanitized to exclude branded or
-product-tuned prompt text.
+The shared fixture in `shared/golden/kernel_golden.json` holds synthetic input
+and output vectors derived from the deterministic behavior of the production
+application, sanitized to exclude branded or product-tuned prompt text. It
+contains no conversation data and no user data.
 
 It contains 225 cases across:
 

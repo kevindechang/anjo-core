@@ -4,8 +4,11 @@
 - Gate and generation quality depend on injected adapters; reflection is not
   included in the current public runtime.
 - The shared appraisal contract excludes production-only habituation behavior.
-- The default appraisal policy is an English conversational preset. Inject a
-  domain policy for non-conversational events or other languages.
+- The default appraisal policy, stage ladder, expectation cues, and presence
+  labels are English conversational presets. They are replaceable values rather
+  than kernel behavior, but a non-conversational or non-English domain must
+  actually supply its own; the defaults will otherwise leak companion phrasing
+  into an unrelated product. See `examples/game-npc/` for a worked replacement.
 - The reference engine evolves mood, baseline valence, and OCC carry; it does not
   evolve relationship stage, attachment, or personality.
 - Retrieval code scores candidates; it does not create embeddings or operate a

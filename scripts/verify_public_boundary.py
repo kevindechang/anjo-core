@@ -23,6 +23,7 @@ ALLOWED_TOP_LEVEL = {
     ".github",
     ".gitleaks.toml",
     ".gitignore",
+    "CHANGELOG.md",
     "CODE_OF_CONDUCT.md",
     "CONTRIBUTING.md",
     "GOVERNANCE.md",
@@ -39,6 +40,7 @@ ALLOWED_TOP_LEVEL = {
     "typescript",
 }
 IGNORED_PARTS = {
+    ".DS_Store",  # Untracked macOS cruft; still an error below if it is tracked.
     ".git",
     ".venv",
     "node_modules",

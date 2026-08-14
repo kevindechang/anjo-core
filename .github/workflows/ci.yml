@@ -49,9 +49,12 @@ jobs:
       - run: python -m pip install --require-hashes -r python/requirements-dev.lock
       - run: python -m pip install --no-deps --no-build-isolation -e ./python
       - run: python -m pytest python/tests scripts/tests --cov=anjo_core --cov-branch --cov-report=term-missing
-      - run: python -m ruff check python scripts examples/python-headless
-      - run: python -m ruff format --check python scripts examples/python-headless
+      - run: python -m ruff check python scripts examples
+      - run: python -m ruff format --check python scripts examples
       - run: python -m mypy --config-file python/pyproject.toml python/src
+      # Examples are executable documentation and assert their own invariants.
+      - run: python examples/python-headless/main.py
+      - run: python examples/game-npc/main.py
 
   python-package:
     runs-on: ubuntu-latest

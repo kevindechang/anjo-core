@@ -1,4 +1,4 @@
-# `@anjo-ai/companion-core`
+# `@anjo-ai/core`
 
 A zero-runtime-dependency TypeScript affect-state kernel for long-lived AI
 characters. It provides deterministic affect, appraisal, memory scoring, presence

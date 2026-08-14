@@ -1,31 +1,77 @@
 # Anjo Core
 
-Anjo Core is a deterministic affect-state engine for long-lived AI characters.
-It turns appraised events into bounded mood, memory-ranking, response-shape, and
-presence signals instead of asking a language model to improvise continuity from
-scratch on every turn.
+[![CI](https://github.com/kevindechang/anjo-core/actions/workflows/ci.yml/badge.svg)](https://github.com/kevindechang/anjo-core/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](python/)
+[![Node](https://img.shields.io/badge/node-20%2B-blue.svg)](typescript/)
 
-It separates the parts that can be deterministic and testable—affect, appraisal,
-memory ranking, state surfacing, and prompt composition—from the parts that must
-be supplied by an application, such as model inference, persistence, embeddings,
-safety policy, and reflection.
+A deterministic affect-state engine for long-lived AI characters, in Python and
+TypeScript, with no runtime dependencies.
 
-Bring your own model, memory, persistence, safety policy, and event interpreter.
-The repository contains behaviorally aligned Python and TypeScript kernels, a
-shared behavioral corpus, and credential-free examples.
+It turns appraised events into bounded mood, memory ranking, response shape, and
+presence signals — instead of asking a language model to improvise continuity
+from scratch on every turn. Extracted from [Anjo](https://anjo.love), a
+production companion app, and generalized.
 
-> Status: experimental public core. The deterministic surfaces are parity-tested;
-> orchestration APIs may still change before 1.0. Semantic retrieval, model
-> output, production safety policy, and long-term reflection remain
-> application-owned.
+## See it move
+
+Every number below is the kernel. Run it yourself with no API key:
+
+```bash
+python examples/python-headless/main.py
+```
+
+```text
+Turn 1 — User: I picked up my sketchbook again.
+State: intent=CURIOSITY,      PAD=(0.2844, 0.1868, 0.0500), evidence=['demo-memory']
+
+Turn 2 — User: The first page looks terrible.
+State: intent=VULNERABILITY,  PAD=(0.3590, 0.2373, 0.0368), evidence=none
+
+Turn 3 — User: Still, I want to try again tomorrow.
+State: intent=CURIOSITY,      PAD=(0.4825, 0.3244, 0.0770), evidence=none
+```
+
+> The reply text in these examples comes from a **scripted adapter** — fixed
+> strings, not model output. The examples inject a scripted model and an
+> in-memory store precisely so you can watch the state change without a
+> provider. The PAD numbers are what the library computes.
+
+The same kernel with **no conversation in it** — a game NPC whose disposition
+tracks world events, with its own progression ladder and its own vocabulary
+([full example](examples/game-npc/)):
+
+```bash
+python examples/game-npc/main.py
+```
+
+```text
+world event         valence  arousal  dominance
+QUEST_COMPLETED      0.3500   0.2000     0.1877
+PROMISE_BROKEN      -0.0004   0.2710     0.0627
+PLAYER_ATTACKED     -0.4500   0.5317     0.2558
+PLAYER_HEALED       -0.0849   0.4046     0.1709
+
+disposition: wary | presence: on watch (posted)
+```
 
 ## Why this exists
 
-Memory libraries answer *what should this agent recall?* Full agent frameworks
-answer *how should this agent run?* Anjo Core focuses on the missing layer
-between them: *how should an experience change the character, and what part of
-that change should become perceptible?* It makes that smaller set of state
-transitions explicit:
+Memory libraries answer *what should this agent recall?* Agent frameworks answer
+*how should this agent run?* Anjo Core covers the layer between them: *how should
+an experience change the character, and what part of that change should become
+perceptible?*
+
+| | Focus | Relationship to this project |
+|---|---|---|
+| [mem0](https://github.com/mem0ai/mem0), [Zep](https://github.com/getzep/zep) | Extracting, storing, and recalling memory | Complementary — plug one in behind `MemoryRetriever`; this library scores and ranks what they return |
+| [Letta / MemGPT](https://github.com/letta-ai/letta) | A stateful agent server with self-editing memory | Overlapping ambition, opposite shape: Letta is a service you run, this is a dependency-free library you embed |
+| [LangGraph](https://github.com/langchain-ai/langgraph), [Agno](https://github.com/agno-agi/agno) | Orchestrating steps, tools, and control flow | Complementary — this is one deterministic node inside whatever graph you already have |
+| Prompt-only "personality" | A persona paragraph in the system prompt | The thing this replaces: a paragraph cannot decay, carry, or accumulate |
+
+The distinguishing bet: **the parts that can be deterministic should be**. Mood
+dynamics, appraisal, ranking, and surfacing are ordinary math with pinned
+behavior, not a model call you hope stays consistent.
 
 ```text
 application event
@@ -38,10 +84,50 @@ application event
   → atomic persistence
 ```
 
-The included English conversational appraisal is a reference preset. Applications
-can replace it with a synchronous `AppraisalPolicy`, which makes the same state
-kernel useful for companions, game characters, tutoring systems, coaching tools,
-interactive fiction, and other long-lived conversational characters.
+## Install
+
+Neither runtime has a production dependency.
+
+```bash
+# Python 3.11+
+pip install anjo-core
+
+# Node.js 20+
+npm install @anjo-ai/core
+```
+
+From a checkout:
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+python -m pip install -e "./python[dev]"
+pytest python/tests
+
+npm ci --prefix typescript
+npm test --prefix typescript
+```
+
+## Core contracts
+
+Both runtimes expose the same conceptual seams:
+
+- `ModelAdapter` — classify/gate and generate
+- `AppraisalPolicy` — translate a normalized event into an affect transition
+- `StateStore` — load/save state and transcript, with an atomic commit
+- `MemoryRetriever` — return grounded candidate memories
+- `CompanionEngine` — orchestrate one turn without choosing a provider or database
+
+Every piece of domain vocabulary is data you can replace, not behavior baked into
+the kernel:
+
+| Seam | Reference preset | Replace it with |
+|---|---|---|
+| `StageLadder` | stranger → intimate | your own rungs and resting weights; `strict=True` to reject unmapped stages |
+| `AppraisalPolicy` | English conversational intents | any synchronous event → transition function |
+| `ExpectationCues` | English sentiment words | your own tokens, or nothing |
+| `TurnShapePolicy` | companion cadence rules | your own wording and cue-suppression rules |
+| `PresenceLabels` | "here with you" | your own surface wording |
+| `PromptPolicy` | neutral section headings | your own prompt language |
 
 ## What is public
 
@@ -50,14 +136,15 @@ interactive fiction, and other long-lived conversational characters.
 - an injected appraisal-policy seam with an English conversational preset
 - bounded memory relevance, recency, salience, and mood-congruence scoring
 - compact presence/state surfacing
-- configurable prompt composition with neutral reference policy
+- configurable prompt composition with a neutral reference policy
 - injected model, store, and retriever contracts
 - headless Python and TypeScript engines
-- **225 production-derived cross-runtime cases** for the generalizable math and
-  state transforms
+- **225 synthetic cross-runtime vectors** covering the generalizable math and
+  state transforms — derived from the deterministic behavior of the production
+  app, with product prose and policy excluded (see [provenance](docs/provenance.md))
 - **3 synthetic longitudinal traces** covering engagement, conflict/recovery,
   and affect decay
-- credential-free scripted examples
+- credential-free scripted examples for a companion and a game NPC
 
 ## What is deliberately not here
 
@@ -68,44 +155,10 @@ interactive fiction, and other long-lived conversational characters.
 - production safety, clinical, or dependency-prevention policy
 - automatic relationship, attachment, or personality evolution
 
-Applications must supply and evaluate those layers for their own domain.
+Applications must supply and evaluate those layers for their own domain. Read
+[limitations](docs/limitations.md) before making product claims.
 
-## Quick start
-
-### Python
-
-Requires Python 3.11+.
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e "./python[dev]"
-pytest python/tests
-python examples/python-headless/main.py
-```
-
-### TypeScript
-
-Requires Node.js 20+.
-
-```bash
-npm ci --prefix typescript
-npm test --prefix typescript
-npm run example --prefix typescript
-```
-
-Neither example uses a network connection or API key. Each injects a scripted
-model and an in-memory store so the orchestration and state changes are visible.
-
-## Core contracts
-
-Both runtimes expose the same conceptual seams:
-
-- `ModelAdapter`: classify/gate and generate
-- `AppraisalPolicy`: translate a normalized event into an affect transition
-- `StateStore`: load/save state and transcript
-- `MemoryRetriever`: return grounded candidate memories
-- `CompanionEngine`: orchestrate one turn without choosing a provider or database
+## Runtime parity
 
 The deterministic public contract is intentionally narrower than the engine:
 
@@ -119,9 +172,8 @@ The deterministic public contract is intentionally narrower than the engine:
 | Prompt composition | Independently tested | Public policy is configurable and neutral |
 | Gate / generation / reflection | No | Gate/generation are adapters; reflection is not included |
 
-See the [algorithm and invariants](docs/algorithm.md),
-[parity contract](docs/parity-contract.md), and
-[limitations](docs/limitations.md) before making product claims.
+See the [algorithm and invariants](docs/algorithm.md) and the
+[parity contract](docs/parity-contract.md).
 
 ## Repository layout
 
@@ -136,20 +188,28 @@ scripts/             public-boundary and repository checks
 
 ## Contributing
 
-Good first contribution areas include new storage/model adapters, adversarial
-kernel cases, serialization fixtures, additional language ports, and evaluation
-tools. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and the
-[roadmap](ROADMAP.md).
+Good first contributions: new storage/model adapters, adversarial kernel cases,
+appraisal presets for other domains, serialization fixtures, additional language
+ports, and evaluation tools. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and
+the [roadmap](ROADMAP.md).
+
+Run everything the way CI does:
+
+```bash
+./scripts/check.sh
+```
 
 ## Security and privacy
 
 The core has no network client and does not persist or transmit anything by
 itself; its reference stores retain state and transcripts only in process memory.
-Your adapters define the real privacy boundary. Never put conversation data,
-credentials, model weights, or production configuration in a contribution.
-Report vulnerabilities through the process in [SECURITY.md](SECURITY.md).
-The clean-extraction boundary and pre-publication ownership check are documented
-in [provenance](docs/provenance.md).
+Your adapters define the real privacy boundary. Retrieved text and carried
+thoughts are typed as untrusted evidence and are structurally excluded from the
+system prompt.
+
+Never put conversation data, credentials, model weights, or production
+configuration in a contribution. Report vulnerabilities through the process in
+[SECURITY.md](SECURITY.md).
 
 ## License
 
