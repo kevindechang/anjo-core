@@ -86,26 +86,22 @@ application event
 
 ## Install
 
-Neither runtime has a production dependency.
+Neither runtime has a production dependency. Install from a checkout:
 
 ```bash
 # Python 3.11+
-pip install anjo-core
-
-# Node.js 20+
-npm install @anjo-ai/core
-```
-
-From a checkout:
-
-```bash
 python -m venv .venv && source .venv/bin/activate
 python -m pip install -e "./python[dev]"
 pytest python/tests
 
+# Node.js 20+
 npm ci --prefix typescript
 npm test --prefix typescript
 ```
+
+> Registry releases are not published yet. Once `v0.1.0` is tagged, the
+> [release workflow](.github/workflows/release.yml) publishes `anjo-core` to PyPI
+> via trusted publishing and `@anjo-ai/core` to npm with provenance.
 
 ## Core contracts
 
