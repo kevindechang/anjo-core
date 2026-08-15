@@ -26,7 +26,9 @@ jobs:
           cache-dependency-path: python/requirements-dev.lock
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 20
+          # 24, not the minimum 20: scripts/check.sh runs the coverage reporter,
+          # which crashes on Node 20. See the note in ci.yml.
+          node-version: 24
           cache: npm
           cache-dependency-path: typescript/package-lock.json
       - run: python -m pip install --require-hashes -r python/requirements-dev.lock
@@ -83,7 +85,9 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 20
+          # 24, not the minimum 20: scripts/check.sh runs the coverage reporter,
+          # which crashes on Node 20. See the note in ci.yml.
+          node-version: 24
           cache: npm
           cache-dependency-path: typescript/package-lock.json
           registry-url: https://registry.npmjs.org

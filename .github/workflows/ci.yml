@@ -75,19 +75,29 @@ jobs:
   typescript:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      matrix:
+        # 20 is the minimum this package declares in "engines"; 24 is current.
+        node-version: [20, 24]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
           cache-dependency-path: typescript/package-lock.json
       - run: npm ci --ignore-scripts --prefix typescript
       - run: npm test --prefix typescript
       - run: npm run typecheck --prefix typescript
+      # Node 20's --experimental-test-coverage reporter crashes on source-mapped
+      # output ("Cannot read properties of undefined (reading 'line')") and takes
+      # the exit code with it, even when every test passes. The suite itself runs
+      # on 20 above; only the coverage report is restricted to a Node that can
+      # produce it.
       - run: npm run test:coverage --prefix typescript
+        if: matrix.node-version == 24
       - run: npm run example --prefix typescript
       - run: npm pack --dry-run ./typescript
       - run: npm audit --omit=dev --prefix ./typescript
