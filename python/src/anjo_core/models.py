@@ -68,6 +68,17 @@ class FrozenMapping(dict[_Key, _Value], Generic[_Key, _Value]):
     def __ior__(self, value: object) -> NoReturn:  # type: ignore[misc]
         self._immutable()
 
+    def __reduce__(self) -> tuple[object, ...]:
+        """Rebuild through the constructor.
+
+        The default ``dict`` pickle protocol restores items by mutating a fresh
+        instance, which this class refuses. Without this hook every state object
+        holding a frozen mapping -- ``CompanionState``, ``TurnShapePolicy``,
+        ``PromptPolicy`` -- is unpicklable, which breaks any ``StateStore`` that
+        serializes with ``pickle`` and any use across a process boundary.
+        """
+        return (self.__class__, (dict(self),))
+
 
 def freeze_mapping(values: Mapping[_Key, _Value]) -> Mapping[_Key, _Value]:
     """Return an immutable defensive copy of ``values``."""

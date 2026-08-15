@@ -123,6 +123,25 @@ export interface TurnShapeContext {
   emotions?: Readonly<Record<string, number>> | null;
 }
 
+/**
+ * Resolve the suppressed cues for an intent, matching declared keys
+ * case-insensitively. Python normalizes declared keys when the policy is
+ * constructed; TypeScript policies are plain object literals with no
+ * construction step, so the normalization has to happen at lookup or the two
+ * runtimes disagree on a lower-case declaration.
+ */
+function suppressedFor(policy: TurnShapePolicy, intent: string | undefined): readonly string[] {
+  const declared = policy.suppressedMoodCues;
+  if (!declared || intent === undefined) return [];
+  const wanted = intent.toUpperCase();
+  const direct = declared[wanted];
+  if (direct) return direct;
+  for (const [key, octants] of Object.entries(declared)) {
+    if (key.toUpperCase() === wanted && octants) return octants;
+  }
+  return [];
+}
+
 function lastAssistantText(history: TurnShapeContext['history']): string {
   if (!history) return '';
   for (let index = history.length - 1; index >= 0; index -= 1) {
@@ -150,7 +169,7 @@ export function buildTurnShapeDirective(
       context.mood.arousal,
       context.mood.dominance,
     );
-    const suppressed = policy.suppressedMoodCues?.[context.intent?.toUpperCase() ?? ''] ?? [];
+    const suppressed = suppressedFor(policy, context.intent);
     const cue = suppressed.includes(octant) ? undefined : policy.moodCues[octant];
     if (cue) rules.push(cue);
   }

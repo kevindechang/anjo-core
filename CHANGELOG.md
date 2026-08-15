@@ -45,5 +45,19 @@ First public release: the deterministic kernel extracted from
 - Public-boundary verification, pinned Gitleaks history scan, and reproducible
   packaging checks.
 
+### Fixed
+
+- `FrozenMapping` is picklable. The default `dict` pickle protocol restores
+  items by mutating a fresh instance, which the class refuses, so every state
+  object holding one — `CompanionState` with a non-empty `occ_carry`,
+  `TurnShapePolicy`, `PromptPolicy` — raised `TypeError` on `pickle.dumps`.
+  That broke any `StateStore` serializing with `pickle` and any use across a
+  process boundary. Restored values remain immutable.
+- Suppressed turn-shape cues resolve declared keys case-insensitively in
+  TypeScript, matching Python. Python normalizes declared keys when the frozen
+  policy is constructed; TypeScript policies are plain object literals with no
+  construction step, so a lower-case declaration silently failed to suppress
+  there while working in Python.
+
 [Unreleased]: https://github.com/kevindechang/anjo-core/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/kevindechang/anjo-core/releases/tag/v0.1.0

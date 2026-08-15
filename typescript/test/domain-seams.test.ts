@@ -133,6 +133,26 @@ test('a domain can suppress cues for its own intents', () => {
   assert.ok(!directive.includes('momentum'));
 });
 
+// Declared-key case must not change the outcome, and must not change it
+// *differently* from Python. python/tests/test_domain_seams.py pins the same
+// lower-case declaration; these two tests are one cross-runtime contract.
+test('suppression matches declared keys case-insensitively, like Python', () => {
+  const upbeat = { valence: 0.6, arousal: 0.5, dominance: 0.4 };
+  for (const declaredKey of ['player_died', 'PLAYER_DIED', 'Player_Died']) {
+    const policy: TurnShapePolicy = {
+      ...NEUTRAL_TURN_SHAPE_POLICY,
+      suppressedMoodCues: { [declaredKey]: ['exuberant'] },
+    };
+    for (const intent of ['player_died', 'PLAYER_DIED']) {
+      const directive = buildTurnShapeDirective({ mood: upbeat, intent }, policy);
+      assert.ok(
+        !directive.includes('momentum'),
+        `declared ${declaredKey} did not suppress for intent ${intent}`,
+      );
+    }
+  }
+});
+
 test('a domain renders its own presence wording', () => {
   const labels: PresenceLabels = { ...DEFAULT_PRESENCE_LABELS, idle: 'on watch', idleMode: 'posted' };
   const vector = buildPresenceVector({}, {}, labels);
