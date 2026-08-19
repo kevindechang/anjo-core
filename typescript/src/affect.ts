@@ -1,3 +1,11 @@
+/**
+ * Deterministic affect controls derived from a PAD mood.
+ *
+ * The octant partition is ALMA's (Gebhard 2005). The decoder controls have no
+ * literature behind them at all: mapping arousal onto a softmax temperature is
+ * an engineering convention, bounded so that it cannot make a model incoherent.
+ * See docs/foundations.md sections 1 and 8.
+ */
 import type { DecodingParams, Message, PadMood } from './contracts.js';
 import { pyRound } from './internal/round.js';
 import { rstripPyWhitespace } from './internal/whitespace.js';
@@ -28,7 +36,7 @@ function sign(value: number): number {
   return value >= 0 ? 1 : -1;
 }
 
-/** Return the ALMA PAD octant, with a deadband around neutral. */
+/** Return the ALMA PAD octant (Gebhard 2005); the deadband is ours. */
 export function moodOctant(valence: number, arousal: number, dominance: number): string {
   if (Math.abs(valence) < 0.15 && Math.abs(arousal) < 0.15 && Math.abs(dominance) < 0.15) {
     return 'neutral';

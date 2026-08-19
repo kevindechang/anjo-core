@@ -24,6 +24,7 @@ ALLOWED_TOP_LEVEL = {
     ".gitleaks.toml",
     ".gitignore",
     "CHANGELOG.md",
+    "CITATION.cff",
     "CODE_OF_CONDUCT.md",
     "CONTRIBUTING.md",
     "GOVERNANCE.md",
@@ -32,6 +33,8 @@ ALLOWED_TOP_LEVEL = {
     "README.md",
     "ROADMAP.md",
     "SECURITY.md",
+    "analysis",
+    "bench",
     "docs",
     "examples",
     "python",
@@ -68,6 +71,7 @@ FORBIDDEN_PARTS = {
 }
 FORBIDDEN_SUFFIXES = {".pem", ".p12", ".key", ".sqlite", ".sqlite3", ".db"}
 ALLOWED_TEXT_SUFFIXES = {
+    ".cff",
     ".json",
     ".lock",
     ".md",

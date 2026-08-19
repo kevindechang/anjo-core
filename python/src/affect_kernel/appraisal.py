@@ -1,4 +1,8 @@
-"""Non-habituating OCC/PAD appraisal as pure state transforms."""
+"""Non-habituating OCC/PAD appraisal as pure state transforms.
+
+Constant provenance for everything in this module is recorded in
+``docs/foundations.md`` sections 2-5.
+"""
 
 from __future__ import annotations
 
@@ -130,7 +134,14 @@ def baseline_weight(stage: int, ladder: StageLadder | None = None) -> float:
 
 
 def mood_inertia(personality: Personality) -> float:
-    """AR(1) carryover parameter derived from Neuroticism and Extraversion."""
+    """AR(1) carryover parameter derived from Neuroticism and Extraversion.
+
+    The *sign* of both terms is literature-grounded: emotional inertia rises
+    with negative-affect tendency (Kuppens, Allen & Sheeber 2010) and falls
+    with extraversion-linked reactivity (Larsen & Ketelaar 1991). The
+    coefficients and the clamp are production-tuned. See
+    ``docs/foundations.md`` section 3.
+    """
     value = 0.80 + 0.20 * (personality.N - 0.5) - 0.10 * (personality.E - 0.5)
     return _clamp(value, 0.62, 0.92)
 
@@ -143,7 +154,13 @@ def decay_mood(
     *,
     ladder: StageLadder | None = None,
 ) -> PADMood:
-    """Relax PAD toward the stage-weighted resting point using AR(1) dynamics."""
+    """Relax PAD toward the stage-weighted resting point using AR(1) dynamics.
+
+    The home-base-plus-attractor form follows the DynAffect account of core
+    affect (Kuppens, Oravecz & Tuerlinckx 2010); the decay is applied per turn
+    rather than per unit of wall-clock time. See ``docs/foundations.md``
+    section 2.
+    """
     chosen = ladder or DEFAULT_STAGE_LADDER
     stage = (
         chosen.ordinal(relationship_stage)
@@ -191,7 +208,13 @@ def appraise_input(
     intent: str,
     baseline_valence: float,
 ) -> InputAppraisal:
-    """Apply one non-habituating intent impulse and update the slow valence baseline."""
+    """Apply one non-habituating intent impulse and update the slow valence baseline.
+
+    The emotion names are an OCC subset (Ortony, Clore & Collins 1988), but
+    this is a lookup table keyed on a pre-classified intent, not an appraisal
+    process over OCC appraisal variables. Every impulse magnitude is
+    production-tuned. See ``docs/foundations.md`` section 4.
+    """
     valence = mood.valence
     arousal = mood.arousal
     dominance = mood.dominance
@@ -345,7 +368,13 @@ def expectation_emotions(
 
 
 def decay_occ_carry(carry: Mapping[str, float] | None) -> dict[str, float]:
-    """Decay prior-turn emotions, dropping values at or below the 0.05 floor."""
+    """Decay prior-turn emotions, dropping values at or below the 0.05 floor.
+
+    Emotion decaying faster than mood is the two-layer structure used by ALMA
+    (Gebhard 2005) and WASABI (Becker-Asano & Wachsmuth 2010). The per-emotion
+    ordering is a product stance, not a finding. See ``docs/foundations.md``
+    section 5.
+    """
     return {
         name: value * _OCC_CARRY_DECAY.get(name, 0.80)
         for name, value in (carry or {}).items()

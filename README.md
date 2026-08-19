@@ -73,6 +73,10 @@ The distinguishing bet: **the parts that can be deterministic should be**. Mood
 dynamics, appraisal, ranking, and surfacing are ordinary math with pinned
 behavior, not a model call you hope stays consistent.
 
+Every constant in that math is labelled in [foundations](docs/foundations.md)
+as literature-grounded, production-tuned, or an arbitrary bounded choice — with
+the departures from the papers it cites stated rather than glossed.
+
 ```text
 application event
   → application-owned interpreter
@@ -206,6 +210,27 @@ system prompt.
 Never put conversation data, credentials, model weights, or production
 configuration in a contribution. Report vulnerabilities through the process in
 [SECURITY.md](SECURITY.md).
+
+## Citing this work
+
+Machine-readable metadata is in [CITATION.cff](CITATION.cff), validated against
+CFF schema 1.2.0.
+
+```bibtex
+@software{chang_affect_kernel_2026,
+  author  = {Chang, Chia Wei},
+  title   = {affect-kernel: a deterministic affect-state kernel for
+             long-lived AI characters},
+  version = {0.1.0},
+  year    = {2026},
+  license = {Apache-2.0},
+  url     = {https://github.com/kevindechang/affect-kernel}
+}
+```
+
+If you are citing the *ideas* rather than this implementation, cite the primary
+sources in [foundations](docs/foundations.md) instead — this library implements
+a subset of them and departs from several.
 
 ## License
 

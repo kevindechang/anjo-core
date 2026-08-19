@@ -1,4 +1,9 @@
-"""Pure memory scoring and ranking, independent of storage or embeddings."""
+"""Pure memory scoring and ranking, independent of storage or embeddings.
+
+The relevance x recency x salience decomposition follows Generative Agents
+(Park et al. 2023), which sums those factors where this module multiplies them.
+Constant provenance is recorded in ``docs/foundations.md`` sections 6-7.
+"""
 
 from __future__ import annotations
 
@@ -24,7 +29,14 @@ def _validate_distance(distance: float) -> float:
 
 
 def recency_weight(timestamp: str, *, now: datetime | None = None) -> float:
-    """Return a linear freshness weight with a 0.4 floor and 0.7 parse fallback."""
+    """Return a linear freshness weight with a 0.4 floor and 0.7 parse fallback.
+
+    Linear-to-a-floor is the least defensible curve in the module: human
+    forgetting is better described by a power law (Wixted & Ebbesen 1991) and
+    the closest published comparable decays exponentially. It is kept because
+    it is trivially inspectable and because the floor dominates in practice.
+    See ``docs/foundations.md`` section 6.
+    """
     reference = _require_aware(now or datetime.now(UTC), "now")
     try:
         parsed = datetime.fromisoformat(timestamp)
@@ -40,7 +52,12 @@ def mood_congruence_factor(
     mood_valence: float,
     congruence_on: bool,
 ) -> float:
-    """Return the small asymmetric multiplier for same-sign memory and mood valence."""
+    """Return the small asymmetric multiplier for same-sign memory and mood valence.
+
+    Mood-congruent recall is Bower (1981); the threshold, the magnitudes, and
+    the negative/positive asymmetry are production-tuned and unsupported by any
+    citation in ``docs/foundations.md`` section 7.
+    """
     if not congruence_on or mem_valence == 0.0:
         return 1.0
     if (mem_valence > 0.0) == (mood_valence > 0.0):

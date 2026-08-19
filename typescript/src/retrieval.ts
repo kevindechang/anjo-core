@@ -1,3 +1,11 @@
+/**
+ * Pure memory scoring and ranking, independent of storage or embeddings.
+ *
+ * The relevance x recency x salience decomposition follows Generative Agents
+ * (Park et al. 2023), which sums those factors where this module multiplies
+ * them, and decays recency exponentially where this module is linear to a
+ * floor. Constant provenance is recorded in docs/foundations.md sections 6-7.
+ */
 import type { MemoryCandidate, RankedMemory } from './contracts.js';
 
 function clamp(value: number, low: number, high: number): number {
@@ -15,6 +23,11 @@ export function recencyWeightFromTimestamp(timestamp: string, now = new Date()):
   return recencyWeight((now.getTime() - time) / 86_400_000);
 }
 
+/**
+ * Mood-congruent recall is Bower (1981); the threshold, the magnitudes, and the
+ * negative/positive asymmetry are production-tuned and unsupported by any
+ * citation in docs/foundations.md section 7.
+ */
 export function moodCongruenceFactor(
   memoryValence: number,
   moodValence: number,

@@ -1,5 +1,9 @@
 # Algorithm and invariants
 
+This file is the *specification*: what the kernel computes. For where each
+constant came from — published work, production tuning, or an arbitrary bounded
+choice — read [foundations.md](foundations.md).
+
 The checked-in fixtures are the behavioral authority. Neither language runtime
 is the oracle by itself. `kernel_golden.json` contains 101 affect, 16 retrieval,
 69 appraisal, and 39 surfacing cases; `continuity_traces.json` adds three
@@ -67,6 +71,12 @@ The reference intent impulses are:
 | `CHALLENGE` | `V-.05, D+.10` | admiration `.45×intellectual`, distress `.25×rapport` |
 | `NEGLECT` | `V-.10, A-.05` | distress `.40×rapport` |
 | `CASUAL` | `V+.02` | joy `.05` |
+
+For the ambiguous intents `CASUAL`, `CURIOSITY`, `CHALLENGE`, and `APOLOGY`, an
+already-polarized valence is then widened: when `|valence| >= 0.20` it is scaled
+by `1.10` if negative and `1.04` if positive, then clamped and rounded to four
+decimals. The other intents carry an unambiguous sign of their own and are not
+amplified.
 
 Slow baseline valence becomes
 `round4(clamp(0.98 × old + 0.02 × appraised_valence, -1, 1))`.

@@ -1,4 +1,8 @@
-"""Deterministic affect controls derived from a PAD mood."""
+"""Deterministic affect controls derived from a PAD mood.
+
+The octant partition is ALMA's (Gebhard 2005). The decoder controls have no
+literature behind them at all; see ``docs/foundations.md`` sections 1 and 8.
+"""
 
 from __future__ import annotations
 
@@ -33,14 +37,23 @@ def _sign(value: float) -> int:
 
 
 def mood_octant(valence: float, arousal: float, dominance: float) -> str:
-    """Return the ALMA PAD octant, with a deadband around neutral."""
+    """Return the ALMA PAD octant (Gebhard 2005), with a deadband around neutral.
+
+    The deadband is an addition of ours, so that a near-zero mood does not flip
+    labels on rounding noise.
+    """
     if abs(valence) < 0.15 and abs(arousal) < 0.15 and abs(dominance) < 0.15:
         return "neutral"
     return _OCTANTS[(_sign(valence), _sign(arousal), _sign(dominance))]
 
 
 def decoding_params(mood: PADMood | None) -> DecodingParams:
-    """Map arousal to the dependency-free sampling envelope."""
+    """Map arousal to the dependency-free sampling envelope.
+
+    No published work licenses mapping arousal onto a softmax temperature. This
+    is an engineering convention, bounded so that it cannot make a model
+    incoherent. See ``docs/foundations.md`` section 8.
+    """
     if mood is None:
         return DecodingParams(temperature=1.0, top_p=None)
     return DecodingParams(

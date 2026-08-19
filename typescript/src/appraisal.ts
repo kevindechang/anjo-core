@@ -1,3 +1,13 @@
+/**
+ * Non-habituating OCC/PAD appraisal as pure state transforms.
+ *
+ * The AR(1) home-base-plus-attractor form follows DynAffect (Kuppens, Oravecz &
+ * Tuerlinckx 2010); the emotion names are an OCC subset (Ortony, Clore &
+ * Collins 1988), but this is a lookup table keyed on a pre-classified intent,
+ * not an appraisal process over OCC appraisal variables. Constant provenance —
+ * literature, production-tuned, or bounded arbitrary — is recorded per constant
+ * in docs/foundations.md sections 2-5.
+ */
 import type { AppraisalGoals, PadMood, Personality } from './contracts.js';
 import { DEFAULT_APPRAISAL_GOALS, DEFAULT_PERSONALITY } from './contracts.js';
 import { pyRound } from './internal/round.js';
