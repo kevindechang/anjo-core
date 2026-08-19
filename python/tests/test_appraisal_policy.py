@@ -4,7 +4,7 @@ from dataclasses import replace
 
 import pytest
 
-from anjo_core import AppraisalResult, CompanionState
+from affect_kernel import AppraisalResult, CompanionState
 
 
 def test_appraisal_result_emotion_mappings_are_defensive_and_immutable() -> None:

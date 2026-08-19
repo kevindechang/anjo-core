@@ -7,17 +7,17 @@ from typing import cast
 
 import pytest
 
-from anjo_core import DEFAULT_ENGINE_LIMITS, EngineLimits
-from anjo_core.adapters.memory import InMemoryStateStore, StaticMemoryRetriever
-from anjo_core.adapters.scripted import ScriptedModelAdapter
-from anjo_core.appraisal import (
+from affect_kernel import DEFAULT_ENGINE_LIMITS, EngineLimits
+from affect_kernel.adapters.memory import InMemoryStateStore, StaticMemoryRetriever
+from affect_kernel.adapters.scripted import ScriptedModelAdapter
+from affect_kernel.appraisal import (
     AppraisalPolicyInput,
     AppraisalResult,
     appraise_turn,
     default_appraisal_policy,
 )
-from anjo_core.engine import CompanionEngine, GateErrorMode
-from anjo_core.models import (
+from affect_kernel.engine import CompanionEngine, GateErrorMode
+from affect_kernel.models import (
     CompanionState,
     GateInput,
     GateResult,
@@ -27,8 +27,8 @@ from anjo_core.models import (
     PADMood,
     RetrievalInput,
 )
-from anjo_core.prompt import PromptPolicy
-from anjo_core.protocols import AppraisalPolicy, MemoryRetriever, ModelAdapter
+from affect_kernel.prompt import PromptPolicy
+from affect_kernel.protocols import AppraisalPolicy, MemoryRetriever, ModelAdapter
 
 
 def test_full_pipeline_streams_and_persists_post_appraisal_state() -> None:

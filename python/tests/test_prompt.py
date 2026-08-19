@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from anjo_core.affect import TurnShapePolicy, turn_shape_directive
-from anjo_core.models import CompanionState, MemoryCandidate, Message, PADMood, RankedMemory
-from anjo_core.prompt import (
+from affect_kernel.affect import TurnShapePolicy, turn_shape_directive
+from affect_kernel.models import CompanionState, MemoryCandidate, Message, PADMood, RankedMemory
+from affect_kernel.prompt import (
     PromptInputs,
     PromptPolicy,
     build_system_prompt,

@@ -16,7 +16,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import replace
 
-from anjo_core import (
+from affect_kernel import (
     AppraisalPolicyInput,
     AppraisalResult,
     CompanionEngine,
@@ -31,7 +31,7 @@ from anjo_core import (
     decay_mood,
     decay_occ_carry,
 )
-from anjo_core.adapters import InMemoryStateStore, ScriptedModelAdapter
+from affect_kernel.adapters import InMemoryStateStore, ScriptedModelAdapter
 
 # A faction-standing ladder. These rungs have nothing to do with the reference
 # conversational ladder, and strict mode means a typo'd standing raises instead

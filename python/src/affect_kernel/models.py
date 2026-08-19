@@ -1,4 +1,4 @@
-"""Small, serializable data contracts for the companion kernel."""
+"""Small, serializable data contracts for the affect kernel."""
 
 from __future__ import annotations
 

@@ -8,14 +8,14 @@ from typing import Any
 
 import pytest
 
-from anjo_core.affect import (
+from affect_kernel.affect import (
     apply_length_factor,
     decoding_params,
     is_ambivalent,
     length_factor,
     mood_octant,
 )
-from anjo_core.appraisal import (
+from affect_kernel.appraisal import (
     appraise_input,
     appraise_turn,
     baseline_weight,
@@ -26,7 +26,7 @@ from anjo_core.appraisal import (
     stage_int,
     state_emotions,
 )
-from anjo_core.models import (
+from affect_kernel.models import (
     AppraisalGoals,
     AttachmentState,
     CognitionState,
@@ -35,8 +35,8 @@ from anjo_core.models import (
     Personality,
     RelationshipState,
 )
-from anjo_core.retrieval import candidate_score, mood_congruence_factor, recency_weight
-from anjo_core.surfacing import build_presence_vector, clean_text, presence_line
+from affect_kernel.retrieval import candidate_score, mood_congruence_factor, recency_weight
+from affect_kernel.surfacing import build_presence_vector, clean_text, presence_line
 
 _REPOSITORY_GOLDEN = (
     Path(__file__).resolve().parents[2] / "shared" / "golden" / "kernel_golden.json"

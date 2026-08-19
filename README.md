@@ -1,6 +1,6 @@
-# Anjo Core
+# Affect Kernel
 
-[![CI](https://github.com/kevindechang/anjo-core/actions/workflows/ci.yml/badge.svg)](https://github.com/kevindechang/anjo-core/actions/workflows/ci.yml)
+[![CI](https://github.com/kevindechang/affect-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/kevindechang/affect-kernel/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](python/)
 [![Node](https://img.shields.io/badge/node-20%2B-blue.svg)](typescript/)
@@ -57,10 +57,10 @@ disposition: wary | presence: on watch (posted)
 
 ## Why this exists
 
-Memory libraries answer *what should this agent recall?* Agent frameworks answer
-*how should this agent run?* Anjo Core covers the layer between them: *how should
-an experience change the character, and what part of that change should become
-perceptible?*
+Memory libraries answer *what should this agent recall?* Agent frameworks
+answer *how should this agent run?* Affect Kernel covers the layer between
+them: *how should an experience change the character, and what part of that
+change should become perceptible?*
 
 | | Focus | Relationship to this project |
 |---|---|---|
@@ -100,8 +100,8 @@ npm test --prefix typescript
 ```
 
 > Registry releases are not published yet. Once `v0.1.0` is tagged, the
-> [release workflow](.github/workflows/release.yml) publishes `anjo-core` to PyPI
-> via trusted publishing and `@anjo-ai/core` to npm with provenance.
+> [release workflow](.github/workflows/release.yml) publishes `affect-kernel` to PyPI
+> via trusted publishing and `affect-kernel` to npm with provenance.
 
 ## Core contracts
 

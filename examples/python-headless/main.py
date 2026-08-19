@@ -6,14 +6,14 @@ import asyncio
 import json
 from datetime import UTC, datetime, timedelta
 
-from anjo_core import (
+from affect_kernel import (
     CompanionEngine,
     CompanionState,
     GateResult,
     MemoryCandidate,
     PADMood,
 )
-from anjo_core.adapters import (
+from affect_kernel.adapters import (
     InMemoryStateStore,
     ScriptedModelAdapter,
     StaticMemoryRetriever,

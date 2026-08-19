@@ -1,9 +1,9 @@
 # Provenance and release boundary
 
-Anjo Core is a clean extraction of reusable deterministic behavior developed for
-the Anjo application. The public repository starts with new history; it does not
-inherit the application repository's commits, deployment material, product
-configuration, prompts, or user data.
+Affect Kernel is a clean extraction of reusable deterministic behavior
+developed for the Anjo application. The public repository starts with new
+history; it does not inherit the application repository's commits, deployment
+material, product configuration, prompts, or user data.
 
 ## Included material
 

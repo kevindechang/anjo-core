@@ -8,14 +8,14 @@ PYTHON_BIN="${PYTHON_BIN:-python3}"
 import sys
 if sys.version_info < (3, 11):
     raise SystemExit(
-        f"Anjo Core requires Python 3.11+; {sys.executable} is "
+        f"Affect Kernel requires Python 3.11+; {sys.executable} is "
         f"{sys.version_info.major}.{sys.version_info.minor}"
     )
 '
 node -e '
 const major = Number(process.versions.node.split(".")[0]);
 if (major < 20) {
-  console.error(`Anjo Core requires Node.js 20+; found ${process.versions.node}`);
+  console.error(`Affect Kernel requires Node.js 20+; found ${process.versions.node}`);
   process.exit(1);
 }
 '

@@ -1,4 +1,4 @@
-title = "Anjo Core secret-scanning policy"
+title = "Affect Kernel secret-scanning policy"
 
 [extend]
 useDefault = true

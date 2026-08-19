@@ -1,4 +1,4 @@
-"""Public API for the dependency-free Anjo companion kernel."""
+"""Public API for the dependency-free affect kernel."""
 
 from .affect import (
     TurnShapePolicy,

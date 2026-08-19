@@ -1,4 +1,4 @@
-# anjo-core for Python
+# affect-kernel for Python
 
 This directory contains the zero-runtime-dependency Python implementation of the
 deterministic affect-state kernel for long-lived AI characters. Install it with

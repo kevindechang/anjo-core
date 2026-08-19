@@ -13,7 +13,7 @@ import pickle
 
 import pytest
 
-from anjo_core import (
+from affect_kernel import (
     AppraisalGoals,
     AttachmentState,
     CompanionState,
@@ -26,7 +26,7 @@ from anjo_core import (
     StageLadder,
     TurnShapePolicy,
 )
-from anjo_core.models import FrozenMapping
+from affect_kernel.models import FrozenMapping
 
 ROUND_TRIP_CASES = [
     pytest.param(FrozenMapping({"joy": 0.5}), id="frozen-mapping"),

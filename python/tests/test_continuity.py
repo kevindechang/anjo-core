@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from anjo_core import (
+from affect_kernel import (
     AppraisalPolicyInput,
     CompanionState,
     PADMood,

@@ -1,6 +1,6 @@
 # Architecture
 
-Anjo Core is a deterministic state-to-surface kernel inside an injected
+Affect Kernel is a deterministic state-to-surface kernel inside an injected
 orchestration shell. The kernel is the product boundary; the engine is a
 credential-free reference integration.
 

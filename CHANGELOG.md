@@ -16,10 +16,15 @@ to a pinned vector is called out here.
 First public release: the deterministic kernel extracted from
 [Anjo](https://anjo.love) and generalized beyond conversation.
 
+The repository was briefly public as `anjo-core` before this release and was
+renamed to `affect-kernel` to name the library by what it does rather than by
+the application it came from. No version was ever tagged or published under the
+old name, so no installed artifact is affected.
+
 ### Added
 
-- Behaviorally aligned Python (`anjo-core`) and TypeScript (`@anjo-ai/core`)
-  kernels with no runtime dependencies.
+- Behaviorally aligned Python and TypeScript kernels with no runtime
+  dependencies, both published as `affect-kernel`.
 - OCC-inspired appraisal, PAD mood dynamics, and Big Five N/E-conditioned affect
   inertia.
 - Bounded memory relevance, recency, salience, and mood-congruence scoring.
@@ -59,5 +64,5 @@ First public release: the deterministic kernel extracted from
   construction step, so a lower-case declaration silently failed to suppress
   there while working in Python.
 
-[Unreleased]: https://github.com/kevindechang/anjo-core/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/kevindechang/anjo-core/releases/tag/v0.1.0
+[Unreleased]: https://github.com/kevindechang/affect-kernel/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/kevindechang/affect-kernel/releases/tag/v0.1.0

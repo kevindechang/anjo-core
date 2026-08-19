@@ -12,7 +12,7 @@ fi
 "$PYTHON_BIN" -m pytest \
   "$REPO_DIR/python/tests" \
   "$REPO_DIR/scripts/tests" \
-  --cov=anjo_core \
+  --cov=affect_kernel \
   --cov-branch \
   --cov-report=term-missing
 "$PYTHON_BIN" -m ruff check \

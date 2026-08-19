@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from anjo_core import (
+from affect_kernel import (
     DEFAULT_STAGE_LADDER,
     CompanionState,
     ExpectationCues,
@@ -30,7 +30,7 @@ from anjo_core import (
     stage_int,
     turn_shape_directive,
 )
-from anjo_core.appraisal import AppraisalPolicyInput
+from affect_kernel.appraisal import AppraisalPolicyInput
 
 FACTION_LADDER = StageLadder(
     stages=("hostile", "wary", "neutral", "friendly", "sworn"),

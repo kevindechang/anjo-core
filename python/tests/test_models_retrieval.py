@@ -6,9 +6,9 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from anjo_core.affect import TurnShapePolicy
-from anjo_core.models import CompanionState, MemoryCandidate, RelationshipState
-from anjo_core.retrieval import (
+from affect_kernel.affect import TurnShapePolicy
+from affect_kernel.models import CompanionState, MemoryCandidate, RelationshipState
+from affect_kernel.retrieval import (
     candidate_score,
     recency_weight,
     similarity_from_distance,
