@@ -21,8 +21,9 @@ Every constant in the tables below carries one of three tags.
 | **B** — bounded choice | Arbitrary. The only load-bearing property is that the value is finite, stable, and inside a stated bound. A different value in the same range would be equally defensible. |
 
 There are more **P** and **B** rows than **L** rows. That is the honest state of
-the artifact, and it is the reason [the evaluation](../bench/README.md) matters
-more than the citation list.
+the artifact, and it is the reason an evaluation matters more than the
+citation list. There is no evaluation yet; see "what would falsify these
+choices" below for the specific results that would change this code.
 
 ## 1. The state space is PAD, not a discrete emotion set
 
@@ -97,7 +98,7 @@ licenses that N's effect is exactly twice E's.
 |---|---|---|---|
 | Sign of the N term | positive | **L** | Kuppens, Allen & Sheeber 2010. |
 | Sign of the E term | negative | **L** | Larsen & Ketelaar 1991. |
-| Base inertia | `0.80` | **P** | Sets the per-turn half-life; see [the sensitivity analysis](../analysis/README.md). |
+| Base inertia | `0.80` | **P** | Sets the per-turn half-life. At the default personality (N `0.15`, E `0.45`) `phi` is `0.735`, a mood half-life of 2.25 turns. |
 | N coefficient | `0.20` | **P** | |
 | E coefficient | `0.10` | **P** | |
 | Clamp | `[0.62, 0.92]` | **B** | Keeps mood neither frozen nor amnesiac at extreme traits. |
@@ -286,8 +287,8 @@ Concrete results that should change the code, not just the prose:
    consistency metric when wired into inertia, §3's restriction to N and E is a
    loss, not a simplification.
 
-Results for (2), (3), and (4) are the first three entries in the
-[benchmark backlog](../bench/README.md).
+None of these has been run. Until they are, treat every **P** row as an
+unfalsified design choice rather than a result.
 
 ## References
 
