@@ -18,17 +18,22 @@ fi
 "$PYTHON_BIN" -m ruff check \
   "$REPO_DIR/python" \
   "$REPO_DIR/scripts" \
-  "$REPO_DIR/examples"
+  "$REPO_DIR/examples" \
+  "$REPO_DIR/bench"
 "$PYTHON_BIN" -m ruff format --check \
   "$REPO_DIR/python" \
   "$REPO_DIR/scripts" \
-  "$REPO_DIR/examples"
+  "$REPO_DIR/examples" \
+  "$REPO_DIR/bench"
 "$PYTHON_BIN" -m mypy \
   --config-file "$REPO_DIR/python/pyproject.toml" \
   "$REPO_DIR/python/src"
 # The examples are executable documentation; each asserts its own invariants.
 "$PYTHON_BIN" "$REPO_DIR/examples/python-headless/main.py" > /dev/null
 "$PYTHON_BIN" "$REPO_DIR/examples/game-npc/main.py" > /dev/null
+# The benchmark report is generated. Fail if the checked-in numbers have drifted
+# from what the code produces, so documentation can never quote stale results.
+"$PYTHON_BIN" "$REPO_DIR/bench/run.py" --check
 npm test --prefix "$REPO_DIR/typescript"
 npm run typecheck --prefix "$REPO_DIR/typescript"
 npm run test:coverage --prefix "$REPO_DIR/typescript"

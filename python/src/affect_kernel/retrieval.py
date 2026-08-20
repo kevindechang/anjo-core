@@ -91,11 +91,11 @@ def recency_weight(
 ) -> float:
     """Return a linear freshness weight with a 0.4 floor and 0.7 parse fallback.
 
-    Linear-to-a-floor is the least defensible curve in the module: human
-    forgetting is better described by a power law (Wixted & Ebbesen 1991) and
-    the closest published comparable decays exponentially. It is kept because
-    it is trivially inspectable and because the floor dominates in practice.
-    See ``docs/foundations.md`` section 6.
+    Human forgetting is better described by a power law (Wixted & Ebbesen 1991)
+    and the closest published comparable decays exponentially, so this curve is
+    the one most obviously open to challenge. It survived that challenge: at a
+    matched 30-day half-life it out-ranked both alternatives in ``bench/``. See
+    ``docs/foundations.md`` section 6.
     """
     reference = _require_aware(now or datetime.now(UTC), "now")
     tuning = weights or DEFAULT_RETRIEVAL_WEIGHTS

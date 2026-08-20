@@ -88,6 +88,35 @@ application event
   → atomic persistence
 ```
 
+## Does it actually work?
+
+Partly. `bench/` is a seeded, dependency-free retrieval benchmark that tests the
+scorer against plain similarity and against the additive form used by Generative
+Agents, across five regimes. It reports where the kernel loses:
+
+```bash
+python bench/run.py     # regenerated and drift-checked in CI
+```
+
+| Finding | Result |
+|---|---|
+| Helps when its assumptions hold | **+0.415 MRR** over similarity-only |
+| Hurts when they don't | **−0.175 MRR** — the machinery is not free |
+| Additive form (Park et al.) beats multiplicative | **+0.111 MRR** against us |
+| …but the cause is the weight, not the shape | `significance_weight` `0.03`→`1.0` lifts MRR `0.858`→`0.960` |
+| Linear recency vs exponential and power-law | linear wins by `0.009` / `0.044` at matched half-life |
+| Mood congruence, in a regime built to favour it | **+0.012 MRR** — barely earns its place |
+
+The most useful thing the benchmark found is a bug in our own documentation:
+`foundations.md` called the linear recency curve "the least defensible" choice
+in the module, and the evidence says otherwise. That claim has been retracted.
+
+**These are synthetic corpora with machine-assigned ground truth**, and the
+README's larger claim — that a deterministic kernel holds character state better
+than a prompt-only persona — is **not tested and remains unsupported**. Read
+[the limitations](bench/README.md#limitations--read-before-quoting-any-number)
+before quoting any of this.
+
 ## Install
 
 Neither runtime has a production dependency. Install from a checkout:
@@ -201,6 +230,7 @@ python/              Python package and tests
 typescript/          TypeScript package and tests
 examples/            credential-free reference programs
 docs/                architecture, boundaries, and design principles
+bench/               seeded retrieval benchmark and its generated results
 scripts/             public-boundary and repository checks
 ```
 

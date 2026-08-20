@@ -25,6 +25,20 @@ to a pinned vector is called out here.
   or arbitrary-but-bounded — with the departures from the cited work stated,
   and a list of results that would falsify the current choices.
 - `CITATION.cff`, validated against CFF schema 1.2.0.
+- `bench/`: a seeded, dependency-free retrieval benchmark over five regimes,
+  comparing the scorer against plain similarity and against the additive form
+  used by Generative Agents. `bench/RESULTS.md` is generated and drift-checked
+  in CI, so no document can quote a stale number. It reports results against the
+  current design, including that the additive form wins wherever salience
+  carries signal and that mood congruence is worth +0.012 MRR in a regime built
+  to favour it.
+
+### Fixed
+
+- Retracted a claim in `docs/foundations.md` and in the `recency_weight`
+  docstring that linear-to-a-floor recency was "the least defensible" curve in
+  the module. At a matched 30-day half-life it out-ranks both the exponential
+  and the power-law curve.
 
 ### Changed
 

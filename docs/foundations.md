@@ -21,9 +21,9 @@ Every constant in the tables below carries one of three tags.
 | **B** — bounded choice | Arbitrary. The only load-bearing property is that the value is finite, stable, and inside a stated bound. A different value in the same range would be equally defensible. |
 
 There are more **P** and **B** rows than **L** rows. That is the honest state of
-the artifact, and it is the reason an evaluation matters more than the
-citation list. There is no evaluation yet; see "what would falsify these
-choices" below for the specific results that would change this code.
+the artifact, and it is the reason [the evaluation](../bench/README.md) matters
+more than the citation list. Three of the five falsification items below have
+now been run; two have not, and are marked as such.
 
 ## 1. The state space is PAD, not a discrete emotion set
 
@@ -197,9 +197,14 @@ published comparable.
 2. **Linear recency, not exponential.** Park et al. decay recency
    exponentially (`0.995^hours`). Human forgetting is better described by a
    power law than by either shape [Wixted & Ebbesen 1991]. Ours is linear to a
-   floor — the least defensible of the three, chosen because it is trivially
-   inspectable and because the `0.40` floor matters more in practice than the
-   curve between.
+   floor, chosen because it is trivially inspectable and because the `0.40`
+   floor matters more in practice than the curve between.
+
+   An earlier revision of this document called the linear curve "the least
+   defensible of the three". [The benchmark](../bench/README.md) does not
+   support that: at a matched 30-day half-life it beats the exponential curve by
+   0.009 MRR and the power-law curve by 0.044. The claim was retracted rather
+   than quietly softened.
 
 The rehearsal term is motivated by the testing effect — retrieval practice
 strengthens later retrieval [Roediger & Karpicke 2006] — but `0.006 × ln(1+n)`
@@ -287,8 +292,24 @@ Concrete results that should change the code, not just the prose:
    consistency metric when wired into inertia, §3's restriction to N and E is a
    loss, not a simplification.
 
-None of these has been run. Until they are, treat every **P** row as an
-unfalsified design choice rather than a result.
+Items (2), (3), and (4) have been run — see [the benchmark](../bench/README.md)
+and its [results](../bench/RESULTS.md):
+
+- **(2) is answered, against the prediction.** Linear-to-a-floor recency is not
+  the weak point; at matched half-life it edges out both alternatives.
+- **(3) is answered, against the current design.** Park et al.'s additive form
+  beats the multiplicative form wherever salience carries signal — but the
+  composition is not the cause. Significance enters this scorer at weight
+  `0.03` and Park's at `1.0`; raising that single parameter closes almost the
+  whole gap (MRR 0.858 → 0.960 against 0.968) with the multiplicative form
+  untouched. **The salience term is underpowered, not misshapen**, and
+  `significance_weight` is the constant with the strongest case for changing.
+- **(4) is answered weakly.** In a regime built to favour it, mood congruence is
+  worth +0.012 MRR. It does not hurt and it does not earn its asymmetry.
+
+Items (1) and (5) have **not** been run: both need affect trajectories with
+external ground truth this repository does not have. Treat every **P** row not
+covered above as an unfalsified design choice rather than a result.
 
 ## References
 
