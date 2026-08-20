@@ -5,8 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 
 from .models import (
+    AffectState,
     CognitionState,
-    CompanionState,
     PresenceAffect,
     PresenceRelationship,
     PresenceVector,
@@ -97,7 +97,7 @@ def presence_line(
 
 
 def build_presence_vector(
-    state: CompanionState,
+    state: AffectState,
     cognition: CognitionState | None = None,
     *,
     labels: PresenceLabels | None = None,

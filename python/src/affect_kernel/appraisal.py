@@ -11,7 +11,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field, replace
 from math import isfinite
 
-from .models import AppraisalGoals, CompanionState, PADMood, Personality, freeze_mapping
+from .models import AffectState, AppraisalGoals, PADMood, Personality, freeze_mapping
 
 DEFAULT_STAGES: tuple[str, ...] = (
     "stranger",
@@ -522,13 +522,13 @@ def _validated_emotion_mapping(
 
 @dataclass(frozen=True, slots=True)
 class AppraisalResult:
-    state: CompanionState
+    state: AffectState
     active_emotions: Mapping[str, float]
     occ_carry: Mapping[str, float]
 
     def __post_init__(self) -> None:
-        if not isinstance(self.state, CompanionState):
-            raise TypeError("state must be CompanionState")
+        if not isinstance(self.state, AffectState):
+            raise TypeError("state must be AffectState")
         active = _validated_emotion_mapping(self.active_emotions, "active_emotions")
         carry = _validated_emotion_mapping(self.occ_carry, "occ_carry")
         if carry != self.state.occ_carry:
@@ -541,14 +541,14 @@ class AppraisalResult:
 class AppraisalPolicyInput:
     """Normalized event and state supplied to a synchronous appraisal policy."""
 
-    state: CompanionState
+    state: AffectState
     intent: str
     message: str
     expectation: str
 
     def __post_init__(self) -> None:
-        if not isinstance(self.state, CompanionState):
-            raise TypeError("state must be CompanionState")
+        if not isinstance(self.state, AffectState):
+            raise TypeError("state must be AffectState")
         if not isinstance(self.intent, str) or not self.intent:
             raise ValueError("intent must be a non-empty string")
         if not isinstance(self.message, str):
@@ -558,7 +558,7 @@ class AppraisalPolicyInput:
 
 
 def appraise_turn(
-    state: CompanionState,
+    state: AffectState,
     intent: str,
     *,
     occ_carry: Mapping[str, float] | None = None,

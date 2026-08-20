@@ -7,7 +7,7 @@ from datetime import UTC, datetime, timedelta
 import pytest
 
 from affect_kernel.affect import TurnShapePolicy
-from affect_kernel.models import CompanionState, MemoryCandidate, RelationshipState
+from affect_kernel.models import AffectState, MemoryCandidate, RelationshipState
 from affect_kernel.retrieval import (
     candidate_score,
     recency_weight,
@@ -15,9 +15,9 @@ from affect_kernel.retrieval import (
 )
 
 
-def test_companion_state_mappings_are_validated_and_immutable() -> None:
+def test_affect_state_mappings_are_validated_and_immutable() -> None:
     source = {"joy": 0.4}
-    state = CompanionState(occ_carry=source)
+    state = AffectState(occ_carry=source)
     source["joy"] = 0.9
 
     assert state.occ_carry["joy"] == 0.4
@@ -27,7 +27,7 @@ def test_companion_state_mappings_are_validated_and_immutable() -> None:
     with pytest.raises(TypeError):
         state.occ_carry.clear()  # type: ignore[attr-defined]
     with pytest.raises(ValueError, match="occ_carry"):
-        CompanionState(occ_carry={"joy": float("nan")})
+        AffectState(occ_carry={"joy": float("nan")})
 
 
 @pytest.mark.parametrize("stage", [3, True, ["friend"]])
@@ -48,9 +48,9 @@ def test_relationship_session_count_must_be_an_integer(session_count: object) ->
         RelationshipState(session_count=session_count)  # type: ignore[arg-type]
 
 
-def test_companion_expectation_must_be_a_string() -> None:
+def test_affect_state_expectation_must_be_a_string() -> None:
     with pytest.raises(TypeError, match="expectation"):
-        CompanionState(expectation=3)  # type: ignore[arg-type]
+        AffectState(expectation=3)  # type: ignore[arg-type]
 
 
 def test_turn_shape_policy_mapping_is_validated_and_immutable() -> None:
@@ -154,4 +154,4 @@ def test_untrusted_source_fields_are_bounded(field: str, value: str) -> None:
         if field == "text":
             MemoryCandidate(id="m", text=value, distance=0.5)
         else:
-            CompanionState(carried_thought=value)
+            AffectState(carried_thought=value)

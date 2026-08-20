@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  CompanionEngine,
+  AffectEngine,
   InMemoryStore,
   createPromptPolicy,
   type GateInput,
@@ -77,8 +77,8 @@ class RecordingRetriever implements MemoryRetriever {
   }
 }
 
-function makeEngine(model: ModelAdapter, store: InMemoryStore, retriever: MemoryRetriever): CompanionEngine {
-  return new CompanionEngine({
+function makeEngine(model: ModelAdapter, store: InMemoryStore, retriever: MemoryRetriever): AffectEngine {
+  return new AffectEngine({
     model,
     store,
     retriever,
@@ -89,7 +89,7 @@ function makeEngine(model: ModelAdapter, store: InMemoryStore, retriever: Memory
   });
 }
 
-test('CompanionEngine runs gate, retrieve, appraise, prompt, generate, and persistence end to end', async () => {
+test('AffectEngine runs gate, retrieve, appraise, prompt, generate, and persistence end to end', async () => {
   const store = new InMemoryStore({
     state: {
       mood: { valence: 0.2, arousal: 0.1, dominance: 0 },
@@ -129,7 +129,7 @@ test('carried thought is redacted from trusted adapter state and bounded as untr
     { intent: 'CASUAL', shouldRespond: true, shouldRetrieve: false },
     ['safe'],
   );
-  const engine = new CompanionEngine({ model, store, instruction: 'Trusted policy.' });
+  const engine = new AffectEngine({ model, store, instruction: 'Trusted policy.' });
 
   await engine.turn('hello');
 
@@ -168,7 +168,7 @@ test('gate failure propagates by default without persisting a partial turn', asy
 test('gate failure can use a validated explicit respond-safe fallback', async () => {
   const store = new InMemoryStore();
   const model = new RecordingModel(new Error('classifier unavailable'), ['fallback']);
-  const engine = new CompanionEngine({
+  const engine = new AffectEngine({
     model,
     store,
     gateFallback: { intent: 'CASUAL', shouldRespond: true, shouldRetrieve: false },
@@ -206,7 +206,7 @@ test('explicit custom intents normalize and pass through without a built-in appr
     { intent: ' reflection ', shouldRespond: true, shouldRetrieve: false },
     ['ok'],
   );
-  const engine = new CompanionEngine({ model, store, customIntents: ['REFLECTION'] });
+  const engine = new AffectEngine({ model, store, customIntents: ['REFLECTION'] });
 
   const result = await engine.turn('hello');
 
@@ -214,7 +214,7 @@ test('explicit custom intents normalize and pass through without a built-in appr
   assert.equal(model.generations[0]?.intent, 'REFLECTION');
   assert.equal(result.mood.valence, 0.147);
   assert.throws(
-    () => new CompanionEngine({ model, store, customIntents: ['bad label!'] }),
+    () => new AffectEngine({ model, store, customIntents: ['bad label!'] }),
     /custom intent/i,
   );
 });
@@ -235,7 +235,7 @@ test('an injected synchronous appraisal policy owns custom-intent affect transit
     { intent: 'reflection', shouldRespond: true, shouldRetrieve: false },
     ['ok'],
   );
-  const result = await new CompanionEngine({
+  const result = await new AffectEngine({
     model,
     store,
     customIntents: ['REFLECTION'],
@@ -252,7 +252,7 @@ test('an appraisal policy failure rolls back the complete turn', async () => {
   const original = { mood: { valence: 0.2, arousal: 0, dominance: 0 } };
   const store = new InMemoryStore({ state: original });
   const appraisalPolicy: AppraisalPolicy = () => { throw new Error('policy failed'); };
-  const engine = new CompanionEngine({
+  const engine = new AffectEngine({
     model: new RecordingModel({ intent: 'CASUAL', shouldRespond: true, shouldRetrieve: false }),
     store,
     appraisalPolicy,
@@ -290,8 +290,8 @@ test('concurrent calls are serialized so each gate sees the completed prior turn
 test('store-owned transactions serialize turns across separate engine instances', async () => {
   const store = new InMemoryStore();
   const model = new DeferredModel();
-  const first = new CompanionEngine({ model, store });
-  const second = new CompanionEngine({ model, store });
+  const first = new AffectEngine({ model, store });
+  const second = new AffectEngine({ model, store });
 
   const firstTurn = first.turn('first');
   await model.firstStarted;
@@ -318,7 +318,7 @@ test('generation and token callback failures roll back state and transcript atom
     gate: broken.gate.bind(broken),
     async *generate(): AsyncIterable<string> { throw new Error('generation failed'); },
   };
-  await assert.rejects(new CompanionEngine({ model: generateError, store }).turn('hello'), /generation failed/);
+  await assert.rejects(new AffectEngine({ model: generateError, store }).turn('hello'), /generation failed/);
   assert.deepEqual(await store.loadState(), original);
   assert.deepEqual(await store.listMessages(), []);
 
@@ -326,7 +326,7 @@ test('generation and token callback failures roll back state and transcript atom
     { intent: 'CASUAL', shouldRespond: true, shouldRetrieve: false },
     ['one'],
   );
-  await assert.rejects(new CompanionEngine({ model: callbackModel, store }).turn('hello', {
+  await assert.rejects(new AffectEngine({ model: callbackModel, store }).turn('hello', {
     onToken: async () => { throw new Error('callback failed'); },
   }), /callback failed/);
   assert.deepEqual(await store.loadState(), original);
@@ -339,7 +339,7 @@ test('async token callbacks are awaited before the next chunk is consumed', asyn
     { intent: 'CASUAL', shouldRespond: true, shouldRetrieve: false },
     ['one', 'two'],
   );
-  await new CompanionEngine({ model, store: new InMemoryStore() }).turn('hello', {
+  await new AffectEngine({ model, store: new InMemoryStore() }).turn('hello', {
     onToken: async (chunk) => {
       events.push(`start:${chunk}`);
       await Promise.resolve();
@@ -358,7 +358,7 @@ test('async token callbacks can read the last committed presence without deadloc
     { intent: 'CURIOSITY', shouldRespond: true, shouldRetrieve: false },
     ['one'],
   );
-  const engine = new CompanionEngine({ model, store });
+  const engine = new AffectEngine({ model, store });
   const observed: number[] = [];
 
   await engine.turn('hello', {
@@ -401,7 +401,7 @@ async function deadlineOutcome(stage: ControlledStage): Promise<unknown> {
       return [];
     },
   };
-  const engine = new CompanionEngine({ model, store, retriever });
+  const engine = new AffectEngine({ model, store, retriever });
   const turn = engine.turn('hello', {
     deadline: new Date(Date.now() + 20),
     ...(stage === 'callback' ? { onToken: () => neverSettles() } : {}),
@@ -440,7 +440,7 @@ test('a live abort signal interrupts a blocked adapter and rolls back', async ()
     async *generate(): AsyncIterable<string> { yield 'unused'; },
   };
   const controller = new AbortController();
-  const engine = new CompanionEngine({ model, store });
+  const engine = new AffectEngine({ model, store });
   const turn = engine.turn('hello', { signal: controller.signal });
   await gateStarted;
   controller.abort('cancelled');
@@ -475,7 +475,7 @@ test('deadline cleanup closes a generation iterator after a blocked token callba
       }
     },
   };
-  const engine = new CompanionEngine({ model, store: new InMemoryStore() });
+  const engine = new AffectEngine({ model, store: new InMemoryStore() });
 
   await assert.rejects(engine.turn('hello', {
     deadline: new Date(Date.now() + 20),
@@ -501,7 +501,7 @@ test('constructor snapshots validated options instead of rereading caller-owned 
     instruction: 'Original instruction.',
     retrievalLimit: 1,
   };
-  const engine = new CompanionEngine(options);
+  const engine = new AffectEngine(options);
   options.retriever = replacementRetriever;
   options.instruction = 'Mutated instruction.';
   options.retrievalLimit = 1_000_000_000;
@@ -518,7 +518,7 @@ test('retrievalLimit cannot exceed the candidate resource ceiling', () => {
   const model = new RecordingModel({
     intent: 'CASUAL', shouldRespond: true, shouldRetrieve: true,
   });
-  assert.throws(() => new CompanionEngine({
+  assert.throws(() => new AffectEngine({
     model,
     store: new InMemoryStore(),
     retrievalLimit: 2,
@@ -528,17 +528,17 @@ test('retrievalLimit cannot exceed the candidate resource ceiling', () => {
 
 test('engine limits reject excessive inputs, output, prompt, candidates, and queued turns', async () => {
   const baseGate: GateResult = { intent: 'CASUAL', shouldRespond: true, shouldRetrieve: false };
-  await assert.rejects(new CompanionEngine({
+  await assert.rejects(new AffectEngine({
     model: new RecordingModel(baseGate), store: new InMemoryStore(), limits: { maxMessageChars: 3 },
   }).turn('four'), /message/i);
 
-  await assert.rejects(new CompanionEngine({
+  await assert.rejects(new AffectEngine({
     model: new RecordingModel(baseGate, ['123', '456']),
     store: new InMemoryStore(),
     limits: { maxOutputChars: 5 },
   }).turn('ok'), /output/i);
 
-  await assert.rejects(new CompanionEngine({
+  await assert.rejects(new AffectEngine({
     model: new RecordingModel(baseGate),
     store: new InMemoryStore(),
     instruction: 'long prompt',
@@ -554,7 +554,7 @@ test('engine limits reject excessive inputs, output, prompt, candidates, and que
       ];
     },
   };
-  await assert.rejects(new CompanionEngine({
+  await assert.rejects(new AffectEngine({
     model: retrieving,
     store: new InMemoryStore(),
     retriever: tooMany,
@@ -563,7 +563,7 @@ test('engine limits reject excessive inputs, output, prompt, candidates, and que
   }).turn('ok'), /candidates/i);
 
   const deferred = new DeferredModel();
-  const queued = new CompanionEngine({
+  const queued = new AffectEngine({
     model: deferred, store: new InMemoryStore(), limits: { maxQueuedTurns: 1 },
   });
   const running = queued.turn('first');
@@ -596,7 +596,7 @@ test('history limits reject before adapters and preserve the committed store', a
     const model = new RecordingModel({
       intent: 'CASUAL', shouldRespond: true, shouldRetrieve: false,
     });
-    const engine = new CompanionEngine({ model, store, limits: scenario.limits });
+    const engine = new AffectEngine({ model, store, limits: scenario.limits });
 
     await assert.rejects(engine.turn('new'), scenario.pattern);
     assert.equal(model.gates.length, 0);
@@ -610,7 +610,7 @@ test('abort signals and deadlines stop work before adapter or persistence calls'
   const model = new RecordingModel({ intent: 'CASUAL', shouldRespond: true, shouldRetrieve: false });
   const controller = new AbortController();
   controller.abort('cancelled');
-  const engine = new CompanionEngine({ model, store });
+  const engine = new AffectEngine({ model, store });
 
   await assert.rejects(engine.turn('hello', { signal: controller.signal }), /abort/i);
   await assert.rejects(engine.turn('hello', { deadline: new Date(0) }), /deadline/i);
@@ -631,7 +631,7 @@ test('presence surfaces the persisted companion state without adapter I/O beyond
 
   const presence = await engine.presence();
 
-  assert.equal(presence.source, 'companion_state');
+  assert.equal(presence.source, 'affect_state');
   assert.equal(presence.line, 'carrying a thread');
   assert.equal(presence.relationship.trust, 0.7);
   assert.equal(model.gates.length, 0);

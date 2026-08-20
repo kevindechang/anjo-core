@@ -17,10 +17,10 @@ import asyncio
 from dataclasses import replace
 
 from affect_kernel import (
+    AffectEngine,
+    AffectState,
     AppraisalPolicyInput,
     AppraisalResult,
-    CompanionEngine,
-    CompanionState,
     GateResult,
     PADMood,
     Personality,
@@ -136,8 +136,8 @@ def faction_appraisal_policy(request: AppraisalPolicyInput) -> AppraisalResult:
     )
 
 
-def _npc_state() -> CompanionState:
-    return CompanionState(
+def _npc_state() -> AffectState:
+    return AffectState(
         mood=PADMood(0.0, 0.0, 0.1),
         # A gruff, disagreeable guard: low Agreeableness, high Neuroticism means
         # mood swings harder and settles slower.
@@ -167,7 +167,7 @@ async def main() -> None:
             ("...That was more than I'd have done. Go on, then.",),
         ],
     )
-    engine = CompanionEngine(
+    engine = AffectEngine(
         model=model,
         store=store,
         conversation_id=npc_id,

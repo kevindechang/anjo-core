@@ -1,5 +1,5 @@
-import type { CompanionState } from './contracts.js';
-import { createCompanionState } from './contracts.js';
+import type { AffectState } from './contracts.js';
+import { createAffectState } from './contracts.js';
 import { pyRound } from './internal/round.js';
 import { rstripPyWhitespace, splitPyWhitespace, stripPyWhitespace } from './internal/whitespace.js';
 
@@ -94,15 +94,15 @@ export interface PresenceVector {
     intentionality: boolean;
     curiosity: boolean;
   };
-  source: 'companion_state';
+  source: 'affect_state';
 }
 
 export function buildPresenceVector(
-  stateInput: CompanionState,
+  stateInput: AffectState,
   cognitionInput: CognitionState = {},
   labels: PresenceLabels = DEFAULT_PRESENCE_LABELS,
 ): PresenceVector {
-  const state = createCompanionState(stateInput);
+  const state = createAffectState(stateInput);
   const cognition: Required<CognitionState> = {
     reflectionPending: cognitionInput.reflectionPending ?? false,
     carriedThought: Boolean(cleanText(state.carriedThought, 300)),
@@ -138,6 +138,6 @@ export function buildPresenceVector(
       intentionality: cognition.intentionality,
       curiosity: cognition.curiosity,
     },
-    source: 'companion_state',
+    source: 'affect_state',
   };
 }

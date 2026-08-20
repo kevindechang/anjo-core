@@ -11,7 +11,7 @@ import pytest
 
 from affect_kernel import (
     DEFAULT_STAGE_LADDER,
-    CompanionState,
+    AffectState,
     ExpectationCues,
     PADMood,
     Personality,
@@ -90,7 +90,7 @@ class TestStageLadder:
         assert with_faction.valence != with_default.valence
 
     def test_appraise_turn_accepts_a_domain_ladder(self) -> None:
-        state = CompanionState(
+        state = AffectState(
             mood=PADMood(0.3, 0.1, 0.0),
             relationship=RelationshipState(stage="friendly"),
             baseline_valence=0.5,
@@ -162,7 +162,7 @@ class TestPresenceLabels:
 
     def test_a_domain_renders_its_own_presence_wording(self) -> None:
         labels = PresenceLabels(idle="on watch", idle_mode="posted")
-        vector = build_presence_vector(CompanionState(), labels=labels)
+        vector = build_presence_vector(AffectState(), labels=labels)
         assert vector.line == "on watch"
         assert vector.mode == "posted"
 
@@ -173,7 +173,7 @@ class TestPresenceLabels:
 
 def test_conversational_policy_factory_binds_a_domain_ladder() -> None:
     policy = conversational_appraisal_policy(ladder=FACTION_LADDER)
-    state = CompanionState(
+    state = AffectState(
         mood=PADMood(0.3, 0.1, 0.0),
         relationship=RelationshipState(stage="friendly"),
         baseline_valence=0.5,

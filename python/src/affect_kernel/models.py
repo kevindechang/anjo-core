@@ -73,7 +73,7 @@ class FrozenMapping(dict[_Key, _Value], Generic[_Key, _Value]):
 
         The default ``dict`` pickle protocol restores items by mutating a fresh
         instance, which this class refuses. Without this hook every state object
-        holding a frozen mapping -- ``CompanionState``, ``TurnShapePolicy``,
+        holding a frozen mapping -- ``AffectState``, ``TurnShapePolicy``,
         ``PromptPolicy`` -- is unpicklable, which breaks any ``StateStore`` that
         serializes with ``pickle`` and any use across a process boundary.
         """
@@ -174,7 +174,7 @@ class AttachmentState:
 
 
 @dataclass(frozen=True, slots=True)
-class CompanionState:
+class AffectState:
     """Complete deterministic working state; persistence remains adapter-owned."""
 
     mood: PADMood = field(default_factory=PADMood)
@@ -330,7 +330,7 @@ class PresenceVector:
     affect: PresenceAffect
     relationship: PresenceRelationship
     cognition: CognitionState
-    source: str = "companion_state"
+    source: str = "affect_state"
 
     def to_dict(self) -> dict[str, object]:
         """Return a JSON-compatible mapping with stable dataclass field names."""
@@ -341,14 +341,14 @@ class PresenceVector:
 class GateInput:
     message: str
     history: tuple[Message, ...]
-    state: CompanionState
+    state: AffectState
 
 
 @dataclass(frozen=True, slots=True)
 class RetrievalInput:
     query: str
     history: tuple[Message, ...]
-    state: CompanionState
+    state: AffectState
     limit: int
     now: datetime
 
@@ -358,7 +358,7 @@ class GenerateInput:
     message: str
     system_prompt: str
     history: tuple[Message, ...]
-    state: CompanionState
+    state: AffectState
     intent: str
     emotions: Mapping[str, float]
     decoding: DecodingParams

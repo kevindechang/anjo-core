@@ -7,7 +7,7 @@ from collections.abc import AsyncIterator, Mapping, Sequence
 from contextlib import asynccontextmanager
 from copy import deepcopy
 
-from ..models import CompanionState, MemoryCandidate, Message, RetrievalInput
+from ..models import AffectState, MemoryCandidate, Message, RetrievalInput
 
 
 class _InMemoryTransaction:
@@ -16,7 +16,7 @@ class _InMemoryTransaction:
         self._conversation_id = conversation_id
         self._committed = False
 
-    async def load_state(self) -> CompanionState | None:
+    async def load_state(self) -> AffectState | None:
         return deepcopy(self._store._states.get(self._conversation_id))
 
     async def load_transcript(self) -> tuple[Message, ...]:
@@ -25,13 +25,13 @@ class _InMemoryTransaction:
     async def commit(
         self,
         *,
-        state: CompanionState | None,
+        state: AffectState | None,
         messages: Sequence[Message],
     ) -> None:
         if self._committed:
             raise RuntimeError("a conversation transaction can only commit once")
-        if state is not None and not isinstance(state, CompanionState):
-            raise TypeError("state must be CompanionState or None")
+        if state is not None and not isinstance(state, AffectState):
+            raise TypeError("state must be AffectState or None")
         copied_messages = list(deepcopy(tuple(messages)))
         if not all(isinstance(message, Message) for message in copied_messages):
             raise TypeError("messages must contain only Message values")
@@ -53,7 +53,7 @@ class InMemoryStateStore:
     def __init__(
         self,
         *,
-        states: Mapping[str, CompanionState] | None = None,
+        states: Mapping[str, AffectState] | None = None,
         transcripts: Mapping[str, Sequence[Message]] | None = None,
     ) -> None:
         self._states = deepcopy(dict(states or {}))
@@ -71,11 +71,11 @@ class InMemoryStateStore:
         async with self._lock_for(conversation_id):
             yield _InMemoryTransaction(self, conversation_id)
 
-    async def load_state(self, conversation_id: str) -> CompanionState | None:
+    async def load_state(self, conversation_id: str) -> AffectState | None:
         async with self._lock_for(conversation_id):
             return deepcopy(self._states.get(conversation_id))
 
-    async def save_state(self, conversation_id: str, state: CompanionState) -> None:
+    async def save_state(self, conversation_id: str, state: AffectState) -> None:
         async with self._lock_for(conversation_id):
             self._states[conversation_id] = deepcopy(state)
 

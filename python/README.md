@@ -11,7 +11,7 @@ Prompt wording is supplied by the caller and is not part of production parity.
 
 ## Adapter security and transaction contract
 
-`CompanionEngine` sends trusted instructions in `GenerateInput.system_prompt` and
+`AffectEngine` sends trusted instructions in `GenerateInput.system_prompt` and
 bounded retrieved/carried evidence in `GenerateInput.untrusted_context`. Model
 adapters must place `untrusted_context` in a user/tool-data channel and obey its
 evidence-only rule; they must never concatenate it, `GenerateInput.state`, or
@@ -26,7 +26,7 @@ normalized, must match `[A-Z][A-Z0-9_]{0,63}`, and intentionally receive no
 built-in appraisal impulse.
 
 Domain kernels can inject a synchronous `AppraisalPolicy` into
-`CompanionEngine`. It receives an `AppraisalPolicyInput` containing the current
+`AffectEngine`. It receives an `AppraisalPolicyInput` containing the current
 state, normalized intent/event, message, and expectation, and must return an
 `AppraisalResult`. `default_appraisal_policy` explicitly preserves the reference
 English conversational mapping implemented by `appraise_turn`.

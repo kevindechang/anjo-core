@@ -1,5 +1,5 @@
 import {
-  CompanionEngine,
+  AffectEngine,
   InMemoryRetriever,
   InMemoryStore,
   ScriptedModelAdapter,
@@ -29,7 +29,7 @@ const retriever = new InMemoryRetriever([
     significance: 0.6,
   },
 ]);
-const engine = new CompanionEngine({
+const engine = new AffectEngine({
   model,
   store,
   retriever,

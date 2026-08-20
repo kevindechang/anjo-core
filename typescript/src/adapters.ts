@@ -1,5 +1,5 @@
 import type {
-  CompanionState,
+  AffectState,
   DeepReadonly,
   GateInput,
   GateResult,
@@ -15,7 +15,7 @@ import type {
 import { cloneValue, readonlySnapshot } from './internal/snapshot.js';
 
 export interface InMemoryStoreOptions {
-  state?: CompanionState;
+  state?: AffectState;
   messages?: ReadonlyArray<Message>;
 }
 
@@ -24,7 +24,7 @@ export interface InMemoryStoreOptions {
  * Direct reads expose the last committed snapshot while a transaction stages private changes.
  */
 export class InMemoryStore implements StateStore {
-  private state: CompanionState | null;
+  private state: AffectState | null;
   private readonly messages: Message[];
   private transactionTail: Promise<void> = Promise.resolve();
 
@@ -39,11 +39,11 @@ export class InMemoryStore implements StateStore {
     return task;
   }
 
-  loadState(): Promise<DeepReadonly<CompanionState> | null> {
+  loadState(): Promise<DeepReadonly<AffectState> | null> {
     return Promise.resolve(this.state === null ? null : readonlySnapshot(this.state));
   }
 
-  saveState(state: DeepReadonly<CompanionState>): Promise<void> {
+  saveState(state: DeepReadonly<AffectState>): Promise<void> {
     const snapshot = cloneValue(state);
     return this.enqueue(async () => { this.state = snapshot; });
   }

@@ -144,7 +144,7 @@ Both runtimes expose the same conceptual seams:
 - `AppraisalPolicy` — translate a normalized event into an affect transition
 - `StateStore` — load/save state and transcript, with an atomic commit
 - `MemoryRetriever` — return grounded candidate memories
-- `CompanionEngine` — orchestrate one turn without choosing a provider or database
+- `AffectEngine` — orchestrate one turn without choosing a provider or database
 
 Every piece of domain vocabulary is data you can replace, not behavior baked into
 the kernel:
@@ -258,6 +258,10 @@ system prompt.
 Never put conversation data, credentials, model weights, or production
 configuration in a contribution. Report vulnerabilities through the process in
 [SECURITY.md](SECURITY.md).
+
+What the kernel does and does not defend against — including the ways an adapter
+can silently undo the untrusted-evidence boundary — is written down in the
+[threat model](docs/threat-model.md).
 
 ## Citing this work
 

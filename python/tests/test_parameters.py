@@ -18,8 +18,8 @@ from affect_kernel import (
     DEFAULT_AFFECT_DYNAMICS,
     DEFAULT_RETRIEVAL_WEIGHTS,
     AffectDynamics,
+    AffectState,
     AppraisalGoals,
-    CompanionState,
     MemoryCandidate,
     PADMood,
     Personality,
@@ -40,7 +40,7 @@ NOW = datetime(2026, 1, 1, tzinfo=UTC)
 
 class TestDefaultsAreTheContract:
     def test_explicit_defaults_match_omitting_them(self) -> None:
-        state = CompanionState(
+        state = AffectState(
             mood=PADMood(valence=0.4, arousal=0.2, dominance=0.1),
             baseline_valence=0.3,
         )

@@ -2384,7 +2384,7 @@
             "intentionality": false,
             "curiosity": false
           },
-          "source": "companion_state"
+          "source": "affect_state"
         }
       },
       {
@@ -2432,7 +2432,7 @@
             "intentionality": false,
             "curiosity": false
           },
-          "source": "companion_state"
+          "source": "affect_state"
         }
       },
       {
@@ -2480,7 +2480,7 @@
             "intentionality": false,
             "curiosity": false
           },
-          "source": "companion_state"
+          "source": "affect_state"
         }
       },
       {
@@ -2528,7 +2528,7 @@
             "intentionality": false,
             "curiosity": false
           },
-          "source": "companion_state"
+          "source": "affect_state"
         }
       },
       {
@@ -2576,7 +2576,7 @@
             "intentionality": false,
             "curiosity": false
           },
-          "source": "companion_state"
+          "source": "affect_state"
         }
       },
       {
@@ -2624,7 +2624,7 @@
             "intentionality": true,
             "curiosity": true
           },
-          "source": "companion_state"
+          "source": "affect_state"
         }
       },
       {
@@ -2672,7 +2672,7 @@
             "intentionality": false,
             "curiosity": false
           },
-          "source": "companion_state"
+          "source": "affect_state"
         }
       },
       {
@@ -2720,7 +2720,7 @@
             "intentionality": false,
             "curiosity": false
           },
-          "source": "companion_state"
+          "source": "affect_state"
         }
       }
     ]

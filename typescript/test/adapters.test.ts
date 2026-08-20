@@ -5,13 +5,13 @@ import {
   InMemoryRetriever,
   InMemoryStore,
   ScriptedModelAdapter,
-  createCompanionState,
+  createAffectState,
   rankCandidates,
-  type CompanionState,
+  type AffectState,
 } from '../src/index.js';
 
 test('InMemoryStore isolates loaded state and transcript values from caller mutation', async () => {
-  const initial: CompanionState = {
+  const initial: AffectState = {
     mood: { valence: 0, arousal: 0, dominance: 0 },
     relationship: { stage: 'friend', trustScore: 0.6 },
   };
@@ -33,7 +33,7 @@ test('ScriptedModelAdapter consumes queued gates and streamed chunks in order', 
     gates: [{ intent: 'CURIOSITY', shouldRespond: true, shouldRetrieve: false }],
     responses: [['one ', 'two']],
   });
-  const state = createCompanionState();
+  const state = createAffectState();
   const gate = await model.gate({ message: 'hello', history: [], state });
   const chunks: string[] = [];
   for await (const chunk of model.generate({

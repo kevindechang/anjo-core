@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from affect_kernel.affect import TurnShapePolicy, turn_shape_directive
-from affect_kernel.models import CompanionState, MemoryCandidate, Message, PADMood, RankedMemory
+from affect_kernel.models import AffectState, MemoryCandidate, Message, PADMood, RankedMemory
 from affect_kernel.prompt import (
     PromptInputs,
     PromptPolicy,
@@ -21,7 +21,7 @@ def test_prompt_is_caller_owned_and_deterministically_assembled() -> None:
         emotion_instructions={"joy": "Use a lighter cadence.", "fatigue": "Keep it compact."},
         carried_thought_prefix="A prior thread remains:",
     )
-    state = CompanionState(
+    state = AffectState(
         mood=PADMood(valence=0.2, arousal=-0.5, dominance=0.0), carried_thought="unfinished idea"
     )
     inputs = PromptInputs(
@@ -56,7 +56,7 @@ def test_prompt_is_caller_owned_and_deterministically_assembled() -> None:
 def test_prompt_omits_empty_optional_sections() -> None:
     prompt = build_system_prompt(
         "  Base instructions.  ",
-        CompanionState(),
+        AffectState(),
         PromptInputs(),
         policy=PromptPolicy(affect_rule=""),
     )
@@ -64,7 +64,7 @@ def test_prompt_omits_empty_optional_sections() -> None:
 
 
 def test_carried_thought_is_explicitly_first_turn_only() -> None:
-    state = CompanionState(carried_thought="carry this")
+    state = AffectState(carried_thought="carry this")
     policy = PromptPolicy(carried_thought_prefix="Prior thread:")
     hidden = build_system_prompt(
         "Base", state, PromptInputs(surface_carried_thought=False), policy=policy
@@ -85,7 +85,7 @@ def test_untrusted_context_is_typed_bounded_and_separate() -> None:
         for index in range(4)
     )
     context = build_untrusted_context(
-        CompanionState(carried_thought="y" * 4_096),
+        AffectState(carried_thought="y" * 4_096),
         memories,
         surface_carried_thought=True,
     )

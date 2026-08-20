@@ -25,6 +25,14 @@ to a pinned vector is called out here.
   or arbitrary-but-bounded — with the departures from the cited work stated,
   and a list of results that would falsify the current choices.
 - `CITATION.cff`, validated against CFF schema 1.2.0.
+- `docs/threat-model.md`: assets, the one boundary the kernel actually enforces,
+  the ways an adapter can silently undo it, and an explicit list of what the
+  kernel does not defend against.
+- Seeded property and fuzz suites in both runtimes covering clamping over
+  200-turn adversarial walks, determinism, non-mutation of caller state, ranking
+  total order, Unicode handling, and pickle/deepcopy round trips. No new
+  dependency: both use a fixed-seed PRNG so a failure is re-runnable from the
+  seed alone.
 - `bench/`: a seeded, dependency-free retrieval benchmark over five regimes,
   comparing the scorer against plain similarity and against the additive form
   used by Generative Agents. `bench/RESULTS.md` is generated and drift-checked
@@ -42,6 +50,15 @@ to a pinned vector is called out here.
 
 ### Changed
 
+- **Breaking (pre-release):** `CompanionState` is now `AffectState` and
+  `CompanionEngine` is `AffectEngine`, in both runtimes, along with
+  `createAffectState`, `AffectStateInput`, `ResolvedAffectState`, and
+  `AffectEngineOptions`. The last product-specific noun in the public API is
+  gone: a game NPC no longer instantiates a "companion". The presence vector's
+  `source` field changes from `"companion_state"` to `"affect_state"`, which
+  updates 8 expected values in `shared/golden/kernel_golden.json`. This is a
+  reviewed fixture change under `docs/parity-contract.md`; no version was ever
+  published, so nothing installed is affected.
 - Renamed from `anjo-core` / `@anjo-ai/core` to `affect-kernel` on both
   registries, and the Python module from `anjo_core` to `affect_kernel`. No
   version was ever tagged or published under the old name.
@@ -95,7 +112,7 @@ old name, so no installed artifact is affected.
 
 - `FrozenMapping` is picklable. The default `dict` pickle protocol restores
   items by mutating a fresh instance, which the class refuses, so every state
-  object holding one — `CompanionState` with a non-empty `occ_carry`,
+  object holding one — `AffectState` with a non-empty `occ_carry`,
   `TurnShapePolicy`, `PromptPolicy` — raised `TypeError` on `pickle.dumps`.
   That broke any `StateStore` serializing with `pickle` and any use across a
   process boundary. Restored values remain immutable.

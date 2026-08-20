@@ -13,7 +13,7 @@ from math import isfinite
 from .models import (
     MAX_UNTRUSTED_CONTEXT_CHARS,
     MAX_UNTRUSTED_ITEM_CHARS,
-    CompanionState,
+    AffectState,
     RankedMemory,
     UntrustedContext,
     freeze_mapping,
@@ -90,7 +90,7 @@ class PromptInputs:
         object.__setattr__(self, "emotions", freeze_mapping(normalized))
 
 
-def build_mood_section(state: CompanionState, policy: PromptPolicy) -> str:
+def build_mood_section(state: AffectState, policy: PromptPolicy) -> str:
     instructions: list[str] = []
     mood = state.mood
     if mood.arousal > 0.4 and policy.high_energy_instruction:
@@ -137,7 +137,7 @@ def build_memory_section(
 
 
 def build_carried_thought_section(
-    state: CompanionState,
+    state: AffectState,
     surface: bool,
     policy: PromptPolicy,
 ) -> str:
@@ -151,7 +151,7 @@ def _bounded_text(text: str, budget: int) -> str:
 
 
 def build_untrusted_context(
-    state: CompanionState,
+    state: AffectState,
     memories: tuple[RankedMemory, ...],
     *,
     surface_carried_thought: bool,
@@ -172,7 +172,7 @@ def build_untrusted_context(
 
 def build_system_prompt(
     base_prompt: str,
-    state: CompanionState,
+    state: AffectState,
     inputs: PromptInputs | None = None,
     *,
     policy: PromptPolicy | None = None,

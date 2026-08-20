@@ -1,11 +1,11 @@
 import type {
-  CompanionState,
+  AffectState,
   DecodingParams,
   PadMood,
   RankedMemory,
   UntrustedContext,
 } from './contracts.js';
-import { createCompanionState } from './contracts.js';
+import { createAffectState } from './contracts.js';
 
 /** Values available to caller-defined prompt sections. */
 export interface PromptContext {
@@ -31,7 +31,7 @@ const DEFAULT_SECTIONS: ReadonlyArray<PromptSection> = Object.freeze([
     {
       id: 'state',
       render: ({ state }: Readonly<PromptContext>) => {
-        const resolved = createCompanionState(state);
+        const resolved = createAffectState(state);
         const mood = resolved.mood;
         return `Current state: valence=${mood.valence}, arousal=${mood.arousal}, dominance=${mood.dominance}.`;
       },
@@ -69,7 +69,7 @@ export interface UntrustedContextOptions {
 
 /** Build bounded evidence that adapters must keep outside trusted system instructions. */
 export function buildUntrustedContext(
-  state: CompanionState,
+  state: AffectState,
   memories: ReadonlyArray<RankedMemory>,
   options: UntrustedContextOptions,
 ): UntrustedContext {

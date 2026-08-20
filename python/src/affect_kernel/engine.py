@@ -11,8 +11,8 @@ from typing import Literal
 from .affect import TurnShapePolicy, decoding_params, turn_shape_directive
 from .appraisal import AppraisalPolicyInput, AppraisalResult, default_appraisal_policy
 from .models import (
+    AffectState,
     CognitionState,
-    CompanionState,
     GateInput,
     GateResult,
     GenerateInput,
@@ -38,7 +38,7 @@ _INTENT_PATTERN = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
 
 @dataclass(frozen=True, slots=True)
 class EngineLimits:
-    """Positive resource ceilings applied by :class:`CompanionEngine`."""
+    """Positive resource ceilings applied by :class:`AffectEngine`."""
 
     max_message_chars: int = 16_000
     max_history_messages: int = 200
@@ -89,7 +89,7 @@ def _normalize_custom_intent(intent: str) -> str:
     return normalized
 
 
-class CompanionEngine:
+class AffectEngine:
     """Run gate → retrieve → appraise → affect → generate with explicit seams.
 
     Gate and generation are model-driven and are not parity claims. The state
@@ -108,7 +108,7 @@ class CompanionEngine:
         turn_shape_policy: TurnShapePolicy | None = None,
         presence_labels: PresenceLabels | None = None,
         appraisal_policy: AppraisalPolicy = default_appraisal_policy,
-        state_factory: Callable[[], CompanionState] = CompanionState,
+        state_factory: Callable[[], AffectState] = AffectState,
         retrieval_limit: int = 6,
         max_retrieval_candidates: int = 64,
         gate_error_mode: GateErrorMode = "raise",
@@ -279,7 +279,7 @@ class CompanionEngine:
         self,
         text: str,
         history: tuple[Message, ...],
-        state: CompanionState,
+        state: AffectState,
     ) -> GateResult:
         try:
             raw = await self.model.gate(
@@ -327,7 +327,7 @@ __all__ = [
     "DEFAULT_ENGINE_LIMITS",
     "DEFAULT_GATE_RESULT",
     "SILENT_GATE_RESULT",
-    "CompanionEngine",
+    "AffectEngine",
     "EngineLimits",
     "GateErrorMode",
     "normalize_intent",

@@ -27,10 +27,10 @@ from affect_kernel.appraisal import (
     state_emotions,
 )
 from affect_kernel.models import (
+    AffectState,
     AppraisalGoals,
     AttachmentState,
     CognitionState,
-    CompanionState,
     PADMood,
     Personality,
     RelationshipState,
@@ -51,8 +51,8 @@ def golden() -> dict[str, Any]:
     return json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
 
 
-def _state(values: dict[str, Any]) -> CompanionState:
-    return CompanionState(
+def _state(values: dict[str, Any]) -> AffectState:
+    return AffectState(
         mood=PADMood(
             values.get("valence", 0.0),
             values.get("arousal", 0.0),

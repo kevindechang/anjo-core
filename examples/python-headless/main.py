@@ -7,8 +7,8 @@ import json
 from datetime import UTC, datetime, timedelta
 
 from affect_kernel import (
-    CompanionEngine,
-    CompanionState,
+    AffectEngine,
+    AffectState,
     GateResult,
     MemoryCandidate,
     PADMood,
@@ -23,7 +23,7 @@ from affect_kernel.adapters import (
 async def main() -> None:
     conversation_id = "headless-demo"
     store = InMemoryStateStore(
-        states={conversation_id: CompanionState(mood=PADMood(0.1, 0.05, 0.0))}
+        states={conversation_id: AffectState(mood=PADMood(0.1, 0.05, 0.0))}
     )
     model = ScriptedModelAdapter(
         gates=[
@@ -53,7 +53,7 @@ async def main() -> None:
             )
         ]
     )
-    engine = CompanionEngine(
+    engine = AffectEngine(
         model=model,
         store=store,
         retriever=retriever,
