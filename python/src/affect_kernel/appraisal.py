@@ -119,6 +119,82 @@ def _clamp(value: float, low: float, high: float) -> float:
     return max(low, min(high, value))
 
 
+def _positive(name: str, value: float, low: float, high: float) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise TypeError(f"{name} must be a number")
+    number = float(value)
+    if not isfinite(number) or not low <= number <= high:
+        raise ValueError(f"{name} must be finite and within [{low}, {high}]")
+    return number
+
+
+@dataclass(frozen=True, slots=True)
+class AffectDynamics:
+    """The numeric parameters of the affect transforms.
+
+    The kernel already lets a caller replace every *word* it emits -- stage
+    names, expectation cues, turn-shape rules, presence labels. These are the
+    *numbers*, exposed on the same principle: a domain that disagrees with a
+    coefficient should be able to change it without forking the library.
+
+    The defaults reproduce the pinned cross-runtime contract exactly. Changing
+    any of them takes the caller off that contract, which is the point; the
+    shared fixtures still pin the defaults.
+
+    Provenance for each value -- published work, production tuning, or an
+    arbitrary bounded choice -- is recorded in ``docs/foundations.md``.
+    """
+
+    inertia_base: float = 0.80
+    inertia_neuroticism: float = 0.20
+    inertia_extraversion: float = 0.10
+    inertia_min: float = 0.62
+    inertia_max: float = 0.92
+    resting_dominance: float = 0.10
+    # Kept as two independent fields rather than one retention plus its
+    # complement: 1 - 0.98 is not exactly 0.02 in binary floating point, and the
+    # pinned fixtures are reproduced to four decimals from the literal pair.
+    baseline_retention: float = 0.98
+    baseline_intake: float = 0.02
+    ambiguity_threshold: float = 0.20
+    ambiguity_negative_gain: float = 1.10
+    ambiguity_positive_gain: float = 1.04
+    carry_decay: Mapping[str, float] = field(default_factory=lambda: dict(_OCC_CARRY_DECAY))
+    carry_decay_default: float = 0.80
+    carry_floor: float = 0.05
+
+    def __post_init__(self) -> None:
+        for name in (
+            "inertia_base",
+            "inertia_neuroticism",
+            "inertia_extraversion",
+            "inertia_min",
+            "inertia_max",
+            "baseline_retention",
+            "baseline_intake",
+            "ambiguity_threshold",
+            "carry_decay_default",
+            "carry_floor",
+        ):
+            _positive(name, getattr(self, name), 0.0, 1.0)
+        _positive("resting_dominance", self.resting_dominance, -1.0, 1.0)
+        _positive("ambiguity_negative_gain", self.ambiguity_negative_gain, 0.0, 10.0)
+        _positive("ambiguity_positive_gain", self.ambiguity_positive_gain, 0.0, 10.0)
+        if self.inertia_min > self.inertia_max:
+            raise ValueError("inertia_min must not exceed inertia_max")
+        if not isinstance(self.carry_decay, Mapping):
+            raise TypeError("carry_decay must be a mapping")
+        rates: dict[str, float] = {}
+        for emotion, rate in self.carry_decay.items():
+            if not isinstance(emotion, str) or not emotion.strip():
+                raise ValueError("carry_decay names must be non-empty strings")
+            rates[emotion] = _positive(f"carry_decay[{emotion!r}]", rate, 0.0, 1.0)
+        object.__setattr__(self, "carry_decay", freeze_mapping(rates))
+
+
+DEFAULT_AFFECT_DYNAMICS = AffectDynamics()
+
+
 def stage_int(stage: str, ladder: StageLadder | None = None) -> int:
     """Map a stage label to its stable ordinal on ``ladder`` (default: conversational).
 
@@ -133,7 +209,11 @@ def baseline_weight(stage: int, ladder: StageLadder | None = None) -> float:
     return (ladder or DEFAULT_STAGE_LADDER).weight_for_ordinal(stage)
 
 
-def mood_inertia(personality: Personality) -> float:
+def mood_inertia(
+    personality: Personality,
+    *,
+    dynamics: AffectDynamics | None = None,
+) -> float:
     """AR(1) carryover parameter derived from Neuroticism and Extraversion.
 
     The *sign* of both terms is literature-grounded: emotional inertia rises
@@ -142,8 +222,13 @@ def mood_inertia(personality: Personality) -> float:
     coefficients and the clamp are production-tuned. See
     ``docs/foundations.md`` section 3.
     """
-    value = 0.80 + 0.20 * (personality.N - 0.5) - 0.10 * (personality.E - 0.5)
-    return _clamp(value, 0.62, 0.92)
+    tuning = dynamics or DEFAULT_AFFECT_DYNAMICS
+    value = (
+        tuning.inertia_base
+        + tuning.inertia_neuroticism * (personality.N - 0.5)
+        - tuning.inertia_extraversion * (personality.E - 0.5)
+    )
+    return _clamp(value, tuning.inertia_min, tuning.inertia_max)
 
 
 def decay_mood(
@@ -153,6 +238,7 @@ def decay_mood(
     baseline_valence: float,
     *,
     ladder: StageLadder | None = None,
+    dynamics: AffectDynamics | None = None,
 ) -> PADMood:
     """Relax PAD toward the stage-weighted resting point using AR(1) dynamics.
 
@@ -162,16 +248,17 @@ def decay_mood(
     section 2.
     """
     chosen = ladder or DEFAULT_STAGE_LADDER
+    tuning = dynamics or DEFAULT_AFFECT_DYNAMICS
     stage = (
         chosen.ordinal(relationship_stage)
         if isinstance(relationship_stage, str)
         else relationship_stage
     )
     weight = chosen.weight_for_ordinal(stage)
-    inertia = mood_inertia(personality)
+    inertia = mood_inertia(personality, dynamics=tuning)
     resting_valence = weight * baseline_valence
     resting_arousal = 0.0
-    resting_dominance = weight * 0.10
+    resting_dominance = weight * tuning.resting_dominance
     return PADMood(
         valence=round(
             _clamp(resting_valence + inertia * (mood.valence - resting_valence), -1.0, 1.0),
@@ -207,6 +294,8 @@ def appraise_input(
     goals: AppraisalGoals,
     intent: str,
     baseline_valence: float,
+    *,
+    dynamics: AffectDynamics | None = None,
 ) -> InputAppraisal:
     """Apply one non-habituating intent impulse and update the slow valence baseline.
 
@@ -215,6 +304,7 @@ def appraise_input(
     process over OCC appraisal variables. Every impulse magnitude is
     production-tuned. See ``docs/foundations.md`` section 4.
     """
+    tuning = dynamics or DEFAULT_AFFECT_DYNAMICS
     valence = mood.valence
     arousal = mood.arousal
     dominance = mood.dominance
@@ -260,10 +350,18 @@ def appraise_input(
         valence = min(1.0, valence + 0.02)
         emotions["joy"] = 0.05
 
-    if intent in _AMBIGUOUS_INTENTS and abs(valence) >= 0.20:
-        valence = round(_clamp(valence * (1.10 if valence < 0 else 1.04), -1.0, 1.0), 4)
+    if intent in _AMBIGUOUS_INTENTS and abs(valence) >= tuning.ambiguity_threshold:
+        gain = tuning.ambiguity_negative_gain if valence < 0 else tuning.ambiguity_positive_gain
+        valence = round(_clamp(valence * gain, -1.0, 1.0), 4)
 
-    next_baseline = round(_clamp(baseline_valence * 0.98 + valence * 0.02, -1.0, 1.0), 4)
+    next_baseline = round(
+        _clamp(
+            baseline_valence * tuning.baseline_retention + valence * tuning.baseline_intake,
+            -1.0,
+            1.0,
+        ),
+        4,
+    )
     return InputAppraisal(
         emotions=emotions,
         mood=PADMood(valence=valence, arousal=arousal, dominance=dominance),
@@ -367,7 +465,11 @@ def expectation_emotions(
     return {}
 
 
-def decay_occ_carry(carry: Mapping[str, float] | None) -> dict[str, float]:
+def decay_occ_carry(
+    carry: Mapping[str, float] | None,
+    *,
+    dynamics: AffectDynamics | None = None,
+) -> dict[str, float]:
     """Decay prior-turn emotions, dropping values at or below the 0.05 floor.
 
     Emotion decaying faster than mood is the two-layer structure used by ALMA
@@ -375,10 +477,13 @@ def decay_occ_carry(carry: Mapping[str, float] | None) -> dict[str, float]:
     ordering is a product stance, not a finding. See ``docs/foundations.md``
     section 5.
     """
+    tuning = dynamics or DEFAULT_AFFECT_DYNAMICS
+    rates = tuning.carry_decay
+    fallback = tuning.carry_decay_default
     return {
-        name: value * _OCC_CARRY_DECAY.get(name, 0.80)
+        name: value * rates.get(name, fallback)
         for name, value in (carry or {}).items()
-        if value * _OCC_CARRY_DECAY.get(name, 0.80) > 0.05
+        if value * rates.get(name, fallback) > tuning.carry_floor
     }
 
 
@@ -461,18 +566,27 @@ def appraise_turn(
     message: str = "",
     ladder: StageLadder | None = None,
     cues: ExpectationCues | None = None,
+    dynamics: AffectDynamics | None = None,
 ) -> AppraisalResult:
     """Compose decay, appraisal, emotion carry, and state-emotion derivation."""
+    tuning = dynamics or DEFAULT_AFFECT_DYNAMICS
     decayed_mood = decay_mood(
         state.mood,
         state.personality,
         state.relationship.stage,
         state.baseline_valence,
         ladder=ladder,
+        dynamics=tuning,
     )
-    fresh = appraise_input(decayed_mood, state.goals, intent, state.baseline_valence)
+    fresh = appraise_input(
+        decayed_mood,
+        state.goals,
+        intent,
+        state.baseline_valence,
+        dynamics=tuning,
+    )
     prior = state.occ_carry if occ_carry is None else occ_carry
-    carried = decay_occ_carry(prior)
+    carried = decay_occ_carry(prior, dynamics=tuning)
     merged = {
         name: max(fresh.emotions.get(name, 0.0), carried.get(name, 0.0))
         for name in sorted(set(fresh.emotions) | set(carried))
@@ -486,7 +600,7 @@ def appraise_turn(
         if value > merged.get(name, 0.0):
             merged[name] = value
 
-    next_carry = {name: value for name, value in merged.items() if value > 0.05}
+    next_carry = {name: value for name, value in merged.items() if value > tuning.carry_floor}
     next_state = replace(
         state,
         mood=fresh.mood,
@@ -504,6 +618,7 @@ def conversational_appraisal_policy(
     *,
     ladder: StageLadder | None = None,
     cues: ExpectationCues | None = None,
+    dynamics: AffectDynamics | None = None,
 ) -> Callable[[AppraisalPolicyInput], AppraisalResult]:
     """Build a reference-shaped policy bound to a custom ladder and cue set.
 
@@ -520,6 +635,7 @@ def conversational_appraisal_policy(
             expectation=request.expectation,
             ladder=ladder,
             cues=cues,
+            dynamics=dynamics,
         )
 
     return policy
@@ -536,10 +652,12 @@ def default_appraisal_policy(request: AppraisalPolicyInput) -> AppraisalResult:
 
 
 __all__ = [
+    "DEFAULT_AFFECT_DYNAMICS",
     "DEFAULT_EXPECTATION_CUES",
     "DEFAULT_STAGES",
     "DEFAULT_STAGE_LADDER",
     "DEFAULT_STAGE_WEIGHTS",
+    "AffectDynamics",
     "AppraisalPolicyInput",
     "AppraisalResult",
     "ExpectationCues",

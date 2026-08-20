@@ -11,6 +11,33 @@ to a pinned vector is called out here.
 
 ## [Unreleased]
 
+### Added
+
+- `AffectDynamics` and `RetrievalWeights`: the numeric coefficients are now
+  caller-owned data, on the same principle that already made stage names,
+  expectation cues, turn-shape rules, and presence labels replaceable. Inertia
+  terms, the resting-dominance coefficient, the baseline blend, per-emotion
+  carry decay and floor, the recency horizon and floor, the episode bonus, and
+  the mood-congruence threshold and asymmetry can all be changed without
+  forking. Defaults reproduce the pinned fixture exactly, so the 225 shared
+  vectors are unchanged.
+- `docs/foundations.md`: per-constant provenance — literature, production-tuned,
+  or arbitrary-but-bounded — with the departures from the cited work stated,
+  and a list of results that would falsify the current choices.
+- `CITATION.cff`, validated against CFF schema 1.2.0.
+
+### Changed
+
+- Renamed from `anjo-core` / `@anjo-ai/core` to `affect-kernel` on both
+  registries, and the Python module from `anjo_core` to `affect_kernel`. No
+  version was ever tagged or published under the old name.
+
+### Documentation
+
+- `docs/algorithm.md` now specifies the ambiguous-intent valence amplification
+  (`x1.10` negative, `x1.04` positive above `|v| >= 0.20`), which was
+  implemented but undocumented.
+
 ## [0.1.0]
 
 First public release: the deterministic kernel extracted from

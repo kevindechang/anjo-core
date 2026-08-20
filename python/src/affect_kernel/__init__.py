@@ -10,10 +10,12 @@ from .affect import (
     turn_shape_directive,
 )
 from .appraisal import (
+    DEFAULT_AFFECT_DYNAMICS,
     DEFAULT_EXPECTATION_CUES,
     DEFAULT_STAGE_LADDER,
     DEFAULT_STAGE_WEIGHTS,
     DEFAULT_STAGES,
+    AffectDynamics,
     AppraisalPolicyInput,
     AppraisalResult,
     ExpectationCues,
@@ -69,6 +71,8 @@ from .protocols import (
     StateStore,
 )
 from .retrieval import (
+    DEFAULT_RETRIEVAL_WEIGHTS,
+    RetrievalWeights,
     candidate_score,
     mood_congruence_factor,
     rank_candidates,
@@ -88,12 +92,15 @@ __version__ = "0.1.0"
 
 __all__ = [
     "BUILTIN_INTENTS",
+    "DEFAULT_AFFECT_DYNAMICS",
     "DEFAULT_ENGINE_LIMITS",
     "DEFAULT_EXPECTATION_CUES",
     "DEFAULT_PRESENCE_LABELS",
+    "DEFAULT_RETRIEVAL_WEIGHTS",
     "DEFAULT_STAGES",
     "DEFAULT_STAGE_LADDER",
     "DEFAULT_STAGE_WEIGHTS",
+    "AffectDynamics",
     "AppraisalGoals",
     "AppraisalPolicy",
     "AppraisalPolicyInput",
@@ -124,6 +131,7 @@ __all__ = [
     "RankedMemory",
     "RelationshipState",
     "RetrievalInput",
+    "RetrievalWeights",
     "StageLadder",
     "StateStore",
     "TurnResult",

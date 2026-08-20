@@ -9,9 +9,64 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable
+from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from .models import MemoryCandidate, RankedMemory
+
+
+def _bounded_number(name: str, value: float, low: float, high: float) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise TypeError(f"{name} must be a number")
+    number = float(value)
+    if not math.isfinite(number) or not low <= number <= high:
+        raise ValueError(f"{name} must be finite and within [{low}, {high}]")
+    return number
+
+
+@dataclass(frozen=True, slots=True)
+class RetrievalWeights:
+    """The numeric parameters of the retrieval scorer.
+
+    Defaults reproduce the pinned cross-runtime contract. These are magnitudes
+    only: the *shape* of the curves -- linear recency, multiplicative
+    composition, log-compressed rehearsal -- is fixed here, and
+    ``docs/foundations.md`` section 6 records why each shape was chosen and what
+    the closest published comparable does instead.
+    """
+
+    recency_horizon_days: float = 60.0
+    recency_floor: float = 0.40
+    recency_fallback: float = 0.70
+    significance_weight: float = 0.03
+    rehearsal_weight: float = 0.006
+    rehearsal_cap: float = 0.025
+    episode_bonus: float = 0.05
+    congruence_threshold: float = 0.20
+    congruence_negative_mood: float = 1.06
+    congruence_positive_mood: float = 1.03
+
+    def __post_init__(self) -> None:
+        horizon = _bounded_number(
+            "recency_horizon_days", self.recency_horizon_days, 0.0, 3_650_000.0
+        )
+        if horizon <= 0.0:
+            raise ValueError("recency_horizon_days must be positive")
+        for name in (
+            "recency_floor",
+            "recency_fallback",
+            "significance_weight",
+            "rehearsal_weight",
+            "rehearsal_cap",
+            "episode_bonus",
+            "congruence_threshold",
+        ):
+            _bounded_number(name, getattr(self, name), 0.0, 1.0)
+        for name in ("congruence_negative_mood", "congruence_positive_mood"):
+            _bounded_number(name, getattr(self, name), 0.0, 10.0)
+
+
+DEFAULT_RETRIEVAL_WEIGHTS = RetrievalWeights()
 
 
 def _require_aware(value: datetime, name: str) -> datetime:
@@ -28,7 +83,12 @@ def _validate_distance(distance: float) -> float:
     return distance
 
 
-def recency_weight(timestamp: str, *, now: datetime | None = None) -> float:
+def recency_weight(
+    timestamp: str,
+    *,
+    now: datetime | None = None,
+    weights: RetrievalWeights | None = None,
+) -> float:
     """Return a linear freshness weight with a 0.4 floor and 0.7 parse fallback.
 
     Linear-to-a-floor is the least defensible curve in the module: human
@@ -38,19 +98,25 @@ def recency_weight(timestamp: str, *, now: datetime | None = None) -> float:
     See ``docs/foundations.md`` section 6.
     """
     reference = _require_aware(now or datetime.now(UTC), "now")
+    tuning = weights or DEFAULT_RETRIEVAL_WEIGHTS
     try:
         parsed = datetime.fromisoformat(timestamp)
         _require_aware(parsed, "timestamp")
         days_ago = max(0.0, (reference - parsed).total_seconds() / 86_400)
-        return max(0.4, min(1.0, 1.0 - days_ago / 60.0))
+        return max(
+            tuning.recency_floor,
+            min(1.0, 1.0 - days_ago / tuning.recency_horizon_days),
+        )
     except (TypeError, ValueError, OverflowError):
-        return 0.7
+        return tuning.recency_fallback
 
 
 def mood_congruence_factor(
     mem_valence: float,
     mood_valence: float,
     congruence_on: bool,
+    *,
+    weights: RetrievalWeights | None = None,
 ) -> float:
     """Return the small asymmetric multiplier for same-sign memory and mood valence.
 
@@ -60,8 +126,13 @@ def mood_congruence_factor(
     """
     if not congruence_on or mem_valence == 0.0:
         return 1.0
+    tuning = weights or DEFAULT_RETRIEVAL_WEIGHTS
     if (mem_valence > 0.0) == (mood_valence > 0.0):
-        return 1.06 if mood_valence < 0.0 else 1.03
+        return (
+            tuning.congruence_negative_mood
+            if mood_valence < 0.0
+            else tuning.congruence_positive_mood
+        )
     return 1.0
 
 
@@ -77,6 +148,7 @@ def candidate_score(
     episode: bool,
     significance: float,
     recall_count: int,
+    weights: RetrievalWeights | None = None,
 ) -> float:
     """Score a worked candidate from distance, age, salience, and rehearsal."""
     _validate_distance(distance)
@@ -88,11 +160,19 @@ def candidate_score(
         raise TypeError("recall_count must be an integer")
     if recall_count < 0:
         raise ValueError("recall_count must be non-negative")
+    tuning = weights or DEFAULT_RETRIEVAL_WEIGHTS
     similarity = similarity_from_distance(distance)
-    recency = max(0.4, min(1.0, 1.0 - max(0.0, days_ago) / 60.0))
+    recency = max(
+        tuning.recency_floor,
+        min(1.0, 1.0 - max(0.0, days_ago) / tuning.recency_horizon_days),
+    )
     bounded_significance = max(0.0, min(1.0, significance))
-    salience = 1.0 + bounded_significance * 0.03 + min(0.025, math.log1p(recall_count) * 0.006)
-    return similarity * recency * salience + (0.05 if episode else 0.0)
+    salience = (
+        1.0
+        + bounded_significance * tuning.significance_weight
+        + min(tuning.rehearsal_cap, math.log1p(recall_count) * tuning.rehearsal_weight)
+    )
+    return similarity * recency * salience + (tuning.episode_bonus if episode else 0.0)
 
 
 def score_candidate(
@@ -101,26 +181,29 @@ def score_candidate(
     now: datetime | None = None,
     mood_valence: float = 0.0,
     mood_congruence: bool = True,
+    weights: RetrievalWeights | None = None,
 ) -> float:
     """Score a candidate carrying an ISO timestamp and optional emotional valence."""
     reference = _require_aware(now or datetime.now(UTC), "now")
+    tuning = weights or DEFAULT_RETRIEVAL_WEIGHTS
     similarity = similarity_from_distance(candidate.distance)
-    recency = recency_weight(candidate.timestamp or "", now=reference)
+    recency = recency_weight(candidate.timestamp or "", now=reference, weights=tuning)
     significance = max(0.0, min(1.0, candidate.significance))
     salience = (
         1.0
-        + significance * 0.03
+        + significance * tuning.significance_weight
         + min(
-            0.025,
-            math.log1p(max(0, candidate.recall_count)) * 0.006,
+            tuning.rehearsal_cap,
+            math.log1p(max(0, candidate.recall_count)) * tuning.rehearsal_weight,
         )
     )
-    score = similarity * recency * salience + (0.05 if candidate.episode else 0.0)
-    congruence_on = mood_congruence and abs(mood_valence) >= 0.20
+    score = similarity * recency * salience + (tuning.episode_bonus if candidate.episode else 0.0)
+    congruence_on = mood_congruence and abs(mood_valence) >= tuning.congruence_threshold
     return score * mood_congruence_factor(
         candidate.emotional_valence,
         mood_valence,
         congruence_on,
+        weights=tuning,
     )
 
 
@@ -131,6 +214,7 @@ def rank_candidates(
     now: datetime | None = None,
     mood_valence: float = 0.0,
     mood_congruence: bool = True,
+    weights: RetrievalWeights | None = None,
 ) -> tuple[RankedMemory, ...]:
     """Deduplicate by id, retain the best score, and return a stable descending rank."""
     if limit < 0:
@@ -145,6 +229,7 @@ def rank_candidates(
                 now=reference,
                 mood_valence=mood_valence,
                 mood_congruence=mood_congruence,
+                weights=weights,
             ),
         )
         previous = best.get(candidate.id)
@@ -155,6 +240,8 @@ def rank_candidates(
 
 
 __all__ = [
+    "DEFAULT_RETRIEVAL_WEIGHTS",
+    "RetrievalWeights",
     "candidate_score",
     "mood_congruence_factor",
     "rank_candidates",

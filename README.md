@@ -129,6 +129,24 @@ the kernel:
 | `PresenceLabels` | "here with you" | your own surface wording |
 | `PromptPolicy` | neutral section headings | your own prompt language |
 
+So is every coefficient. `AffectDynamics` and `RetrievalWeights` expose the
+numbers on the same principle — inertia terms, the resting-dominance
+coefficient, the baseline blend, per-emotion carry decay, the recency horizon
+and floor, the episode bonus, the mood-congruence threshold and its asymmetry:
+
+```python
+from affect_kernel import AffectDynamics, appraise_turn
+
+# A character whose mood barely carries between turns.
+volatile = AffectDynamics(inertia_base=0.30, inertia_min=0.0, inertia_max=0.5)
+result = appraise_turn(state, "CURIOSITY", dynamics=volatile)
+```
+
+The defaults reproduce the pinned cross-runtime fixture exactly; passing your
+own takes you off that contract deliberately rather than by accident. Which
+constants are literature-grounded and which are one product's taste is recorded
+in [foundations](docs/foundations.md).
+
 ## What is public
 
 - OCC-inspired intent appraisal and PAD mood dynamics
