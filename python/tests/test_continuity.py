@@ -7,9 +7,9 @@ from typing import Any
 
 import pytest
 
-from anjo_core import (
+from affect_kernel import (
+    AffectState,
     AppraisalPolicyInput,
-    CompanionState,
     PADMood,
     Personality,
     appraise_turn,
@@ -45,7 +45,7 @@ def test_default_appraisal_policy_matches_every_continuity_trace_step() -> None:
 
     for trace in fixture["traces"]:
         initial = trace["initial"]
-        state = CompanionState(
+        state = AffectState(
             mood=PADMood(**initial["mood"]),
             personality=Personality(**initial["personality"]),
             baseline_valence=initial["baseline_valence"],

@@ -41,7 +41,7 @@ jobs:
           tag="${GITHUB_REF_NAME#v}"
           py=$(python -c "import tomllib,pathlib;print(tomllib.loads(pathlib.Path('python/pyproject.toml').read_text())['project']['version'])")
           ts=$(node -p "require('./typescript/package.json').version")
-          init=$(python -c "import re,pathlib;print(re.search(r'__version__ = \"([^\"]+)\"', pathlib.Path('python/src/anjo_core/__init__.py').read_text()).group(1))")
+          init=$(python -c "import re,pathlib;print(re.search(r'__version__ = \"([^\"]+)\"', pathlib.Path('python/src/affect_kernel/__init__.py').read_text()).group(1))")
           echo "tag=$tag python=$py typescript=$ts __version__=$init"
           test "$tag" = "$py" && test "$tag" = "$ts" && test "$tag" = "$init"
 

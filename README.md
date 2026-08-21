@@ -1,6 +1,6 @@
-# Anjo Core
+# Affect Kernel
 
-[![CI](https://github.com/kevindechang/anjo-core/actions/workflows/ci.yml/badge.svg)](https://github.com/kevindechang/anjo-core/actions/workflows/ci.yml)
+[![CI](https://github.com/kevindechang/affect-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/kevindechang/affect-kernel/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](python/)
 [![Node](https://img.shields.io/badge/node-20%2B-blue.svg)](typescript/)
@@ -57,10 +57,10 @@ disposition: wary | presence: on watch (posted)
 
 ## Why this exists
 
-Memory libraries answer *what should this agent recall?* Agent frameworks answer
-*how should this agent run?* Anjo Core covers the layer between them: *how should
-an experience change the character, and what part of that change should become
-perceptible?*
+Memory libraries answer *what should this agent recall?* Agent frameworks
+answer *how should this agent run?* Affect Kernel covers the layer between
+them: *how should an experience change the character, and what part of that
+change should become perceptible?*
 
 | | Focus | Relationship to this project |
 |---|---|---|
@@ -73,6 +73,10 @@ The distinguishing bet: **the parts that can be deterministic should be**. Mood
 dynamics, appraisal, ranking, and surfacing are ordinary math with pinned
 behavior, not a model call you hope stays consistent.
 
+Every constant in that math is labelled in [foundations](docs/foundations.md)
+as literature-grounded, production-tuned, or an arbitrary bounded choice — with
+the departures from the papers it cites stated rather than glossed.
+
 ```text
 application event
   → application-owned interpreter
@@ -83,6 +87,35 @@ application event
   → model adapter
   → atomic persistence
 ```
+
+## Does it actually work?
+
+Partly. `bench/` is a seeded, dependency-free retrieval benchmark that tests the
+scorer against plain similarity and against the additive form used by Generative
+Agents, across five regimes. It reports where the kernel loses:
+
+```bash
+python bench/run.py     # regenerated and drift-checked in CI
+```
+
+| Finding | Result |
+|---|---|
+| Helps when its assumptions hold | **+0.415 MRR** over similarity-only |
+| Hurts when they don't | **−0.175 MRR** — the machinery is not free |
+| Additive form (Park et al.) beats multiplicative | **+0.111 MRR** against us |
+| …but the cause is the weight, not the shape | `significance_weight` `0.03`→`1.0` lifts MRR `0.858`→`0.960` |
+| Linear recency vs exponential and power-law | linear wins by `0.009` / `0.044` at matched half-life |
+| Mood congruence, in a regime built to favour it | **+0.012 MRR** — barely earns its place |
+
+The most useful thing the benchmark found is a bug in our own documentation:
+`foundations.md` called the linear recency curve "the least defensible" choice
+in the module, and the evidence says otherwise. That claim has been retracted.
+
+**These are synthetic corpora with machine-assigned ground truth**, and the
+README's larger claim — that a deterministic kernel holds character state better
+than a prompt-only persona — is **not tested and remains unsupported**. Read
+[the limitations](bench/README.md#limitations--read-before-quoting-any-number)
+before quoting any of this.
 
 ## Install
 
@@ -100,8 +133,8 @@ npm test --prefix typescript
 ```
 
 > Registry releases are not published yet. Once `v0.1.0` is tagged, the
-> [release workflow](.github/workflows/release.yml) publishes `anjo-core` to PyPI
-> via trusted publishing and `@anjo-ai/core` to npm with provenance.
+> [release workflow](.github/workflows/release.yml) publishes `affect-kernel` to PyPI
+> via trusted publishing and `affect-kernel` to npm with provenance.
 
 ## Core contracts
 
@@ -111,7 +144,7 @@ Both runtimes expose the same conceptual seams:
 - `AppraisalPolicy` — translate a normalized event into an affect transition
 - `StateStore` — load/save state and transcript, with an atomic commit
 - `MemoryRetriever` — return grounded candidate memories
-- `CompanionEngine` — orchestrate one turn without choosing a provider or database
+- `AffectEngine` — orchestrate one turn without choosing a provider or database
 
 Every piece of domain vocabulary is data you can replace, not behavior baked into
 the kernel:
@@ -124,6 +157,24 @@ the kernel:
 | `TurnShapePolicy` | companion cadence rules | your own wording and cue-suppression rules |
 | `PresenceLabels` | "here with you" | your own surface wording |
 | `PromptPolicy` | neutral section headings | your own prompt language |
+
+So is every coefficient. `AffectDynamics` and `RetrievalWeights` expose the
+numbers on the same principle — inertia terms, the resting-dominance
+coefficient, the baseline blend, per-emotion carry decay, the recency horizon
+and floor, the episode bonus, the mood-congruence threshold and its asymmetry:
+
+```python
+from affect_kernel import AffectDynamics, appraise_turn
+
+# A character whose mood barely carries between turns.
+volatile = AffectDynamics(inertia_base=0.30, inertia_min=0.0, inertia_max=0.5)
+result = appraise_turn(state, "CURIOSITY", dynamics=volatile)
+```
+
+The defaults reproduce the pinned cross-runtime fixture exactly; passing your
+own takes you off that contract deliberately rather than by accident. Which
+constants are literature-grounded and which are one product's taste is recorded
+in [foundations](docs/foundations.md).
 
 ## What is public
 
@@ -179,6 +230,7 @@ python/              Python package and tests
 typescript/          TypeScript package and tests
 examples/            credential-free reference programs
 docs/                architecture, boundaries, and design principles
+bench/               seeded retrieval benchmark and its generated results
 scripts/             public-boundary and repository checks
 ```
 
@@ -206,6 +258,31 @@ system prompt.
 Never put conversation data, credentials, model weights, or production
 configuration in a contribution. Report vulnerabilities through the process in
 [SECURITY.md](SECURITY.md).
+
+What the kernel does and does not defend against — including the ways an adapter
+can silently undo the untrusted-evidence boundary — is written down in the
+[threat model](docs/threat-model.md).
+
+## Citing this work
+
+Machine-readable metadata is in [CITATION.cff](CITATION.cff), validated against
+CFF schema 1.2.0.
+
+```bibtex
+@software{chang_affect_kernel_2026,
+  author  = {Chang, Chia Wei},
+  title   = {affect-kernel: a deterministic affect-state kernel for
+             long-lived AI characters},
+  version = {0.1.0},
+  year    = {2026},
+  license = {Apache-2.0},
+  url     = {https://github.com/kevindechang/affect-kernel}
+}
+```
+
+If you are citing the *ideas* rather than this implementation, cite the primary
+sources in [foundations](docs/foundations.md) instead — this library implements
+a subset of them and departs from several.
 
 ## License
 

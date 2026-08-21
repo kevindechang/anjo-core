@@ -54,7 +54,7 @@ export interface AttachmentState {
 }
 
 /** Serializable state consumed by the deterministic kernel. */
-export interface CompanionState {
+export interface AffectState {
   readonly mood?: Partial<PadMood> | null;
   readonly personality?: Partial<Personality>;
   readonly goals?: Partial<AppraisalGoals>;
@@ -80,7 +80,7 @@ export interface ResolvedAttachmentState {
 }
 
 /** Fully defaulted state used inside the engine and pure transforms. */
-export interface ResolvedCompanionState {
+export interface ResolvedAffectState {
   readonly mood: PadMood;
   readonly personality: Personality;
   readonly goals: AppraisalGoals;
@@ -92,7 +92,7 @@ export interface ResolvedCompanionState {
   readonly expectation: string;
 }
 
-export type CompanionStateInput = CompanionState;
+export type AffectStateInput = AffectState;
 
 export const DEFAULT_PERSONALITY: Readonly<Personality> = Object.freeze({
   O: 0.8,
@@ -143,7 +143,7 @@ function partialVector(
 }
 
 /** Validate, default, and defensively copy caller-owned state. */
-export function createCompanionState(input: CompanionStateInput = {}): ResolvedCompanionState {
+export function createAffectState(input: AffectStateInput = {}): ResolvedAffectState {
   assertRecord(input, 'state');
   const mood = partialVector(input.mood, 'mood', ['valence', 'arousal', 'dominance'], -1, 1);
   const personality = partialVector(input.personality, 'personality', ['O', 'C', 'E', 'A', 'N'], 0, 1);
@@ -306,13 +306,13 @@ export interface AdapterControl {
 export interface GateInput extends AdapterControl {
   readonly message: string;
   readonly history: ReadonlyArray<DeepReadonly<Message>>;
-  readonly state: DeepReadonly<CompanionState>;
+  readonly state: DeepReadonly<AffectState>;
 }
 
 export interface RetrievalInput extends AdapterControl {
   readonly query: string;
   readonly history: ReadonlyArray<DeepReadonly<Message>>;
-  readonly state: DeepReadonly<CompanionState>;
+  readonly state: DeepReadonly<AffectState>;
   readonly limit: number;
   readonly now: Date;
 }
@@ -321,7 +321,7 @@ export interface GenerateInput extends AdapterControl {
   readonly message: string;
   readonly systemPrompt: string;
   readonly history: ReadonlyArray<DeepReadonly<Message>>;
-  readonly state: DeepReadonly<CompanionState>;
+  readonly state: DeepReadonly<AffectState>;
   readonly intent: Intent;
   readonly emotions: Readonly<Record<string, number>>;
   readonly decoding: DeepReadonly<DecodingParams>;
@@ -342,8 +342,8 @@ export interface ModelAdapter {
 }
 
 export interface StateTransaction {
-  loadState(): Promise<DeepReadonly<CompanionState> | null>;
-  saveState(state: DeepReadonly<CompanionState>): Promise<void>;
+  loadState(): Promise<DeepReadonly<AffectState> | null>;
+  saveState(state: DeepReadonly<AffectState>): Promise<void>;
   listMessages(): Promise<ReadonlyArray<DeepReadonly<Message>>>;
   appendMessage(message: DeepReadonly<Message>): Promise<void>;
 }

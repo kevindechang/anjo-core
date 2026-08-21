@@ -8,7 +8,7 @@ from typing import Protocol, runtime_checkable
 
 from .appraisal import AppraisalPolicyInput, AppraisalResult
 from .models import (
-    CompanionState,
+    AffectState,
     GateInput,
     GateResult,
     GenerateInput,
@@ -44,14 +44,14 @@ class ModelAdapter(Protocol):
 class ConversationTransaction(Protocol):
     """One serialized conversation snapshot with an atomic commit boundary."""
 
-    async def load_state(self) -> CompanionState | None: ...
+    async def load_state(self) -> AffectState | None: ...
 
     async def load_transcript(self) -> tuple[Message, ...]: ...
 
     async def commit(
         self,
         *,
-        state: CompanionState | None,
+        state: AffectState | None,
         messages: Sequence[Message],
     ) -> None:
         """Atomically persist the optional state update and all messages."""
@@ -66,9 +66,9 @@ class StateStore(Protocol):
         """Serialize all turns for this conversation, including across engine instances."""
         ...
 
-    async def load_state(self, conversation_id: str) -> CompanionState | None: ...
+    async def load_state(self, conversation_id: str) -> AffectState | None: ...
 
-    async def save_state(self, conversation_id: str, state: CompanionState) -> None: ...
+    async def save_state(self, conversation_id: str, state: AffectState) -> None: ...
 
     async def load_transcript(self, conversation_id: str) -> tuple[Message, ...]: ...
 

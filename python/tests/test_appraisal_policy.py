@@ -4,14 +4,14 @@ from dataclasses import replace
 
 import pytest
 
-from anjo_core import AppraisalResult, CompanionState
+from affect_kernel import AffectState, AppraisalResult
 
 
 def test_appraisal_result_emotion_mappings_are_defensive_and_immutable() -> None:
     active = {"joy": 0.6}
     carry = {"joy": 0.5}
     result = AppraisalResult(
-        state=CompanionState(occ_carry=carry),
+        state=AffectState(occ_carry=carry),
         active_emotions=active,
         occ_carry=carry,
     )
@@ -46,7 +46,7 @@ def test_appraisal_result_rejects_invalid_emotion_mappings(
     mapping: dict[object, object],
 ) -> None:
     kwargs: dict[str, object] = {
-        "state": CompanionState(),
+        "state": AffectState(),
         "active_emotions": {},
         "occ_carry": {},
     }
@@ -56,7 +56,7 @@ def test_appraisal_result_rejects_invalid_emotion_mappings(
 
 
 def test_appraisal_result_occ_carry_must_match_next_state() -> None:
-    state = CompanionState(occ_carry={"joy": 0.5})
+    state = AffectState(occ_carry={"joy": 0.5})
     with pytest.raises(ValueError, match=r"agree with state\.occ_carry"):
         AppraisalResult(
             state=state,

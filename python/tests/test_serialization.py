@@ -13,10 +13,10 @@ import pickle
 
 import pytest
 
-from anjo_core import (
+from affect_kernel import (
+    AffectState,
     AppraisalGoals,
     AttachmentState,
-    CompanionState,
     ExpectationCues,
     PADMood,
     Personality,
@@ -26,13 +26,13 @@ from anjo_core import (
     StageLadder,
     TurnShapePolicy,
 )
-from anjo_core.models import FrozenMapping
+from affect_kernel.models import FrozenMapping
 
 ROUND_TRIP_CASES = [
     pytest.param(FrozenMapping({"joy": 0.5}), id="frozen-mapping"),
-    pytest.param(CompanionState(), id="default-state"),
+    pytest.param(AffectState(), id="default-state"),
     pytest.param(
-        CompanionState(
+        AffectState(
             mood=PADMood(0.3, -0.2, 0.1),
             personality=Personality(O=0.4, C=0.5, E=0.6, A=0.7, N=0.8),
             goals=AppraisalGoals(rapport=0.5),

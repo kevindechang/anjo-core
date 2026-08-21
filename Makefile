@@ -1,4 +1,4 @@
-.PHONY: setup test lint package check examples
+.PHONY: setup test lint package check examples bench
 
 setup:
 	./scripts/setup.sh
@@ -8,8 +8,8 @@ test:
 	npm test --prefix typescript
 
 lint:
-	python -m ruff check python scripts examples/python-headless
-	python -m ruff format --check python scripts examples/python-headless
+	python -m ruff check python scripts examples/python-headless bench
+	python -m ruff format --check python scripts examples/python-headless bench
 	python -m mypy --config-file python/pyproject.toml python/src
 	npm run typecheck --prefix typescript
 
@@ -23,3 +23,6 @@ check:
 examples:
 	python examples/python-headless/main.py
 	npm run example --prefix typescript
+
+bench:
+	python bench/run.py --write

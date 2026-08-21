@@ -1,0 +1,107 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "affect-kernel: a deterministic affect-state kernel for long-lived AI characters"
+abstract: >-
+  A dependency-free Python and TypeScript library that turns appraised events
+  into bounded PAD mood, OCC-flavored emotion carry, mood-aware memory ranking,
+  response controls, and presence signals. The deterministic surfaces are pinned
+  by a shared cross-runtime fixture so that both runtimes reproduce the same
+  numbers. Constant provenance — published work, production tuning, or bounded
+  arbitrary choice — is documented per constant in docs/foundations.md.
+type: software
+authors:
+  - family-names: Chang
+    given-names: Chia Wei
+    alias: kevindechang
+repository-code: "https://github.com/kevindechang/affect-kernel"
+url: "https://github.com/kevindechang/affect-kernel"
+license: Apache-2.0
+version: 0.1.0
+keywords:
+  - affective computing
+  - appraisal theory
+  - PAD model
+  - OCC model
+  - agent memory
+  - character agents
+  - deterministic simulation
+references:
+  - type: book
+    title: "The Cognitive Structure of Emotions"
+    authors:
+      - family-names: Ortony
+        given-names: Andrew
+      - family-names: Clore
+        given-names: Gerald L.
+      - family-names: Collins
+        given-names: Allan
+    publisher:
+      name: Cambridge University Press
+    year: 1988
+    doi: 10.1017/CBO9780511571299
+  - type: article
+    title: >-
+      Pleasure-arousal-dominance: A general framework for describing and
+      measuring individual differences in temperament
+    authors:
+      - family-names: Mehrabian
+        given-names: Albert
+    journal: Current Psychology
+    volume: 14
+    issue: 4
+    start: 261
+    end: 292
+    year: 1996
+    doi: 10.1007/BF02686918
+  - type: conference-paper
+    title: "ALMA: A Layered Model of Affect"
+    authors:
+      - family-names: Gebhard
+        given-names: Patrick
+    collection-title: >-
+      Proceedings of the Fourth International Joint Conference on Autonomous
+      Agents and Multiagent Systems (AAMAS '05)
+    start: 29
+    end: 36
+    year: 2005
+    doi: 10.1145/1082473.1082478
+  - type: article
+    title: >-
+      Feelings change: Accounting for individual differences in the temporal
+      dynamics of affect
+    authors:
+      - family-names: Kuppens
+        given-names: Peter
+      - family-names: Oravecz
+        given-names: Zita
+      - family-names: Tuerlinckx
+        given-names: Francis
+    journal: Journal of Personality and Social Psychology
+    volume: 99
+    issue: 6
+    start: 1042
+    end: 1060
+    year: 2010
+    doi: 10.1037/a0020962
+  - type: conference-paper
+    title: "Generative Agents: Interactive Simulacra of Human Behavior"
+    authors:
+      - family-names: Park
+        given-names: Joon Sung
+      - family-names: O'Brien
+        given-names: Joseph C.
+      - family-names: Cai
+        given-names: Carrie J.
+      - family-names: Morris
+        given-names: Meredith Ringel
+      - family-names: Liang
+        given-names: Percy
+      - family-names: Bernstein
+        given-names: Michael S.
+    collection-title: >-
+      Proceedings of the 36th Annual ACM Symposium on User Interface Software
+      and Technology (UIST '23)
+    start: 1
+    end: 22
+    year: 2023
+    doi: 10.1145/3586183.3606763

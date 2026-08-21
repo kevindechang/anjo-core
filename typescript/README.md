@@ -1,4 +1,4 @@
-# `@anjo-ai/core`
+# `affect-kernel`
 
 A zero-runtime-dependency TypeScript affect-state kernel for long-lived AI
 characters. It provides deterministic affect, appraisal, memory scoring, presence
@@ -33,4 +33,4 @@ consumer, typechecks and runs three turns, then removes the generated consumer
 artifacts. Internal helpers are not package exports.
 
 Licensed under Apache-2.0. Source and issues are hosted at
-<https://github.com/kevindechang/anjo-core>.
+<https://github.com/kevindechang/affect-kernel>.

@@ -3,14 +3,14 @@ requires = ["hatchling==1.32.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "anjo-core"
+name = "affect-kernel"
 version = "0.1.0"
 description = "Deterministic affect-state kernel for long-lived AI characters, with injected adapters"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-authors = [{ name = "Anjo" }]
+authors = [{ name = "Chang Chia Wei" }]
 keywords = [
   "affect",
   "appraisal",
@@ -35,9 +35,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/kevindechang/anjo-core"
-Repository = "https://github.com/kevindechang/anjo-core"
-Issues = "https://github.com/kevindechang/anjo-core/issues"
+Homepage = "https://github.com/kevindechang/affect-kernel"
+Repository = "https://github.com/kevindechang/affect-kernel"
+Issues = "https://github.com/kevindechang/affect-kernel/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -53,7 +53,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/anjo_core"]
+packages = ["src/affect_kernel"]
 
 [tool.hatch.build.targets.sdist.force-include]
 "../shared/golden/kernel_golden.json" = "tests/fixtures/kernel_golden.json"
@@ -79,7 +79,7 @@ files = ["src"]
 
 [tool.coverage.run]
 branch = true
-source = ["anjo_core"]
+source = ["affect_kernel"]
 
 [tool.coverage.report]
 fail_under = 80

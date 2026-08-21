@@ -1,9 +1,9 @@
 import {
-  CompanionEngine,
+  AffectEngine,
   InMemoryRetriever,
   InMemoryStore,
   ScriptedModelAdapter,
-} from '@anjo-ai/core';
+} from 'affect-kernel';
 
 const store = new InMemoryStore({
   state: { mood: { valence: 0.1, arousal: 0.05, dominance: 0 } },
@@ -29,7 +29,7 @@ const retriever = new InMemoryRetriever([
     significance: 0.6,
   },
 ]);
-const engine = new CompanionEngine({
+const engine = new AffectEngine({
   model,
   store,
   retriever,

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  createCompanionState,
+  createAffectState,
   applyLengthFactor,
   rankCandidates,
   recencyWeight,
@@ -19,11 +19,11 @@ test('length shaping validates and never increases the caller token budget', () 
 });
 
 test('companion state validates finite values, ranges, counts, and OCC values', () => {
-  assert.throws(() => createCompanionState({ mood: { valence: Number.NaN } }), /valence/i);
-  assert.throws(() => createCompanionState({ personality: { O: 1.01 } }), /personality\.O/i);
-  assert.throws(() => createCompanionState({ relationship: { trustScore: -0.1 } }), /trustScore/i);
-  assert.throws(() => createCompanionState({ relationship: { sessionCount: 1.5 } }), /sessionCount/i);
-  assert.throws(() => createCompanionState({ occCarry: { joy: Number.POSITIVE_INFINITY } }), /occCarry/i);
+  assert.throws(() => createAffectState({ mood: { valence: Number.NaN } }), /valence/i);
+  assert.throws(() => createAffectState({ personality: { O: 1.01 } }), /personality\.O/i);
+  assert.throws(() => createAffectState({ relationship: { trustScore: -0.1 } }), /trustScore/i);
+  assert.throws(() => createAffectState({ relationship: { sessionCount: 1.5 } }), /sessionCount/i);
+  assert.throws(() => createAffectState({ occCarry: { joy: Number.POSITIVE_INFINITY } }), /occCarry/i);
 });
 
 test('memory candidates validate finite ranges and require zoned timestamps', () => {

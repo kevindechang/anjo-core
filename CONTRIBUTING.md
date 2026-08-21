@@ -1,4 +1,4 @@
-# Contributing to Anjo Core
+# Contributing to Affect Kernel
 
 Thank you for helping make long-lived character systems more inspectable and
 portable.

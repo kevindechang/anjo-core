@@ -5,7 +5,7 @@ import type { AppraiseTurnInput, AppraiseTurnResult } from './appraisal.js';
 import type {
   AdapterControl,
   AbortSignalLike,
-  CompanionState,
+  AffectState,
   DeepReadonly,
   GateResult,
   Intent,
@@ -19,7 +19,7 @@ import type {
   TurnCallbacks,
   TurnResult,
 } from './contracts.js';
-import { createCompanionState, INTENTS } from './contracts.js';
+import { createAffectState, INTENTS } from './contracts.js';
 import { readonlySnapshot } from './internal/snapshot.js';
 import { stripPyWhitespace } from './internal/whitespace.js';
 import { buildUntrustedContext, composePrompt } from './prompt.js';
@@ -63,7 +63,7 @@ export type AppraisalPolicy = (
 /** Current conversational OCC/PAD mapping, exposed as the reference policy. */
 export const DEFAULT_APPRAISAL_POLICY: AppraisalPolicy = (input) => appraiseTurn(input);
 
-export interface CompanionEngineOptions {
+export interface AffectEngineOptions {
   readonly model: ModelAdapter;
   readonly store: StateStore;
   readonly retriever?: MemoryRetriever;
@@ -72,7 +72,7 @@ export interface CompanionEngineOptions {
   readonly turnShapePolicy?: TurnShapePolicy;
   /** Wording of the presence surface; defaults to the conversational phrasing. */
   readonly presenceLabels?: PresenceLabels;
-  readonly stateFactory?: () => CompanionState;
+  readonly stateFactory?: () => AffectState;
   readonly retrievalLimit?: number;
   /** Opt-in fallback; omitted means gate errors and malformed output propagate. */
   readonly gateFallback?: GateResult;
@@ -357,8 +357,8 @@ function parseAppraisalResult(value: unknown): AppraiseTurnResult {
     || candidate.occCarry === undefined) {
     throw new TypeError('appraisal policy result is missing state fields');
   }
-  const validated = createCompanionState({
-    mood: candidate.mood as NonNullable<CompanionState['mood']>,
+  const validated = createAffectState({
+    mood: candidate.mood as NonNullable<AffectState['mood']>,
     baselineValence: candidate.baselineValence as number,
     occCarry: candidate.occCarry as Readonly<Record<string, number>>,
   });
@@ -384,7 +384,7 @@ function parseAppraisalResult(value: unknown): AppraiseTurnResult {
 }
 
 /** Injected gate → retrieval → appraisal → prompt → generation pipeline. */
-export class CompanionEngine {
+export class AffectEngine {
   private readonly model: ModelAdapter;
   private readonly store: StateStore;
   private readonly retriever: MemoryRetriever | undefined;
@@ -392,7 +392,7 @@ export class CompanionEngine {
   private readonly promptPolicy: PromptPolicy | undefined;
   private readonly turnShapePolicy: TurnShapePolicy | undefined;
   private readonly presenceLabels: PresenceLabels;
-  private readonly stateFactory: (() => CompanionState) | undefined;
+  private readonly stateFactory: (() => AffectState) | undefined;
   private readonly retrievalLimit: number;
   private readonly now: (() => Date) | undefined;
   private readonly limits: Readonly<EngineLimits>;
@@ -402,7 +402,7 @@ export class CompanionEngine {
   private tail: Promise<void> = Promise.resolve();
   private admittedTurns = 0;
 
-  constructor(options: CompanionEngineOptions) {
+  constructor(options: AffectEngineOptions) {
     if (options === null || typeof options !== 'object') {
       throw new TypeError('options must be an object');
     }
@@ -493,7 +493,7 @@ export class CompanionEngine {
 
   async presence(cognition: CognitionState = {}): Promise<PresenceVector> {
     const stored = await this.store.loadState();
-    const state = createCompanionState(stored ?? this.stateFactory?.() ?? {});
+    const state = createAffectState(stored ?? this.stateFactory?.() ?? {});
     return readonlySnapshot(
       buildPresenceVector(state, cognition, this.presenceLabels),
     ) as PresenceVector;
@@ -516,10 +516,10 @@ export class CompanionEngine {
     const history = readonlySnapshot(await transaction.listMessages());
     validateHistory(history, this.limits);
     const stored = await transaction.loadState();
-    const state = readonlySnapshot(createCompanionState(
+    const state = readonlySnapshot(createAffectState(
       stored ?? this.stateFactory?.() ?? {},
     ));
-    const adapterState = readonlySnapshot(createCompanionState({ ...state, carriedThought: null }));
+    const adapterState = readonlySnapshot(createAffectState({ ...state, carriedThought: null }));
     stopIfNeeded(callbacks);
 
     let gate: GateResult;
@@ -589,7 +589,7 @@ export class CompanionEngine {
       expectation: state.expectation,
       message,
     }))));
-    const evolved = readonlySnapshot(createCompanionState({
+    const evolved = readonlySnapshot(createAffectState({
       ...state,
       mood: appraisal.mood,
       baselineValence: appraisal.baselineValence,
@@ -624,7 +624,7 @@ export class CompanionEngine {
       maxChars: this.limits.maxMemoryChars,
       surfaceCarriedThought: history.length === 0,
     });
-    const generationState = readonlySnapshot(createCompanionState({
+    const generationState = readonlySnapshot(createAffectState({
       ...evolved,
       carriedThought: null,
     }));

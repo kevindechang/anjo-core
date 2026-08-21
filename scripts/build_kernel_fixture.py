@@ -657,7 +657,7 @@ def validate_public_fixture(payload: Any) -> None:
                     section,
                     group,
                     case,
-                    source_label="companion_state",
+                    source_label="affect_state",
                 )
 
     if _case_count(payload) != EXPECTED_CASES:
@@ -687,7 +687,7 @@ def build_fixture(source: Path) -> dict[str, Any]:
                 for case in cases
             ]
     for case in public_sections["surfacing"]["presence_vector"]:
-        case["out"]["source"] = "companion_state"
+        case["out"]["source"] = "affect_state"
 
     payload = {
         "_meta": {

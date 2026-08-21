@@ -1,3 +1,13 @@
+/**
+ * Non-habituating OCC/PAD appraisal as pure state transforms.
+ *
+ * The AR(1) home-base-plus-attractor form follows DynAffect (Kuppens, Oravecz &
+ * Tuerlinckx 2010); the emotion names are an OCC subset (Ortony, Clore &
+ * Collins 1988), but this is a lookup table keyed on a pre-classified intent,
+ * not an appraisal process over OCC appraisal variables. Constant provenance —
+ * literature, production-tuned, or bounded arbitrary — is recorded per constant
+ * in docs/foundations.md sections 2-5.
+ */
 import type { AppraisalGoals, PadMood, Personality } from './contracts.js';
 import { DEFAULT_APPRAISAL_GOALS, DEFAULT_PERSONALITY } from './contracts.js';
 import { pyRound } from './internal/round.js';
@@ -81,6 +91,51 @@ const OCC_DECAY: Readonly<Record<string, number>> = Object.freeze({
   joy: 0.9,
 });
 
+/**
+ * The numeric parameters of the affect transforms.
+ *
+ * The kernel already lets a caller replace every *word* it emits -- stage
+ * names, expectation cues, turn-shape rules, presence labels. These are the
+ * *numbers*, exposed on the same principle: a domain that disagrees with a
+ * coefficient should be able to change it without forking the library.
+ *
+ * The defaults reproduce the pinned cross-runtime contract exactly. Provenance
+ * for each value is recorded in docs/foundations.md.
+ */
+export interface AffectDynamics {
+  readonly inertiaBase: number;
+  readonly inertiaNeuroticism: number;
+  readonly inertiaExtraversion: number;
+  readonly inertiaMin: number;
+  readonly inertiaMax: number;
+  readonly restingDominance: number;
+  readonly baselineRetention: number;
+  readonly baselineIntake: number;
+  readonly ambiguityThreshold: number;
+  readonly ambiguityNegativeGain: number;
+  readonly ambiguityPositiveGain: number;
+  readonly carryDecay: Readonly<Record<string, number>>;
+  readonly carryDecayDefault: number;
+  readonly carryFloor: number;
+}
+
+export const DEFAULT_AFFECT_DYNAMICS: AffectDynamics = Object.freeze({
+  inertiaBase: 0.8,
+  inertiaNeuroticism: 0.2,
+  inertiaExtraversion: 0.1,
+  inertiaMin: 0.62,
+  inertiaMax: 0.92,
+  restingDominance: 0.1,
+  baselineRetention: 0.98,
+  baselineIntake: 0.02,
+  ambiguityThreshold: 0.2,
+  ambiguityNegativeGain: 1.1,
+  ambiguityPositiveGain: 1.04,
+  carryDecay: OCC_DECAY,
+  carryDecayDefault: 0.8,
+  carryFloor: 0.05,
+});
+
 function clamp(value: number, low: number, high: number): number {
   return Math.max(low, Math.min(high, value));
 }
@@ -97,9 +152,15 @@ export function stageInt(
   return 1;
 }
 
-export function moodInertia(personality: Personality): number {
-  const inertia = 0.8 + 0.2 * (personality.N - 0.5) - 0.1 * (personality.E - 0.5);
-  return clamp(inertia, 0.62, 0.92);
+export function moodInertia(
+  personality: Personality,
+  dynamics: AffectDynamics = DEFAULT_AFFECT_DYNAMICS,
+): number {
+  const inertia =
+    dynamics.inertiaBase +
+    dynamics.inertiaNeuroticism * (personality.N - 0.5) -
+    dynamics.inertiaExtraversion * (personality.E - 0.5);
+  return clamp(inertia, dynamics.inertiaMin, dynamics.inertiaMax);
 }
 
 export function baselineWeight(
@@ -117,11 +178,12 @@ export function decayMood(
   stage: number,
   baselineValence: number,
   ladder: StageLadder = DEFAULT_STAGE_LADDER,
+  dynamics: AffectDynamics = DEFAULT_AFFECT_DYNAMICS,
 ): PadMood {
-  const inertia = moodInertia(personality);
+  const inertia = moodInertia(personality, dynamics);
   const weight = baselineWeight(stage, ladder);
   const setValence = weight * baselineValence;
-  const setDominance = weight * 0.1;
+  const setDominance = weight * dynamics.restingDominance;
   return {
     valence: pyRound(clamp(setValence + inertia * (mood.valence - setValence), -1, 1), 4),
     arousal: pyRound(clamp(inertia * mood.arousal, -1, 1), 4),
@@ -143,6 +205,7 @@ export function appraiseInput(
   goals: AppraisalGoals,
   intent: string,
   baselineValence: number,
+  dynamics: AffectDynamics = DEFAULT_AFFECT_DYNAMICS,
 ): AppraiseInputResult {
   const emotions: Record<string, number> = {
     joy: 0,
@@ -198,11 +261,19 @@ export function appraiseInput(
       break;
   }
 
-  if (AMBIGUOUS_INTENTS.has(intent) && Math.abs(valence) >= 0.2) {
-    const gain = valence < 0 ? 0.1 : 0.04;
-    valence = pyRound(clamp(valence * (1 + gain), -1, 1), 4);
+  if (AMBIGUOUS_INTENTS.has(intent) && Math.abs(valence) >= dynamics.ambiguityThreshold) {
+    const gain =
+      valence < 0 ? dynamics.ambiguityNegativeGain : dynamics.ambiguityPositiveGain;
+    valence = pyRound(clamp(valence * gain, -1, 1), 4);
   }
-  const nextBaseline = pyRound(clamp(baselineValence * 0.98 + valence * 0.02, -1, 1), 4);
+  const nextBaseline = pyRound(
+    clamp(
+      baselineValence * dynamics.baselineRetention + valence * dynamics.baselineIntake,
+      -1,
+      1,
+    ),
+    4,
+  );
   return {
     emotions,
     mood: { valence, arousal, dominance },
@@ -278,11 +349,14 @@ export function expectationEmotions(
   return {};
 }
 
-export function occCarryDecay(carry: Readonly<Record<string, number>>): Record<string, number> {
+export function occCarryDecay(
+  carry: Readonly<Record<string, number>>,
+  dynamics: AffectDynamics = DEFAULT_AFFECT_DYNAMICS,
+): Record<string, number> {
   const result: Record<string, number> = {};
   for (const [emotion, intensity] of Object.entries(carry)) {
-    const decayed = intensity * (OCC_DECAY[emotion] ?? 0.8);
-    if (decayed > 0.05) result[emotion] = decayed;
+    const decayed = intensity * (dynamics.carryDecay[emotion] ?? dynamics.carryDecayDefault);
+    if (decayed > dynamics.carryFloor) result[emotion] = decayed;
   }
   return result;
 }
@@ -326,6 +400,8 @@ export interface AppraiseTurnInput {
   ladder?: StageLadder;
   /** Expectation-violation vocabulary; defaults to the English conversational preset. */
   cues?: ExpectationCues;
+  /** Numeric affect parameters; defaults to the pinned cross-runtime contract. */
+  dynamics?: AffectDynamics;
 }
 
 export interface AppraiseTurnResult {
@@ -340,20 +416,23 @@ export interface AppraiseTurnResult {
  * input; this function never invokes a model or persistence layer.
  */
 export function appraiseTurn(input: AppraiseTurnInput): AppraiseTurnResult {
+  const dynamics = input.dynamics ?? DEFAULT_AFFECT_DYNAMICS;
   const decayedMood = decayMood(
     input.mood,
     input.personality,
     input.stageInt,
     input.baselineValence,
     input.ladder ?? DEFAULT_STAGE_LADDER,
+    dynamics,
   );
   const appraisal = appraiseInput(
     decayedMood,
     input.goals,
     input.intent,
     input.baselineValence,
+    dynamics,
   );
-  const decayedCarry = occCarryDecay(input.occCarry ?? {});
+  const decayedCarry = occCarryDecay(input.occCarry ?? {}, dynamics);
   const keys = [...new Set([
     ...Object.keys(appraisal.emotions),
     ...Object.keys(decayedCarry),
@@ -370,7 +449,7 @@ export function appraiseTurn(input: AppraiseTurnInput): AppraiseTurnResult {
 
   const carry: Record<string, number> = {};
   for (const [emotion, intensity] of Object.entries(active)) {
-    if (intensity > 0.05) carry[emotion] = intensity;
+    if (intensity > dynamics.carryFloor) carry[emotion] = intensity;
   }
   return {
     mood: appraisal.mood,

@@ -1,5 +1,5 @@
 {
-  "name": "@anjo-ai/core",
+  "name": "affect-kernel",
   "version": "0.1.0",
   "description": "Deterministic affect-state kernel for long-lived AI characters, model-agnostic",
   "keywords": [
@@ -15,14 +15,14 @@
     "character"
   ],
   "license": "Apache-2.0",
-  "homepage": "https://github.com/kevindechang/anjo-core#readme",
+  "homepage": "https://github.com/kevindechang/affect-kernel#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kevindechang/anjo-core.git",
+    "url": "git+https://github.com/kevindechang/affect-kernel.git",
     "directory": "typescript"
   },
   "bugs": {
-    "url": "https://github.com/kevindechang/anjo-core/issues"
+    "url": "https://github.com/kevindechang/affect-kernel/issues"
   },
   "type": "module",
   "sideEffects": false,
