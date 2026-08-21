@@ -2,6 +2,7 @@
   "name": "affect-kernel",
   "version": "0.1.0",
   "description": "Deterministic affect-state kernel for long-lived AI characters, model-agnostic",
+  "author": "Chang Chia Wei",
   "keywords": [
     "affect",
     "appraisal",

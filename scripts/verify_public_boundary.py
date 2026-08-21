@@ -33,6 +33,7 @@ ALLOWED_TOP_LEVEL = {
     "README.md",
     "ROADMAP.md",
     "SECURITY.md",
+    "SUPPORT.md",
     "bench",
     "docs",
     "examples",

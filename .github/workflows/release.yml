@@ -1,7 +1,8 @@
 name: Release
 
-# Publishes both runtimes from one tag. The full check suite must pass first, so
-# a tag can never publish something CI would have rejected.
+# Publishes both runtimes and GitHub release notes from one tag. The full check
+# suite must pass first, so a tag can never publish something CI would have
+# rejected.
 on:
   push:
     tags: ["v*"]
@@ -96,3 +97,21 @@ jobs:
       - run: npm publish ./typescript --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  github-release:
+    needs: [pypi, npm]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Publish generated release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          --repo "$GITHUB_REPOSITORY"
+          --verify-tag
+          --generate-notes
+          --title "$GITHUB_REF_NAME"
