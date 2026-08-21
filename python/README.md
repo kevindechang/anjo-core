@@ -1,8 +1,24 @@
 # affect-kernel for Python
 
 This directory contains the zero-runtime-dependency Python implementation of the
-deterministic affect-state kernel for long-lived AI characters. Install it with
-`python -m pip install -e .`; run its tests with `python -m pytest`.
+deterministic affect-state kernel for long-lived AI characters.
+
+```bash
+python -m pip install affect-kernel
+```
+
+```python
+from affect_kernel import AffectState, appraise_turn
+
+state = AffectState()
+result = appraise_turn(state, "CURIOSITY")
+print(result.state.mood)
+```
+
+The [repository README](https://github.com/kevindechang/affect-kernel#readme)
+contains runnable headless examples, benchmark results, limitations, and the
+cross-runtime contract. From a source checkout, run `./scripts/setup.sh` and
+`./scripts/check.sh` at the repository root.
 
 The package deliberately leaves model inference, persistence, and retrieval I/O
 behind injected protocols. Its cross-runtime guarantee covers deterministic,

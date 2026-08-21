@@ -116,6 +116,19 @@ def test_boundary_rejects_binary_payload_in_an_allowed_directory(
     assert any("binary file is not allowed" in error for error in errors)
 
 
+def test_boundary_allows_reviewed_support_policy(
+    tmp_path: Path,
+    fixture: dict[str, Any],
+    continuity_fixture: dict[str, Any],
+) -> None:
+    _write_minimal_candidate(tmp_path, fixture, continuity_fixture)
+    (tmp_path / "SUPPORT.md").write_text("# Support\n", encoding="utf-8")
+
+    errors = verify(tmp_path)
+
+    assert not any("unexpected top-level entries" in error for error in errors)
+
+
 def test_boundary_scans_force_tracked_ignored_paths(
     tmp_path: Path,
     fixture: dict[str, Any],

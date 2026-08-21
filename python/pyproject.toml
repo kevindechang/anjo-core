@@ -38,6 +38,8 @@ dependencies = []
 Homepage = "https://github.com/kevindechang/affect-kernel"
 Repository = "https://github.com/kevindechang/affect-kernel"
 Issues = "https://github.com/kevindechang/affect-kernel/issues"
+Changelog = "https://github.com/kevindechang/affect-kernel/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/kevindechang/affect-kernel/tree/main/docs"
 
 [project.optional-dependencies]
 dev = [

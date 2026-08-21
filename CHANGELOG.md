@@ -11,7 +11,19 @@ to a pinned vector is called out here.
 
 ## [Unreleased]
 
-### Added
+No changes yet.
+
+## [0.1.0] - 2026-08-21
+
+First public release: the deterministic kernel extracted from
+[Anjo](https://anjo.love) and generalized beyond conversation.
+
+The repository was briefly public as `anjo-core` before this release and was
+renamed to `affect-kernel` to name the library by what it does rather than by
+the application it came from. No version was ever tagged or published under the
+old name, so no installed artifact is affected.
+
+### Evaluation and hardening
 
 - `AffectDynamics` and `RetrievalWeights`: the numeric coefficients are now
   caller-owned data, on the same principle that already made stage names,
@@ -41,14 +53,14 @@ to a pinned vector is called out here.
   carries signal and that mood congruence is worth +0.012 MRR in a regime built
   to favour it.
 
-### Fixed
+### Corrected claims
 
 - Retracted a claim in `docs/foundations.md` and in the `recency_weight`
   docstring that linear-to-a-floor recency was "the least defensible" curve in
   the module. At a matched 30-day half-life it out-ranks both the exponential
   and the power-law curve.
 
-### Changed
+### Breaking pre-release changes
 
 - **Breaking (pre-release):** `CompanionState` is now `AffectState` and
   `CompanionEngine` is `AffectEngine`, in both runtimes, along with
@@ -69,17 +81,7 @@ to a pinned vector is called out here.
   (`x1.10` negative, `x1.04` positive above `|v| >= 0.20`), which was
   implemented but undocumented.
 
-## [0.1.0]
-
-First public release: the deterministic kernel extracted from
-[Anjo](https://anjo.love) and generalized beyond conversation.
-
-The repository was briefly public as `anjo-core` before this release and was
-renamed to `affect-kernel` to name the library by what it does rather than by
-the application it came from. No version was ever tagged or published under the
-old name, so no installed artifact is affected.
-
-### Added
+### Initial public surface
 
 - Behaviorally aligned Python and TypeScript kernels with no runtime
   dependencies, both published as `affect-kernel`.
@@ -108,7 +110,7 @@ old name, so no installed artifact is affected.
 - Public-boundary verification, pinned Gitleaks history scan, and reproducible
   packaging checks.
 
-### Fixed
+### Pre-release fixes
 
 - `FrozenMapping` is picklable. The default `dict` pickle protocol restores
   items by mutating a fresh instance, which the class refuses, so every state

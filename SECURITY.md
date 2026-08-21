@@ -2,8 +2,12 @@
 
 ## Supported versions
 
-Until the first stable release, security fixes are applied to the latest commit
-on `main`.
+Security fixes are applied to the latest `0.1.x` release and to `main`.
+
+| Version | Supported |
+|---|---|
+| `0.1.x` | Yes |
+| `< 0.1` | No |
 
 ## Reporting a vulnerability
 
@@ -29,4 +33,3 @@ adapters belong to the application integrating them. This project will still
 accept reports about unsafe defaults, state-boundary violations, prompt injection
 across adapter boundaries, data leakage in examples/tests, and dependency or
 packaging vulnerabilities.
-

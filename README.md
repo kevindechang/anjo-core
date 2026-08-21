@@ -1,6 +1,8 @@
 # Affect Kernel
 
 [![CI](https://github.com/kevindechang/affect-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/kevindechang/affect-kernel/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/affect-kernel.svg)](https://pypi.org/project/affect-kernel/)
+[![npm](https://img.shields.io/npm/v/affect-kernel.svg)](https://www.npmjs.com/package/affect-kernel)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](python/)
 [![Node](https://img.shields.io/badge/node-20%2B-blue.svg)](typescript/)
@@ -119,22 +121,21 @@ before quoting any of this.
 
 ## Install
 
-Neither runtime has a production dependency. Install from a checkout:
+Both packages have zero runtime dependencies:
 
 ```bash
-# Python 3.11+
-python -m venv .venv && source .venv/bin/activate
-python -m pip install -e "./python[dev]"
-pytest python/tests
-
-# Node.js 20+
-npm ci --prefix typescript
-npm test --prefix typescript
+python -m pip install affect-kernel  # import affect_kernel
+npm install affect-kernel
 ```
 
-> Registry releases are not published yet. Once `v0.1.0` is tagged, the
-> [release workflow](.github/workflows/release.yml) publishes `affect-kernel` to PyPI
-> via trusted publishing and `affect-kernel` to npm with provenance.
+For a contributor checkout:
+
+```bash
+git clone https://github.com/kevindechang/affect-kernel.git
+cd affect-kernel
+./scripts/setup.sh
+./scripts/check.sh
+```
 
 ## Core contracts
 

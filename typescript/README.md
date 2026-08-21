@@ -5,6 +5,14 @@ characters. It provides deterministic affect, appraisal, memory scoring, presenc
 surfacing, and an engine with injected model, appraisal, storage, and retrieval
 adapters. Application instructions and prompt wording remain caller-owned.
 
+```sh
+npm install affect-kernel
+```
+
+The [repository README](https://github.com/kevindechang/affect-kernel#readme)
+contains runnable headless examples, benchmark results, limitations, and the
+cross-runtime contract.
+
 The engine runtime-validates unknown gate output, normalizes built-in or explicitly
 registered custom intents, and propagates gate errors unless `gateFallback` is supplied.
 `AppraisalPolicy` is a synchronous injection seam; `DEFAULT_APPRAISAL_POLICY` preserves
