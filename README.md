@@ -7,17 +7,70 @@
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](python/)
 [![Node](https://img.shields.io/badge/node-20%2B-blue.svg)](typescript/)
 
-A deterministic affect-state engine for long-lived AI characters, in Python and
-TypeScript, with no runtime dependencies.
+**Deterministic emotional continuity for AI characters.**
 
-It turns appraised events into bounded mood, memory ranking, response shape, and
-presence signals — instead of asking a language model to improvise continuity
-from scratch on every turn. Extracted from [Anjo](https://anjo.love), a
-production companion app, and generalized.
+Affect Kernel is a dependency-free state layer for companions, NPCs, tutors,
+and other long-lived characters. It turns appraised events into bounded mood,
+emotion carry, memory scores, response controls, and UI-ready presence signals.
 
-## See it move
+You bring the model, memory backend, and persistence. The kernel gives you the
+part that should be inspectable and replayable, with Python and TypeScript
+pinned to the same behavioral contract.
 
-Every number below is the kernel. Run it yourself with no API key:
+It was extracted from the deterministic state machinery behind
+[Anjo](https://anjo.love), then stripped of product prose and private policy and
+generalized behind replaceable contracts.
+
+```text
+appraised event ──→ PAD/OCC state ──→ response controls + presence
+memory candidates ──→ bounded ranking ────────────────┘
+```
+
+| What you get | What you keep control of |
+|---|---|
+| Bounded, non-mutating state transitions | Model provider and prompts |
+| Mood-aware candidate scoring | Embeddings and vector database |
+| Response and decoding controls | Persistence and transactions |
+| Semantic presence for UI surfaces | Domain vocabulary and safety policy |
+| Cross-runtime behavioral fixtures | Relationship and personality evolution |
+
+## Start in 60 seconds
+
+Install either runtime. Both packages have zero runtime dependencies.
+
+```bash
+python -m pip install affect-kernel  # import affect_kernel
+npm install affect-kernel
+```
+
+Appraise one event and turn the resulting state into a UI-ready presence
+payload:
+
+```python
+from affect_kernel import AffectState, appraise_turn, build_presence_vector
+
+state = AffectState()
+step = appraise_turn(
+    state,
+    "CURIOSITY",
+    message="I picked up my sketchbook again.",
+)
+
+state = step.state
+print(build_presence_vector(state).to_dict()["affect"])
+# {'valence': 0.208, 'arousal': 0.15, 'dominance': 0.05}
+```
+
+That call is a pure state transition: no model, network, global state, or hidden
+persistence. For complete turn orchestration, start with the credential-free
+[Python engine example](examples/python-headless/main.py) or
+[TypeScript engine example](examples/typescript-headless/src/main.ts).
+
+## Watch state accumulate
+
+The headless example injects an in-memory store, one synthetic memory, and a
+scripted model. The text is fixed; the state changes are computed by the kernel.
+The state portion of its output is:
 
 ```bash
 python examples/python-headless/main.py
@@ -25,27 +78,18 @@ python examples/python-headless/main.py
 
 ```text
 Turn 1 — User: I picked up my sketchbook again.
-State: intent=CURIOSITY,      PAD=(0.2844, 0.1868, 0.0500), evidence=['demo-memory']
+State: intent=CURIOSITY, PAD=(0.2844, 0.1868, 0.0500), evidence=['demo-memory']
 
 Turn 2 — User: The first page looks terrible.
-State: intent=VULNERABILITY,  PAD=(0.3590, 0.2373, 0.0368), evidence=none
+State: intent=VULNERABILITY, PAD=(0.3590, 0.2373, 0.0368), evidence=none
 
 Turn 3 — User: Still, I want to try again tomorrow.
-State: intent=CURIOSITY,      PAD=(0.4825, 0.3244, 0.0770), evidence=none
+State: intent=CURIOSITY, PAD=(0.4825, 0.3244, 0.0770), evidence=none
 ```
 
-> The reply text in these examples comes from a **scripted adapter** — fixed
-> strings, not model output. The examples inject a scripted model and an
-> in-memory store precisely so you can watch the state change without a
-> provider. The PAD numbers are what the library computes.
-
-The same kernel with **no conversation in it** — a game NPC whose disposition
-tracks world events, with its own progression ladder and its own vocabulary
-([full example](examples/game-npc/)):
-
-```bash
-python examples/game-npc/main.py
-```
+The same machinery can track world events instead of conversation. The
+[game NPC example](examples/game-npc/main.py) replaces the progression ladder,
+appraisal policy, and surface vocabulary:
 
 ```text
 world event         valence  arousal  dominance
@@ -57,78 +101,194 @@ PLAYER_HEALED       -0.0849   0.4046     0.1709
 disposition: wary | presence: on watch (posted)
 ```
 
-## Why this exists
+## Where it fits
 
-Memory libraries answer *what should this agent recall?* Agent frameworks
-answer *how should this agent run?* Affect Kernel covers the layer between
-them: *how should an experience change the character, and what part of that
-change should become perceptible?*
-
-| | Focus | Relationship to this project |
-|---|---|---|
-| [mem0](https://github.com/mem0ai/mem0), [Zep](https://github.com/getzep/zep) | Extracting, storing, and recalling memory | Complementary — plug one in behind `MemoryRetriever`; this library scores and ranks what they return |
-| [Letta / MemGPT](https://github.com/letta-ai/letta) | A stateful agent server with self-editing memory | Overlapping ambition, opposite shape: Letta is a service you run, this is a dependency-free library you embed |
-| [LangGraph](https://github.com/langchain-ai/langgraph), [Agno](https://github.com/agno-agi/agno) | Orchestrating steps, tools, and control flow | Complementary — this is one deterministic node inside whatever graph you already have |
-| Prompt-only "personality" | A persona paragraph in the system prompt | The thing this replaces: a paragraph cannot decay, carry, or accumulate |
-
-The distinguishing bet: **the parts that can be deterministic should be**. Mood
-dynamics, appraisal, ranking, and surfacing are ordinary math with pinned
-behavior, not a model call you hope stays consistent.
-
-Every constant in that math is labelled in [foundations](docs/foundations.md)
-as literature-grounded, production-tuned, or an arbitrary bounded choice — with
-the departures from the papers it cites stated rather than glossed.
+Memory systems answer **what happened?** Agent frameworks answer **what runs
+next?** Affect Kernel answers **how should this event change the character, and
+what should become perceptible?**
 
 ```text
-application event
-  → application-owned interpreter
-  → appraisal policy
-  → deterministic affect transition
-  → mood-aware candidate ranking
-  → response controls + semantic presence
-  → model adapter
-  → atomic persistence
+message or world event
+        │
+        ▼
+ModelAdapter.gate or your own event interpreter
+        │ normalized intent
+        ▼
+MemoryRetriever → deterministic ranking
+        │
+        ▼
+AppraisalPolicy → bounded affect transition
+        │
+        ▼
+response controls + untrusted evidence → ModelAdapter.generate
+        │
+        ▼
+StateStore atomic commit + presence payload
 ```
 
-## Does it actually work?
+It is designed to sit beside tools such as
+[mem0](https://github.com/mem0ai/mem0) or [Zep](https://github.com/getzep/zep)
+for memory, and inside orchestration such as
+[LangGraph](https://github.com/langchain-ai/langgraph) or
+[Agno](https://github.com/agno-agi/agno). Unlike a hosted agent server, it is a
+small library you embed and own.
 
-Partly. `bench/` is a seeded, dependency-free retrieval benchmark that tests the
-scorer against plain similarity and against the additive form used by Generative
-Agents, across five regimes. It reports where the kernel loses:
+A persona prompt describes a character. Affect Kernel represents what changed
+after an event. It does **not** yet prove that this produces better long-horizon
+responses than a prompt-only persona; that comparison remains an open
+evaluation problem.
 
-```bash
-python bench/run.py     # regenerated and drift-checked in CI
+## Choose your integration level
+
+Use the pure functions when your application already owns classification and
+control flow. Use `AffectEngine` when you want the reference turn transaction.
+
+| Job | Python | TypeScript |
+|---|---|---|
+| Create or validate state | `AffectState` | `createAffectState` |
+| Appraise one event | `appraise_turn` | `appraiseTurn` |
+| Rank memory candidates | `rank_candidates` | `rankCandidates` |
+| Derive response controls | `decoding_params` | `decodingParams` |
+| Build presence payload | `build_presence_vector` | `buildPresenceVector` |
+| Orchestrate a complete turn | `AffectEngine` | `AffectEngine` |
+
+The engine coordinates this sequence:
+
+1. Load state and gate the input.
+2. Optionally retrieve and deterministically rank evidence.
+3. Apply the appraisal policy and derive response controls.
+4. Ask the injected model adapter to generate.
+5. Atomically commit the next state and messages.
+
+Its four boundary contracts are deliberately small:
+
+- `ModelAdapter` classifies/gates and generates.
+- `MemoryRetriever` returns candidate memories or evidence.
+- `AppraisalPolicy` maps a normalized event to a state transition.
+- `StateStore` provides per-conversation transactions and atomic commits.
+
+See the [Python package guide](python/README.md),
+[TypeScript package guide](typescript/README.md), and
+[architecture](docs/architecture.md) for signatures and adapter requirements.
+
+## State model
+
+`AffectState` is serializable and caller-owned. It contains:
+
+- PAD mood: valence, arousal, and dominance
+- OCC-inspired emotion carry between turns
+- OCEAN (Big Five) personality and appraisal goals
+- relationship stage, trust, session count, and prior-session valence
+- attachment, baseline valence, expectation, and a carried thought
+
+The reference appraisal updates **mood, baseline valence, and OCC carry**. It
+does not automatically evolve personality, relationship stage, trust, or
+attachment. Those are inputs your application may update through its own
+policy, reflection process, or progression system.
+
+All numeric state is validated and bounded. Python state objects are frozen
+dataclasses; TypeScript inputs are normalized into defensively copied,
+statically read-only structures.
+
+## Customize without forking
+
+Domain vocabulary is configuration, not hard-coded behavior:
+
+| Seam | Reference preset | Replace it with |
+|---|---|---|
+| `StageLadder` | stranger → intimate | NPC reputation, tutoring levels, game factions |
+| `AppraisalPolicy` | conversational intents | any synchronous event → transition function |
+| `ExpectationCues` | English sentiment cues | another language, domain tokens, or nothing |
+| `TurnShapePolicy` | companion cadence | your own response-shaping rules |
+| `PresenceLabels` | “here with you” | UI text for your product or world |
+| `PromptPolicy` | neutral prompt sections | your own prompt language and structure |
+
+The coefficients are configurable too. `AffectDynamics` exposes inertia,
+resting dominance, baseline blending, and per-emotion decay;
+`RetrievalWeights` exposes recency, salience, episode, and mood-congruence
+weights.
+
+```python
+from affect_kernel import AffectDynamics, AffectState, appraise_turn
+
+state = AffectState()
+
+# A character whose mood carries less strongly between events.
+volatile = AffectDynamics(inertia_base=0.30, inertia_min=0.0, inertia_max=0.5)
+step = appraise_turn(state, "CURIOSITY", dynamics=volatile)
 ```
 
-| Finding | Result |
+Defaults reproduce the pinned cross-runtime fixtures. Custom values
+intentionally take you off that behavioral contract. Every default constant is
+tagged in [foundations](docs/foundations.md) as literature-grounded,
+production-tuned, or a bounded design choice.
+
+## Evidence and limits
+
+The deterministic contract is checked against **225 shared vectors** and
+**3 longitudinal traces** in both runtimes. The vectors cover affect math,
+appraisal, ranking, presence, and state transforms; the traces cover engagement,
+conflict/recovery, and decay. See the [parity contract](docs/parity-contract.md)
+and [provenance](docs/provenance.md).
+
+The seeded retrieval benchmark is intentionally adversarial. It compares the
+current scorer with plain similarity and the additive form used by Generative
+Agents across five synthetic regimes:
+
+| Finding | MRR result |
+|---|---:|
+| Assumptions hold | **+0.415** vs similarity-only |
+| Assumptions are violated | **−0.175** vs similarity-only |
+| Additive form vs current multiplicative form | **+0.111** against the current scorer |
+| `significance_weight` from `0.03` to `1.0` | `0.858` → `0.960` |
+| Mood congruence in a favorable regime | **+0.012** |
+
+Run it with `python bench/run.py`. These are synthetic corpora with
+machine-assigned ground truth, not evidence of better conversations or user
+outcomes. Read the [benchmark limitations](bench/README.md#limitations--read-before-quoting-any-number)
+before quoting a result.
+
+This project is also **not** a complete agent, an emotion detector, a vector
+database, a reflection engine, or a production safety layer. It must not be
+treated as a clinical model or as evidence that a system feels emotions. The
+full boundary is documented in [limitations](docs/limitations.md).
+
+## Security and privacy boundary
+
+The core has no network client and does not persist or transmit data by itself.
+Reference stores are in-memory only. Retrieved text and carried thoughts are
+typed as untrusted evidence and kept structurally separate from the system
+prompt.
+
+Your adapters define the real privacy and security boundary. A model adapter
+can defeat that separation if it inserts retrieved text into privileged
+instructions; a store adapter can persist sensitive data insecurely. Read the
+[threat model](docs/threat-model.md) before a production integration and report
+vulnerabilities through [SECURITY.md](SECURITY.md).
+
+## Documentation
+
+| Read this | When you need |
 |---|---|
-| Helps when its assumptions hold | **+0.415 MRR** over similarity-only |
-| Hurts when they don't | **−0.175 MRR** — the machinery is not free |
-| Additive form (Park et al.) beats multiplicative | **+0.111 MRR** against us |
-| …but the cause is the weight, not the shape | `significance_weight` `0.03`→`1.0` lifts MRR `0.858`→`0.960` |
-| Linear recency vs exponential and power-law | linear wins by `0.009` / `0.044` at matched half-life |
-| Mood congruence, in a regime built to favour it | **+0.012 MRR** — barely earns its place |
+| [Architecture](docs/architecture.md) | data flow, components, and transaction semantics |
+| [Algorithm and invariants](docs/algorithm.md) | equations, bounds, and edge-case behavior |
+| [Foundations](docs/foundations.md) | sources and provenance for every constant |
+| [Design principles](docs/design-principles.md) | why the public seams have this shape |
+| [Parity contract](docs/parity-contract.md) | what Python and TypeScript guarantee in common |
+| [Threat model](docs/threat-model.md) | trust boundaries and adapter obligations |
+| [Limitations](docs/limitations.md) | unsupported claims and deliberately excluded layers |
 
-The most useful thing the benchmark found is a bug in our own documentation:
-`foundations.md` called the linear recency curve "the least defensible" choice
-in the module, and the evidence says otherwise. That claim has been retracted.
+## Contributing
 
-**These are synthetic corpora with machine-assigned ground truth**, and the
-README's larger claim — that a deterministic kernel holds character state better
-than a prompt-only persona — is **not tested and remains unsupported**. Read
-[the limitations](bench/README.md#limitations--read-before-quoting-any-number)
-before quoting any of this.
+Good first contributions include storage or model adapters, adversarial cases,
+domain-specific appraisal presets, serialization fixtures, language ports, and
+evaluation tools. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[roadmap](ROADMAP.md).
 
-## Install
-
-Both packages have zero runtime dependencies:
-
-```bash
-python -m pip install affect-kernel  # import affect_kernel
-npm install affect-kernel
-```
-
-For a contributor checkout:
+Use [Discussions](https://github.com/kevindechang/affect-kernel/discussions) for
+integration questions and design ideas, or
+[Issues](https://github.com/kevindechang/affect-kernel/issues) for reproducible
+bugs and scoped feature requests.
 
 ```bash
 git clone https://github.com/kevindechang/affect-kernel.git
@@ -137,134 +297,9 @@ cd affect-kernel
 ./scripts/check.sh
 ```
 
-## Core contracts
+`./scripts/check.sh` runs the same repository checks as CI.
 
-Both runtimes expose the same conceptual seams:
-
-- `ModelAdapter` — classify/gate and generate
-- `AppraisalPolicy` — translate a normalized event into an affect transition
-- `StateStore` — load/save state and transcript, with an atomic commit
-- `MemoryRetriever` — return grounded candidate memories
-- `AffectEngine` — orchestrate one turn without choosing a provider or database
-
-Every piece of domain vocabulary is data you can replace, not behavior baked into
-the kernel:
-
-| Seam | Reference preset | Replace it with |
-|---|---|---|
-| `StageLadder` | stranger → intimate | your own rungs and resting weights; `strict=True` to reject unmapped stages |
-| `AppraisalPolicy` | English conversational intents | any synchronous event → transition function |
-| `ExpectationCues` | English sentiment words | your own tokens, or nothing |
-| `TurnShapePolicy` | companion cadence rules | your own wording and cue-suppression rules |
-| `PresenceLabels` | "here with you" | your own surface wording |
-| `PromptPolicy` | neutral section headings | your own prompt language |
-
-So is every coefficient. `AffectDynamics` and `RetrievalWeights` expose the
-numbers on the same principle — inertia terms, the resting-dominance
-coefficient, the baseline blend, per-emotion carry decay, the recency horizon
-and floor, the episode bonus, the mood-congruence threshold and its asymmetry:
-
-```python
-from affect_kernel import AffectDynamics, appraise_turn
-
-# A character whose mood barely carries between turns.
-volatile = AffectDynamics(inertia_base=0.30, inertia_min=0.0, inertia_max=0.5)
-result = appraise_turn(state, "CURIOSITY", dynamics=volatile)
-```
-
-The defaults reproduce the pinned cross-runtime fixture exactly; passing your
-own takes you off that contract deliberately rather than by accident. Which
-constants are literature-grounded and which are one product's taste is recorded
-in [foundations](docs/foundations.md).
-
-## What is public
-
-- OCC-inspired intent appraisal and PAD mood dynamics
-- Big Five N/E-conditioned affect inertia
-- an injected appraisal-policy seam with an English conversational preset
-- bounded memory relevance, recency, salience, and mood-congruence scoring
-- compact presence/state surfacing
-- configurable prompt composition with a neutral reference policy
-- injected model, store, and retriever contracts
-- headless Python and TypeScript engines
-- **225 synthetic cross-runtime vectors** covering the generalizable math and
-  state transforms — derived from the deterministic behavior of the production
-  app, with product prose and policy excluded (see [provenance](docs/provenance.md))
-- **3 synthetic longitudinal traces** covering engagement, conflict/recovery,
-  and affect decay
-- credential-free scripted examples for a companion and a game NPC
-
-## What is deliberately not here
-
-- Anjo's identity, static persona, product-tuned prompt text, or private policies
-- hosted application, mobile UI, accounts, billing, analytics, or deployment
-- production user data, memory databases, operational documents, or git history
-- claims that two language models will produce identical conversations
-- production safety, clinical, or dependency-prevention policy
-- automatic relationship, attachment, or personality evolution
-
-Applications must supply and evaluate those layers for their own domain. Read
-[limitations](docs/limitations.md) before making product claims.
-
-## Runtime parity
-
-The deterministic public contract is intentionally narrower than the engine:
-
-| Surface | Shared parity | Notes |
-|---|---:|---|
-| Affect math | Yes | Mood octant, decoding envelope, length control, ambivalence |
-| OCC/PAD appraisal | Yes | Non-habituating contract |
-| Retrieval scoring | Yes | Ranking math, not embeddings or a vector store |
-| Presence surfacing | Yes | Pure state-to-payload transform |
-| Longitudinal affect | Yes | Three synthetic three-step traces |
-| Prompt composition | Independently tested | Public policy is configurable and neutral |
-| Gate / generation / reflection | No | Gate/generation are adapters; reflection is not included |
-
-See the [algorithm and invariants](docs/algorithm.md) and the
-[parity contract](docs/parity-contract.md).
-
-## Repository layout
-
-```text
-shared/golden/       cross-runtime behavioral fixture
-python/              Python package and tests
-typescript/          TypeScript package and tests
-examples/            credential-free reference programs
-docs/                architecture, boundaries, and design principles
-bench/               seeded retrieval benchmark and its generated results
-scripts/             public-boundary and repository checks
-```
-
-## Contributing
-
-Good first contributions: new storage/model adapters, adversarial kernel cases,
-appraisal presets for other domains, serialization fixtures, additional language
-ports, and evaluation tools. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and
-the [roadmap](ROADMAP.md).
-
-Run everything the way CI does:
-
-```bash
-./scripts/check.sh
-```
-
-## Security and privacy
-
-The core has no network client and does not persist or transmit anything by
-itself; its reference stores retain state and transcripts only in process memory.
-Your adapters define the real privacy boundary. Retrieved text and carried
-thoughts are typed as untrusted evidence and are structurally excluded from the
-system prompt.
-
-Never put conversation data, credentials, model weights, or production
-configuration in a contribution. Report vulnerabilities through the process in
-[SECURITY.md](SECURITY.md).
-
-What the kernel does and does not defend against — including the ways an adapter
-can silently undo the untrusted-evidence boundary — is written down in the
-[threat model](docs/threat-model.md).
-
-## Citing this work
+## Citation
 
 Machine-readable metadata is in [CITATION.cff](CITATION.cff), validated against
 CFF schema 1.2.0.
@@ -281,9 +316,9 @@ CFF schema 1.2.0.
 }
 ```
 
-If you are citing the *ideas* rather than this implementation, cite the primary
-sources in [foundations](docs/foundations.md) instead — this library implements
-a subset of them and departs from several.
+If you cite the ideas rather than this implementation, cite the primary sources
+in [foundations](docs/foundations.md); the library implements only a subset and
+documents where it departs from them.
 
 ## License
 
